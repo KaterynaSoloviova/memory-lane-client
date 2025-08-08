@@ -9,7 +9,8 @@ import SignUp from "./pages/SignUp";
 import Login from "./pages/LogIn";
 import PrivateRoute from "./components/PrivateRoute";
 import MyCapsules from "./pages/MyCapsules";
-import CapsuleDetails from './pages/CapsuleDetails';
+import PublicCapsulesPage from "./pages/PublicCapsulesPage";
+import ViewCapsulePage from "./pages/ViewCapsulePage";
 
 function App() {
   return (
@@ -18,13 +19,47 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/demo" element={<DemoCapsule />} />
-        <Route path="/capsules" element={<MyCapsules />} />
-        <Route path="/capsule/:id" element={<CapsuleDetails />} />
+        <Route
+          path="/capsules"
+          element={
+            <PrivateRoute>
+              <MyCapsules />
+            </PrivateRoute>
+          }
+        />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/create-capsule" element={
+
+        {/* Create new capsule */}
+        <Route
+          path="/create-capsule"
+          element={
             <PrivateRoute>
               <CreateCapsule />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Edit existing draft capsule */}
+        <Route
+          path="/create-capsule/:id"
+          element={
+            <PrivateRoute>
+              <CreateCapsule />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="/public" element={<PublicCapsulesPage />} />
+        <Route path="/public/:id" element={<ViewCapsulePage />} />
+        <Route path="/capsule/:id" element={<ViewCapsulePage />} />
+
+        {/* View unlocked capsule */}
+        <Route
+          path="/capsule/:id"
+          element={
+            <PrivateRoute>
+              <ViewCapsulePage />
             </PrivateRoute>
           }
         />

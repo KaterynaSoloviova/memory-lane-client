@@ -1,6 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <main className="bg-[#fdf7f2] text-gray-800 font-serif min-h-screen">
       {/* Hero section */}
@@ -14,19 +16,27 @@ function HomePage() {
           future.
         </p>
 
-        <div className="flex justify-center gap-6">
+        <div className="flex justify-center gap-6 flex-wrap">
           <NavLink
             to="/demo"
             className="bg-yellow-100 text-yellow-800 px-6 py-2 rounded shadow hover:bg-yellow-200"
           >
             🎁 See Demo Capsule
           </NavLink>
+
           <NavLink
             to="/create-capsule"
             className="bg-green-100 text-green-800 px-6 py-2 rounded shadow hover:bg-green-200"
           >
             ✨ Get Started
           </NavLink>
+
+          <button
+            onClick={() => navigate("/public")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Public Capsules
+          </button>
         </div>
       </section>
 

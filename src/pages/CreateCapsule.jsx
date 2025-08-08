@@ -1,22 +1,24 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
 import { AuthContext } from "../contexts/AuthContext";
 import TiptapEditor from "../components/TiptapEditor";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function CreateCapsule() {
   const { user } = useContext(AuthContext);
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
+  const [capsuleImage, setCapsuleImage] = useState(""); // Capsule image URL
   const [description, setDescription] = useState("");
   const [unlockedDate, setUnlockedDate] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [items, setItems] = useState([]);
-  const [richText, setRichText] = useState("");
-
-  const [capsules, setCapsules] = useState([]);
-  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const [itemType, setItemType] = useState("text");
   const [textContent, setTextContent] = useState("");
@@ -24,7 +26,33 @@ function CreateCapsule() {
   const [imageUrl, setImageUrl] = useState("");
   const [imageDescription, setImageDescription] = useState("");
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (id) {
+      const fetchCapsule = async () => {
+        setLoading(true);
+        setError("");
+        try {
+          const token = localStorage.getItem("authToken");
+          const res = await axios.get(`${BASE_URL}/api/capsules/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const cap = res.data;
+          setTitle(cap.title || "");
+          setCapsuleImage(cap.capsuleImage || ""); // Load existing capsule image
+          setDescription(cap.description || "");
+          setUnlockedDate(cap.unlockedDate ? cap.unlockedDate.slice(0, 10) : "");
+          setIsPublic(!!cap.isPublic);
+          setItems(cap.items || []);
+          setLoading(false);
+        } catch (err) {
+          setError("Failed to load capsule data.");
+          setLoading(false);
+          console.error(err);
+        }
+      };
+      fetchCapsule();
+    }
+  }, [id]);
 
   if (!user) {
     return (
@@ -32,51 +60,87 @@ function CreateCapsule() {
     );
   }
 
-  // Submit capsule
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleAddItem = () => {
+    if (itemType === "text" && textContent.trim() !== "") {
+      setItems((prev) => [...prev, { type: "text", content: textContent }]);
+      setTextContent("");
+    } else if (itemType === "image" && imageUrl.trim() !== "") {
+      setItems((prev) => [
+        ...prev,
+        { type: "image", url: imageUrl.trim(), description: imageDescription.trim() },
+      ]);
+      setImageUrl("");
+      setImageDescription("");
+    }
+  };
+
+  const handleSave = async () => {
     setLoading(true);
     setMessage("");
+    setError("");
 
-    const newCapsule = {
+    const storedToken = localStorage.getItem("authToken");
+
+    const capsuleData = {
       title,
+      capsuleImage,
       description,
       unlockedDate,
       isPublic,
       items,
     };
 
-    const storedToken = localStorage.getItem("authToken");
-
-    axios
-  .post(`${BASE_URL}/api/capsules`, newCapsule, {
-    headers: {
-      Authorization: `Bearer ${storedToken}`,
-    },
-  })
-  .then((res) => {
-    const createdId = res.data._id;
-    if (createdId) {
-      navigate(`/capsules/${createdId}`);
-    } else {
-      console.error("Capsule created but no ID returned:", res.data);
-      setMessage("Capsule created, but can't navigate.");
+    try {
+      if (id) {
+        await axios.put(`${BASE_URL}/api/capsules/${id}`, capsuleData, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+        setMessage("Capsule updated successfully!");
+        navigate(`/capsules`);
+      } else {
+        const res = await axios.post(`${BASE_URL}/api/capsules`, capsuleData, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+        const createdId = res.data._id;
+        if (createdId) {
+          navigate(`/create-capsule/${createdId}`);
+        }
+        setMessage("Capsule created successfully!");
+      }
+    } catch (err) {
+      setError("Failed to save capsule.");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  })
-  .catch((err) => {
-    console.error("Failed to create capsule", err);
-    setMessage("Error creating capsule.");
-  })
-  .finally(() => setLoading(false));
+  };
+
+  const handlePreview = () => {
+    if (id) {
+      navigate(`/preview/${id}`);
+    } else {
+      alert("Please save the capsule before previewing.");
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 mt-8 bg-yellow-50 font-retro rounded shadow-lg">
-      <h2 className="text-3xl font-bold mb-4">📦 Create Time Capsule</h2>
+      <h2 className="text-3xl font-bold mb-4">
+        📦 {id ? "Edit" : "Create"} Time Capsule
+      </h2>
 
-      {message && <p className="mb-4 text-center">{message}</p>}
+      {error && <p className="mb-4 text-center text-red-600">{error}</p>}
+      {message && <p className="mb-4 text-center text-green-600">{message}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {loading && <p className="mb-4 text-center">Loading...</p>}
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSave();
+        }}
+        className="space-y-4"
+      >
         <div>
           <label className="block font-medium">Title</label>
           <input
@@ -86,6 +150,25 @@ function CreateCapsule() {
             required
             onChange={(e) => setTitle(e.target.value)}
           />
+        </div>
+
+        {/* Capsule Image URL */}
+        <div>
+          <label className="block font-medium">Capsule Image URL</label>
+          <input
+            className="w-full border rounded px-3 py-2"
+            type="text"
+            placeholder="Enter image URL for capsule card"
+            value={capsuleImage}
+            onChange={(e) => setCapsuleImage(e.target.value)}
+          />
+          {capsuleImage && (
+            <img
+              src={capsuleImage}
+              alt="Capsule Thumbnail Preview"
+              className="mt-2 max-h-40 object-contain rounded border"
+            />
+          )}
         </div>
 
         <div>
@@ -120,7 +203,6 @@ function CreateCapsule() {
           </label>
         </div>
 
-        {/* Item type selector */}
         <div>
           <label className="block font-medium mb-1">Select Item Type</label>
           <select
@@ -133,7 +215,6 @@ function CreateCapsule() {
           </select>
         </div>
 
-        {/* Conditional fields based on type */}
         {itemType === "text" && (
           <div className="mt-4">
             <label className="block font-medium mb-1">Insert Text</label>
@@ -162,36 +243,14 @@ function CreateCapsule() {
           </div>
         )}
 
-        {/* Add Item Button */}
         <button
           type="button"
-          onClick={() => {
-            if (itemType === "text" && textContent.trim() !== "") {
-              setItems((prev) => [
-                ...prev,
-                { type: "text", content: textContent },
-              ]);
-              setTextContent("");
-            }
-            if (itemType === "image" && imageUrl.trim() !== "") {
-              setItems((prev) => [
-                ...prev,
-                {
-                  type: "image",
-                  url: imageUrl.trim(),
-                  description: imageDescription.trim(),
-                },
-              ]);
-              setImageUrl("");
-              setImageDescription("");
-            }
-          }}
+          onClick={handleAddItem}
           className="mt-3 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
         >
           ➕ Add Item
         </button>
 
-        {/* Items Preview Cards */}
         <div className="mt-6 space-y-4">
           {items.length === 0 ? (
             <p className="text-center text-gray-500">No items added yet.</p>
@@ -224,26 +283,29 @@ function CreateCapsule() {
           )}
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
-        >
-          {loading ? "Creating..." : "Create Capsule"}
-        </button>
-      </form>
+        <div className="flex gap-4 mt-6">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
+          >
+            {loading ? "Saving..." : "Save"}
+          </button>
 
-      {/* Preview of created capsules */}
-      {capsules.length > 0 && (
-        <div className="mt-10">
-          <h3 className="text-xl font-bold mb-2">🎩 Existing Capsules</h3>
-          <ul className="list-disc ml-5">
-            {capsules.map((cap) => (
-              <li key={cap._id}>{cap.title}</li>
-            ))}
-          </ul>
+          <button
+            type="button"
+            onClick={handlePreview}
+            disabled={!id || loading}
+            className={`px-6 py-2 rounded border ${
+              id && !loading
+                ? "border-green-600 text-green-600 hover:bg-green-100 cursor-pointer"
+                : "text-gray-400 border-gray-400 cursor-not-allowed"
+            }`}
+          >
+            Preview
+          </button>
         </div>
-      )}
+      </form>
     </div>
   );
 }

@@ -21,7 +21,7 @@ function Login() {
       .then((response) => {
         storeToken(response.data.authToken);
         authenticateUser();
-        navigate("/capsules");
+        navigate("/"); // Go back to HomePage
       })
       .catch((error) => {
         const errorDescription =
