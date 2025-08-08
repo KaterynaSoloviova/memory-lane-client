@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
+import { isLocked, isUnlocked, isDraft } from "../utils/validators";
 
 function MyCapsules() {
   const { user } = useContext(AuthContext);
@@ -44,31 +45,26 @@ function MyCapsules() {
     }
   };
 
-  // Determine capsule status:
-  // - If unlockDate missing or empty, status = draft
-  // - Else if unlockDate in future => locked
-  // - Else unlocked
+  // Use imported helper functions to determine status
   const getCapsuleStatus = (cap) => {
-    if (!cap.unlockDate) {
+    if (isDraft(cap)) {
       return { status: "draft", date: cap.createdAt, dateLabel: "Created on" };
     }
-
-    const now = new Date();
-    const unlockDate = new Date(cap.unlockDate);
-
-    if (unlockDate > now) {
+    if (isLocked(cap)) {
       return {
         status: "locked",
-        date: cap.unlockDate,
+        date: cap.unlockedDate,
         dateLabel: "Unlock date",
       };
-    } else {
+    }
+    if (isUnlocked(cap)) {
       return {
         status: "unlocked",
-        date: cap.unlockDate,
+        date: cap.unlockedDate,
         dateLabel: "Unlocked on",
       };
     }
+    return { status: "unknown", date: null, dateLabel: "" };
   };
 
   const filteredCapsules = capsules.filter((cap) => {

@@ -1,22 +1,27 @@
-import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../contexts/AuthContext";
+import { BASE_URL } from "../config/config";
+import { isDraft, isOwner } from "../utils/validators";
 
 function ViewCapsulePage() {
   const { id } = useParams();
-  const location = useLocation();
+  const { user } = useContext(AuthContext);
   const [capsule, setCapsule] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // read edit mode from location.state (default to false)
-  const editMode = location.state?.editMode || false;
-
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
     axios
-      .get(`${import.meta.env.VITE_API_URL}/public/${id}`)
+      .get(`${BASE_URL}/api/capsules/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((res) => setCapsule(res.data))
       .catch((err) => console.error("Error fetching capsule:", err));
   }, [id]);
+  
+  const editMode = capsule && isDraft(capsule) && isOwner(capsule, user._id);
 
   if (!capsule) return <p className="p-6">Loading...</p>;
 

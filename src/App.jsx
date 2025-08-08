@@ -52,7 +52,7 @@ function App() {
 
         <Route path="/public" element={<PublicCapsulesPage />} />
         <Route path="/public/:id" element={<ViewCapsulePage />} />
-        <Route path="/capsule/:id" element={<ViewCapsulePage />} />
+        <Route path="/preview/:id" element={<ViewCapsulePage />} />
 
         {/* View unlocked capsule */}
         <Route
