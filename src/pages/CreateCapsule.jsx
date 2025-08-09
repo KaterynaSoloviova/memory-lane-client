@@ -11,7 +11,7 @@ function CreateCapsule() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
-  const [capsuleImage, setCapsuleImage] = useState(""); // Capsule image URL
+  const [image, setImage] = useState(""); // Capsule image URL
   const [description, setDescription] = useState("");
   const [unlockedDate, setUnlockedDate] = useState("");
   const [isPublic, setIsPublic] = useState(false);
@@ -38,9 +38,11 @@ function CreateCapsule() {
           });
           const cap = res.data;
           setTitle(cap.title || "");
-          setCapsuleImage(cap.capsuleImage || ""); // Load existing capsule image
+          setImage(cap.image || ""); // Load existing capsule image
           setDescription(cap.description || "");
-          setUnlockedDate(cap.unlockedDate ? cap.unlockedDate.slice(0, 10) : "");
+          setUnlockedDate(
+            cap.unlockedDate ? cap.unlockedDate.slice(0, 10) : ""
+          );
           setIsPublic(!!cap.isPublic);
           setItems(cap.items || []);
           setLoading(false);
@@ -67,11 +69,19 @@ function CreateCapsule() {
     } else if (itemType === "image" && imageUrl.trim() !== "") {
       setItems((prev) => [
         ...prev,
-        { type: "image", url: imageUrl.trim(), description: imageDescription.trim() },
+        {
+          type: "image",
+          url: imageUrl.trim(),
+          description: imageDescription.trim(),
+        },
       ]);
       setImageUrl("");
       setImageDescription("");
     }
+  };
+
+  const handleDeleteItem = (index) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSave = async () => {
@@ -83,7 +93,7 @@ function CreateCapsule() {
 
     const capsuleData = {
       title,
-      capsuleImage,
+      image,
       description,
       unlockedDate,
       isPublic,
@@ -159,12 +169,12 @@ function CreateCapsule() {
             className="w-full border rounded px-3 py-2"
             type="text"
             placeholder="Enter image URL for capsule card"
-            value={capsuleImage}
-            onChange={(e) => setCapsuleImage(e.target.value)}
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
           />
-          {capsuleImage && (
+          {image && (
             <img
-              src={capsuleImage}
+              src={image}
               alt="Capsule Thumbnail Preview"
               className="mt-2 max-h-40 object-contain rounded border"
             />
@@ -258,14 +268,24 @@ function CreateCapsule() {
             items.map((item, idx) => (
               <div
                 key={idx}
-                className="border rounded-lg bg-white shadow-md p-4 flex flex-col items-center"
+                className="border rounded-lg bg-white shadow-md p-4 flex flex-col items-center relative"
               >
+                {/* Delete button */}
+                <button
+                  type="button"
+                  onClick={() => handleDeleteItem(idx)}
+                  className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                >
+                  ❌
+                </button>
+
                 {item.type === "text" && (
                   <div
                     className="prose max-w-full"
                     dangerouslySetInnerHTML={{ __html: item.content }}
                   />
                 )}
+
                 {item.type === "image" && (
                   <>
                     <img

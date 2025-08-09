@@ -4,6 +4,7 @@ import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
 import { isLocked, isUnlocked, isDraft } from "../utils/validators";
+import imagePlaceholder from "../assets/image-placeholder.jpg"
 
 function MyCapsules() {
   const { user } = useContext(AuthContext);
@@ -128,11 +129,11 @@ function MyCapsules() {
                   isClickable ? "cursor-pointer" : "cursor-default"
                 }`}
               >
-                <img
-                  src={cap.image || "/placeholder.jpg"}
-                  alt={cap.title}
-                  className="w-full h-40 object-cover"
-                />
+                <figure class="max-w-lg">
+                  <img class="h-auto max-w-full rounded-lg" src={cap.image || imagePlaceholder}
+                  alt={cap.title}/>
+                </figure>
+                
                 <div className="p-4">
                   <h3 className="text-xl font-bold mb-2">{cap.title}</h3>
                   <p className="text-gray-600 text-sm">
