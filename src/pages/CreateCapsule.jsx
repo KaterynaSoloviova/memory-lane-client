@@ -19,6 +19,7 @@ function CreateCapsule() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [isLocked, setIsLocked] = useState(false);
 
   const [itemType, setItemType] = useState("text");
   const [textContent, setTextContent] = useState("");
@@ -44,6 +45,7 @@ function CreateCapsule() {
             cap.unlockedDate ? cap.unlockedDate.slice(0, 10) : ""
           );
           setIsPublic(!!cap.isPublic);
+          setIsLocked(!!cap.isLocked);
           setItems(cap.items || []);
           setLoading(false);
         } catch (err) {
@@ -60,6 +62,10 @@ function CreateCapsule() {
     return (
       <p className="text-center mt-10">Please login to create a capsule.</p>
     );
+  }
+
+  if (isLocked) {
+   navigate(`/capsule/${id}`);
   }
 
   const handleAddItem = () => {

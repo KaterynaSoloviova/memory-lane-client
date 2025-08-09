@@ -1,15 +1,17 @@
 import { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
-import { isDraft, isOwner } from "../utils/validators";
+import { isDraft, isLocked, isOwner } from "../utils/validators";
+import Countdown from "../components/Countdown";
 
 function ViewCapsulePage() {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
   const [capsule, setCapsule] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -20,10 +22,24 @@ function ViewCapsulePage() {
       .then((res) => setCapsule(res.data))
       .catch((err) => console.error("Error fetching capsule:", err));
   }, [id]);
-  
-  const editMode = capsule && isDraft(capsule) && isOwner(capsule, user._id);
 
-  if (!capsule) return <p className="p-6">Loading...</p>;
+  const editMode =
+    capsule && user && isDraft(capsule) && isOwner(capsule, user._id);
+
+  if (!capsule) {
+    return <p className="p-6">Loading...</p>;
+  }
+
+  if (isLocked(capsule)) {
+    console.log(capsule.unlockedDate);
+    return (
+      <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
+        <h2 className="text-2xl font-bold mb-4">{capsule.title}</h2>
+        <p className="mb-4">This capsule is locked until:</p>
+        <Countdown unlockDate={capsule.unlockedDate} />
+      </div>
+    );
+  }
 
   const items = capsule.items || [];
 
@@ -37,13 +53,29 @@ function ViewCapsulePage() {
 
   // Delete and Lock handlers only if in edit mode
   const handleDelete = () => {
-    // your delete logic here or call API
-    alert("Delete clicked"); // replace with actual
+    const token = localStorage.getItem("authToken");
+    axios
+      .delete(`${BASE_URL}/api/capsules/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setCapsule(res.data))
+      .catch((err) => console.error("Error deleting capsule:", err));
+    navigate(`/capsules`);
   };
 
   const handleLock = () => {
-    // your lock logic here or call API
-    alert("Lock clicked"); // replace with actual
+    const token = localStorage.getItem("authToken");
+    axios
+      .post(
+        `${BASE_URL}/api/capsules/${id}/lock`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+      .then((res) => setCapsule(res.data))
+      .catch((err) => console.error("Error updating capsule:", err));
+    navigate(`/capsules`);
   };
 
   return (

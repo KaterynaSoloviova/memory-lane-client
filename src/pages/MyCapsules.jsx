@@ -4,7 +4,7 @@ import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
 import { isLocked, isUnlocked, isDraft } from "../utils/validators";
-import imagePlaceholder from "../assets/image-placeholder.jpg"
+import imagePlaceholder from "../assets/image-placeholder.jpg";
 
 function MyCapsules() {
   const { user } = useContext(AuthContext);
@@ -13,9 +13,9 @@ function MyCapsules() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const storedToken = localStorage.getItem("authToken");
     const fetchCapsules = async () => {
       try {
-        const storedToken = localStorage.getItem("authToken");
         const response = await axios.get(`${BASE_URL}/api/capsules`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
@@ -34,16 +34,14 @@ function MyCapsules() {
     );
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
     const storedToken = localStorage.getItem("authToken");
-    try {
-      await axios.delete(`${BASE_URL}/api/capsules/${id}`, {
+    axios
+      .delete(`${BASE_URL}/api/capsules/${id}`, {
         headers: { Authorization: `Bearer ${storedToken}` },
-      });
-      setCapsules((prev) => prev.filter((c) => c._id !== id));
-    } catch (err) {
-      console.error("Failed to delete capsule", err);
-    }
+      })
+      .then(() => setCapsules((prev) => prev.filter((c) => c._id !== id)))
+      .catch((err) => console.error("Failed to delete capsule", err));
   };
 
   // Use imported helper functions to determine status
@@ -78,7 +76,7 @@ function MyCapsules() {
     const { status } = getCapsuleStatus(cap);
     if (status === "draft") {
       navigate(`/create-capsule/${cap._id}`); // edit draft
-    } else if (status === "unlocked") {
+    } else {
       navigate(`/capsule/${cap._id}`, { state: { editMode: false } }); // view unlocked in read-only mode
     }
   };
@@ -119,21 +117,21 @@ function MyCapsules() {
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {filteredCapsules.map((cap) => {
             const { status, date, dateLabel } = getCapsuleStatus(cap);
-            const isClickable = status === "unlocked" || status === "draft";
 
             return (
               <div
                 key={cap._id}
-                onClick={() => isClickable && handleCardClick(cap)}
-                className={`bg-white rounded shadow overflow-hidden transition hover:shadow-lg ${
-                  isClickable ? "cursor-pointer" : "cursor-default"
-                }`}
+                onClick={() => handleCardClick(cap)}
+                className={`bg-white rounded shadow overflow-hidden transition hover:shadow-lg cursor-pointer`}
               >
                 <figure class="max-w-lg">
-                  <img class="h-auto max-w-full rounded-lg" src={cap.image || imagePlaceholder}
-                  alt={cap.title}/>
+                  <img
+                    class="h-auto max-w-full rounded-lg"
+                    src={cap.image || imagePlaceholder}
+                    alt={cap.title}
+                  />
                 </figure>
-                
+
                 <div className="p-4">
                   <h3 className="text-xl font-bold mb-2">{cap.title}</h3>
                   <p className="text-gray-600 text-sm">

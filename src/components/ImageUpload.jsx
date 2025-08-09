@@ -22,7 +22,7 @@ const ImageUpload = ({ onUploadSuccess, compact = false }) => {
 
     try {
       const res = await fetch(
-        "https://api.cloudinary.com/v1_1//imadtjylc9nyge/upload",
+        "https://api.cloudinary.com/v1_1/dtjylc9ny/image/upload",
         {
           method: "POST",
           body: data,
