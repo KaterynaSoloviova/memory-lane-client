@@ -1,9 +1,10 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
 import { AuthContext } from "../contexts/AuthContext";
 import TiptapEditor from "../components/TiptapEditor";
 import { useNavigate, useParams } from "react-router-dom";
+import { memoryStyles } from "../utils/styles";
 
 function CreateCapsule() {
   const { user } = useContext(AuthContext);
@@ -22,15 +23,13 @@ function CreateCapsule() {
   const [isLocked, setIsLocked] = useState(false);
   const [participants, setParticipants] = useState([]);
 
-  const [itemType, setItemType] = useState("text");
+  const [selectedStyle, setSelectedStyle] = useState("wedding");
   const [textContent, setTextContent] = useState("");
-
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageDescription, setImageDescription] = useState("");
 
   const [newParticipant, setNewParticipant] = useState("");
   const [participantError, setParticipantError] = useState("");
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (id) {
@@ -93,18 +92,24 @@ function CreateCapsule() {
     }
   };
 
-  // const handleImageFileSelect = async (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const uploadedUrl = await handleCloudinaryUpload(file);
-  //     if (uploadedUrl) {
-  //       setItems((prev) => [
-  //         ...prev,
-  //         { type: "image", url: uploadedUrl, description: "" },
-  //       ]);
-  //     }
-  //   }
-  // };
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const url = await handleCloudinaryUpload(e.target.files[0]);
+      setImage(url);
+    }
+  };
+
+  const handleClear = () => {
+    setImage("");
+    // Optionally also clear file input value to allow re-upload of same file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
+  };
 
   const handleAddParticipant = () => {
     if (!emailRegex.test(newParticipant.trim())) {
@@ -125,23 +130,16 @@ function CreateCapsule() {
   };
 
   const handleAddItem = () => {
-    if (itemType === "text" && textContent.trim() !== "") {
-      setItems((prev) => [...prev, { type: "text", content: textContent }]);
-      setTextContent("");
-    } else if (itemType === "image" && imageUrl.trim() !== "") {
-      setItems((prev) => [
-        ...prev,
-        {
-          type: "image",
-          url: imageUrl.trim(),
-          description: imageDescription.trim(),
-        },
-      ]);
-      setImageUrl("");
-      setImageDescription("");
-    }
+    setItems((prev) => [
+      ...prev,
+      {
+        type: "text",
+        content: textContent,
+        style: selectedStyle, // save selected style
+      },
+    ]);
+    setTextContent("");
   };
-
   const handleDeleteItem = (index) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
@@ -227,21 +225,45 @@ function CreateCapsule() {
         </div>
 
         {/* Capsule Image Upload */}
-        <label className="block font-medium">Capsule Image</label>
-        <input
-          type="file"
-          onChange={async (e) => {
-            const url = await handleCloudinaryUpload(e.target.files[0]);
-            setImage(url);
-          }}
-        />
-        {image && (
-          <img
-            src={image}
-            alt="Capsule"
-            className="mt-2 max-h-40 object-contain rounded border"
+
+        <div>
+          <label className="block font-medium mb-1">Capsule Image</label>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleChange}
           />
-        )}
+
+          <div
+            onClick={handleClick}
+            className="cursor-pointer w-40 h-40 border border-dashed border-gray-400 rounded flex items-center justify-center overflow-hidden"
+            title="Click to upload image"
+          >
+            {image ? (
+              <img
+                src={image}
+                alt="Capsule"
+                className="object-contain w-full h-full"
+              />
+            ) : (
+              <div className="text-gray-400 text-center px-2">
+                Click here to upload capsule image
+              </div>
+            )}
+          </div>
+          {image && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="mt-2 text-sm text-red-600 hover:underline"
+            >
+              Clear Image
+            </button>
+          )}
+        </div>
 
         {/* Description */}
         <div>
@@ -322,44 +344,46 @@ function CreateCapsule() {
 
         {/* Add Items */}
         <div>
-          <label className="block font-medium mb-1">Select Item Type</label>
-          <select
-            className="border rounded px-3 py-2 w-full"
-            value={itemType}
-            onChange={(e) => setItemType(e.target.value)}
-          >
-            <option value="text">Text</option>
-            <option value="image">Image</option>
-          </select>
+          <label className="block font-medium mb-2">Select Memory Style</label>
+          <div className="flex gap-4 flex-wrap">
+            {Object.entries(memoryStyles).map(([key, style]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setSelectedStyle(key)}
+                className={`px-4 py-2 rounded border ${
+                  selectedStyle === key
+                    ? "border-blue-600 bg-blue-100"
+                    : "border-gray-300 bg-white"
+                }`}
+              >
+                {style.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {itemType === "text" && (
-          <div className="mt-4">
-            <label className="block font-medium mb-1">Insert Text</label>
-            <TiptapEditor content={textContent} onChange={setTextContent} />
-          </div>
-        )}
+        <div className="mt-4">
+          <label className="block font-medium mb-1">Insert Text</label>
+          <TiptapEditor content={textContent} onChange={setTextContent} />
 
-        {itemType === "image" && (
-          <div className="mt-4 space-y-2">
-            <label className="block font-medium">Image URL</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Paste image URL here"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-            />
-            <label className="block font-medium">Description</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Image description"
-              value={imageDescription}
-              onChange={(e) => setImageDescription(e.target.value)}
+          <div className="mt-4">
+            <label className="block font-medium mb-1">Preview</label>
+            <div
+              className="p-4 rounded shadow-sm border"
+              style={{
+                backgroundColor: memoryStyles[selectedStyle].backgroundColor,
+                fontFamily: memoryStyles[selectedStyle].fontFamily,
+                fontSize: memoryStyles[selectedStyle].fontSize,
+                color: memoryStyles[selectedStyle].color,
+                minHeight: "100px",
+                whiteSpace: "pre-wrap",
+                overflowWrap: "break-word",
+              }}
+              dangerouslySetInnerHTML={{ __html: textContent }}
             />
           </div>
-        )}
+        </div>
 
         <button
           type="button"
@@ -388,25 +412,23 @@ function CreateCapsule() {
                   ❌
                 </button>
 
-                {item.type === "text" && (
-                  <div
-                    className="prose max-w-full"
-                    dangerouslySetInnerHTML={{ __html: item.content }}
-                  />
-                )}
-
-                {item.type === "image" && (
-                  <>
-                    <img
-                      src={item.url}
-                      alt={item.description || "Image"}
-                      className="max-w-full rounded mb-2"
-                    />
-                    <p className="italic text-gray-600 text-center">
-                      {item.description || "No description"}
-                    </p>
-                  </>
-                )}
+                <div
+                  className="prose max-w-full p-4 rounded"
+                  style={{
+                    backgroundColor:
+                      memoryStyles[item.style]?.backgroundColor || "#fff",
+                    fontFamily:
+                      memoryStyles[item.style]?.fontFamily || "inherit",
+                    fontSize: memoryStyles[item.style]?.fontSize || "inherit",
+                    color: memoryStyles[item.style]?.color || "#000",
+                    minHeight: "100px",
+                    whiteSpace: "pre-wrap",
+                    overflowWrap: "break-word",
+                    width: "100%", // Take full width of parent
+                    boxSizing: "border-box", // Include padding/border in width
+                  }}
+                  dangerouslySetInnerHTML={{ __html: item.content }}
+                />
               </div>
             ))
           )}
