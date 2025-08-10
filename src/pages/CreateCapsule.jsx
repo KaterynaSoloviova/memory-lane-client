@@ -5,6 +5,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import TiptapEditor from "../components/TiptapEditor";
 import { useNavigate, useParams } from "react-router-dom";
 import { memoryStyles } from "../utils/styles";
+import { Trash2, Plus, ChevronUp, ChevronDown, X, Play, Pause, Volume2 } from "lucide-react";
 
 function CreateCapsule() {
   const { user } = useContext(AuthContext);
@@ -23,13 +24,42 @@ function CreateCapsule() {
   const [isLocked, setIsLocked] = useState(false);
   const [participants, setParticipants] = useState([]);
 
-  const [selectedStyle, setSelectedStyle] = useState("wedding");
   const [textContent, setTextContent] = useState("");
 
   const [newParticipant, setNewParticipant] = useState("");
   const [participantError, setParticipantError] = useState("");
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const fileInputRef = useRef(null);
+
+  const [styleKey, setStyleKey] = useState("default");
+  const [selectedMusic, setSelectedMusic] = useState("");
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const [previewVolume, setPreviewVolume] = useState(0.5);
+  const audioPreviewRef = useRef(null);
+
+  // Available background music options
+  const backgroundMusicOptions = [
+    {
+      id: "presentation-music-1.mp3",
+      name: "Presentation Music 1",
+      duration: "0:58"
+    },
+    {
+      id: "presentation-music-2.mp3", 
+      name: "Presentation Music 2",
+      duration: "1:49"
+    },
+    {
+      id: "presentation-music-3.mp3",
+      name: "Presentation Music 3",
+      duration: "1:12"
+    },
+    {
+      id: "promo-music-1.mp3",
+      name: "Promo Music 1",
+      duration: "1:06"
+    }
+  ];
 
   useEffect(() => {
     if (id) {
@@ -51,8 +81,9 @@ function CreateCapsule() {
           setIsPublic(!!cap.isPublic);
           setIsLocked(!!cap.isLocked);
           setItems(cap.items || []);
-          setLoading(false);
           setParticipants(cap.emails || []);
+          setSelectedMusic(cap.backgroundMusic || "");
+          setLoading(false);
         } catch (err) {
           setError("Failed to load capsule data.");
           setLoading(false);
@@ -135,14 +166,80 @@ function CreateCapsule() {
       {
         type: "text",
         content: textContent,
-        style: selectedStyle, // save selected style
+        style: styleKey || "default",
       },
     ]);
     setTextContent("");
   };
+
   const handleDeleteItem = (index) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const handleMoveItemUp = (index) => {
+    if (index > 0) {
+      setItems((prev) => {
+        const newItems = [...prev];
+        [newItems[index], newItems[index - 1]] = [newItems[index - 1], newItems[index]];
+        return newItems;
+      });
+    }
+  };
+
+  const handleMoveItemDown = (index) => {
+    if (index < items.length - 1) {
+      setItems((prev) => {
+        const newItems = [...prev];
+        [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+        return newItems;
+      });
+    }
+  };
+
+  // Audio preview functions
+  const toggleMusicPreview = () => {
+    if (audioPreviewRef.current) {
+      if (isPlayingPreview) {
+        audioPreviewRef.current.pause();
+        setIsPlayingPreview(false);
+      } else {
+        // Stop any currently playing audio
+        if (audioPreviewRef.current.src) {
+          audioPreviewRef.current.pause();
+          audioPreviewRef.current.currentTime = 0;
+        }
+        // Set new source and play
+        audioPreviewRef.current.src = `/music/${selectedMusic}`;
+        audioPreviewRef.current.play();
+        setIsPlayingPreview(true);
+      }
+    }
+  };
+
+  const handlePreviewVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setPreviewVolume(newVolume);
+    if (audioPreviewRef.current) {
+      audioPreviewRef.current.volume = newVolume;
+    }
+  };
+
+  // Stop preview when music selection changes
+  useEffect(() => {
+    if (audioPreviewRef.current && isPlayingPreview) {
+      audioPreviewRef.current.pause();
+      setIsPlayingPreview(false);
+    }
+  }, [selectedMusic]);
+
+  // Cleanup audio on component unmount
+  useEffect(() => {
+    return () => {
+      if (audioPreviewRef.current) {
+        audioPreviewRef.current.pause();
+      }
+    };
+  }, []);
 
   const handleSave = async () => {
     setLoading(true);
@@ -159,6 +256,7 @@ function CreateCapsule() {
       emails: participants,
       isPublic,
       items,
+      backgroundMusic: selectedMusic,
     };
 
     try {
@@ -316,7 +414,7 @@ function CreateCapsule() {
               onClick={handleAddParticipant}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
-              Add
+              <Plus size={18} />
             </button>
           </div>
           {participantError && (
@@ -335,32 +433,121 @@ function CreateCapsule() {
                   onClick={() => handleRemoveParticipant(idx)}
                   className="text-red-600 hover:text-red-800"
                 >
-                  ❌
+                  <Trash2 size={16} />
                 </button>
               </li>
             ))}
           </ul>
         </div>
 
-        {/* Add Items */}
+        {/* Choose style */}
         <div>
-          <label className="block font-medium mb-2">Select Memory Style</label>
-          <div className="flex gap-4 flex-wrap">
-            {Object.entries(memoryStyles).map(([key, style]) => (
+          <label className="block font-medium mb-1">Choose style</label>
+          <div className="grid grid-cols-5 gap-2">
+            {Object.keys(memoryStyles).map((key) => {
+              const s = memoryStyles[key];
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setStyleKey(key)}
+                  className={`border rounded overflow-hidden p-1 relative ${
+                    styleKey === key ? "ring-4 ring-yellow-300" : ""
+                  }`}
+                  aria-pressed={styleKey === key}
+                >
+                  <div
+                    className="w-28 h-16"
+                    style={{ 
+                      backgroundImage: s.backgroundImage,
+                      backgroundSize: "100% 100%",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat",
+                      opacity: 0.7
+                    }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-black drop-shadow-lg">
+                    {s.label}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Background Music Selection */}
+        <div>
+          <label className="block font-medium mb-1">Background Music</label>
+          
+          {/* Audio Preview Element */}
+          <audio ref={audioPreviewRef} preload="metadata" />
+          
+          <div className="grid grid-cols-2 gap-3">
+            {backgroundMusicOptions.map((music) => (
               <button
-                key={key}
+                key={music.id}
                 type="button"
-                onClick={() => setSelectedStyle(key)}
-                className={`px-4 py-2 rounded border ${
-                  selectedStyle === key
-                    ? "border-blue-600 bg-blue-100"
-                    : "border-gray-300 bg-white"
+                onClick={() => setSelectedMusic(music.id)}
+                className={`border rounded-lg p-3 text-left transition-all ${
+                  selectedMusic === music.id
+                    ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
+                    : "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50"
                 }`}
               >
-                {style.label}
+                <div className="font-medium text-gray-900">{music.name}</div>
+                <div className="text-sm text-gray-500">{music.duration}</div>
+                {selectedMusic === music.id && (
+                  <div className="mt-2 text-blue-600 text-sm font-medium">
+                    ✓ Selected
+                  </div>
+                )}
               </button>
             ))}
           </div>
+          
+          {/* Music Preview Controls */}
+          {selectedMusic && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-sm font-medium text-gray-700">
+                  Preview: {backgroundMusicOptions.find(m => m.id === selectedMusic)?.name}
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleMusicPreview}
+                  disabled={!selectedMusic}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${
+                    isPlayingPreview
+                      ? "bg-red-500 text-white hover:bg-red-600"
+                      : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+                >
+                  {isPlayingPreview ? <Pause size={16} /> : <Play size={16} />}
+                  {isPlayingPreview ? "Stop" : "Play Preview"}
+                </button>
+              </div>
+              
+              {/* Volume Control */}
+              <div className="flex items-center gap-2">
+                <Volume2 size={16} className="text-gray-600" />
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={previewVolume}
+                  onChange={handlePreviewVolumeChange}
+                  className="flex-1 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${previewVolume * 100}%, #e5e7eb ${previewVolume * 100}%, #e5e7eb 100%)`
+                  }}
+                />
+                <span className="text-sm text-gray-600 w-8 text-right">
+                  {Math.round(previewVolume * 100)}%
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mt-4">
@@ -370,18 +557,40 @@ function CreateCapsule() {
           <div className="mt-4">
             <label className="block font-medium mb-1">Preview</label>
             <div
-              className="p-4 rounded shadow-sm border"
+              className="p-4 rounded shadow-sm border relative"
               style={{
-                backgroundColor: memoryStyles[selectedStyle].backgroundColor,
-                fontFamily: memoryStyles[selectedStyle].fontFamily,
-                fontSize: memoryStyles[selectedStyle].fontSize,
-                color: memoryStyles[selectedStyle].color,
-                minHeight: "100px",
+                backgroundColor:
+                  memoryStyles[styleKey]?.backgroundColor ||
+                  memoryStyles.default.backgroundColor,
+                backgroundImage:
+                  memoryStyles[styleKey]?.backgroundImage || "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                fontFamily:
+                  memoryStyles[styleKey]?.fontFamily ||
+                  memoryStyles.default.fontFamily,
+                fontSize:
+                  memoryStyles[styleKey]?.fontSize ||
+                  memoryStyles.default.fontSize,
+                color:
+                  memoryStyles[styleKey]?.color || memoryStyles.default.color,
+                minHeight: "400px",
                 whiteSpace: "pre-wrap",
                 overflowWrap: "break-word",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
               }}
-              dangerouslySetInnerHTML={{ __html: textContent }}
-            />
+            >
+              <div
+                dangerouslySetInnerHTML={{ __html: textContent }}
+                style={{
+                  maxWidth: "80%",
+                  padding: "20px",
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -403,32 +612,81 @@ function CreateCapsule() {
                 key={idx}
                 className="border rounded-lg bg-white shadow-md p-4 flex flex-col items-center relative"
               >
+                {/* Reorder buttons */}
+                <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                  <button
+                    type="button"
+                    onClick={() => handleMoveItemUp(idx)}
+                    disabled={idx === 0}
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-sm ${
+                      idx === 0
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+                    }`}
+                  >
+                    <ChevronUp size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleMoveItemDown(idx)}
+                    disabled={idx === items.length - 1}
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-sm ${
+                      idx === items.length - 1
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+                    }`}
+                  >
+                    <ChevronDown size={14} />
+                  </button>
+                </div>
+
                 {/* Delete button */}
                 <button
                   type="button"
                   onClick={() => handleDeleteItem(idx)}
-                  className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+                  className="absolute top-3 right-3 bg-red-500 text-white hover:bg-blue-600 rounded-full p-2 shadow-sm z-10 w-6 h-6 flex items-center justify-center"
                 >
-                  ❌
+                  <X size={18} strokeWidth={8} />
                 </button>
 
                 <div
-                  className="prose max-w-full p-4 rounded"
+                  className="prose max-w-full p-4 rounded relative"
                   style={{
                     backgroundColor:
-                      memoryStyles[item.style]?.backgroundColor || "#fff",
+                      memoryStyles[item.style]?.backgroundColor ||
+                      memoryStyles.default.backgroundColor,
+                    backgroundImage:
+                      memoryStyles[item.style]?.backgroundImage || "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                     fontFamily:
-                      memoryStyles[item.style]?.fontFamily || "inherit",
-                    fontSize: memoryStyles[item.style]?.fontSize || "inherit",
-                    color: memoryStyles[item.style]?.color || "#000",
-                    minHeight: "100px",
+                      memoryStyles[item.style]?.fontFamily ||
+                      memoryStyles.default.fontFamily,
+                    fontSize:
+                      memoryStyles[item.style]?.fontSize ||
+                      memoryStyles.default.fontSize,
+                    color:
+                      memoryStyles[item.style]?.color ||
+                      memoryStyles.default.color,
+                    minHeight: "400px",
                     whiteSpace: "pre-wrap",
                     overflowWrap: "break-word",
-                    width: "100%", // Take full width of parent
-                    boxSizing: "border-box", // Include padding/border in width
+                    width: "100%",
+                    boxSizing: "border-box",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
                   }}
-                  dangerouslySetInnerHTML={{ __html: item.content }}
-                />
+                >
+                  <div
+                    dangerouslySetInnerHTML={{ __html: item.content }}
+                    style={{
+                      maxWidth: "80%",
+                      padding: "15px",
+                    }}
+                  />
+                </div>
               </div>
             ))
           )}
