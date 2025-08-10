@@ -20,12 +20,17 @@ function CreateCapsule() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [isLocked, setIsLocked] = useState(false);
+  const [participants, setParticipants] = useState([]);
 
   const [itemType, setItemType] = useState("text");
   const [textContent, setTextContent] = useState("");
 
   const [imageUrl, setImageUrl] = useState("");
   const [imageDescription, setImageDescription] = useState("");
+
+  const [newParticipant, setNewParticipant] = useState("");
+  const [participantError, setParticipantError] = useState("");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   useEffect(() => {
     if (id) {
@@ -48,6 +53,7 @@ function CreateCapsule() {
           setIsLocked(!!cap.isLocked);
           setItems(cap.items || []);
           setLoading(false);
+          setParticipants(cap.emails || []);
         } catch (err) {
           setError("Failed to load capsule data.");
           setLoading(false);
@@ -65,8 +71,58 @@ function CreateCapsule() {
   }
 
   if (isLocked) {
-   navigate(`/capsule/${id}`);
+    navigate(`/capsule/${id}`);
   }
+
+  // --- Cloudinary Upload ---
+  const handleCloudinaryUpload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "wombat-kombat");
+
+    try {
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/dtjylc9ny/image/upload",
+        formData
+      );
+      return res.data.secure_url;
+    } catch (err) {
+      console.error("Cloudinary upload failed", err);
+      setError("Image upload failed");
+      return "";
+    }
+  };
+
+  // const handleImageFileSelect = async (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const uploadedUrl = await handleCloudinaryUpload(file);
+  //     if (uploadedUrl) {
+  //       setItems((prev) => [
+  //         ...prev,
+  //         { type: "image", url: uploadedUrl, description: "" },
+  //       ]);
+  //     }
+  //   }
+  // };
+
+  const handleAddParticipant = () => {
+    if (!emailRegex.test(newParticipant.trim())) {
+      setParticipantError("Please enter a valid email address.");
+      return;
+    }
+    if (participants.includes(newParticipant.trim())) {
+      setParticipantError("This email is already added.");
+      return;
+    }
+    setParticipants((prev) => [...prev, newParticipant.trim()]);
+    setNewParticipant("");
+    setParticipantError("");
+  };
+
+  const handleRemoveParticipant = (index) => {
+    setParticipants((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleAddItem = () => {
     if (itemType === "text" && textContent.trim() !== "") {
@@ -102,6 +158,7 @@ function CreateCapsule() {
       image,
       description,
       unlockedDate,
+      emails: participants,
       isPublic,
       items,
     };
@@ -157,6 +214,7 @@ function CreateCapsule() {
         }}
         className="space-y-4"
       >
+        {/* Title */}
         <div>
           <label className="block font-medium">Title</label>
           <input
@@ -168,25 +226,24 @@ function CreateCapsule() {
           />
         </div>
 
-        {/* Capsule Image URL */}
-        <div>
-          <label className="block font-medium">Capsule Image URL</label>
-          <input
-            className="w-full border rounded px-3 py-2"
-            type="text"
-            placeholder="Enter image URL for capsule card"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
+        {/* Capsule Image Upload */}
+        <label className="block font-medium">Capsule Image</label>
+        <input
+          type="file"
+          onChange={async (e) => {
+            const url = await handleCloudinaryUpload(e.target.files[0]);
+            setImage(url);
+          }}
+        />
+        {image && (
+          <img
+            src={image}
+            alt="Capsule"
+            className="mt-2 max-h-40 object-contain rounded border"
           />
-          {image && (
-            <img
-              src={image}
-              alt="Capsule Thumbnail Preview"
-              className="mt-2 max-h-40 object-contain rounded border"
-            />
-          )}
-        </div>
+        )}
 
+        {/* Description */}
         <div>
           <label className="block font-medium">Description</label>
           <textarea
@@ -197,6 +254,7 @@ function CreateCapsule() {
           />
         </div>
 
+        {/* Unlock Date */}
         <div>
           <label className="block font-medium">Unlock Date</label>
           <input
@@ -208,6 +266,7 @@ function CreateCapsule() {
           />
         </div>
 
+        {/* Public Toggle */}
         <div>
           <label className="inline-flex items-center gap-2">
             <input
@@ -219,6 +278,49 @@ function CreateCapsule() {
           </label>
         </div>
 
+        {/* Add Participants */}
+        <div className="mt-6">
+          <label className="block font-medium mb-1">Participants</label>
+          <div className="flex gap-2">
+            <input
+              type="email"
+              className="w-full border rounded px-3 py-2"
+              placeholder="Enter participant email"
+              value={newParticipant}
+              onChange={(e) => setNewParticipant(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={handleAddParticipant}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              Add
+            </button>
+          </div>
+          {participantError && (
+            <p className="text-red-600 mt-1">{participantError}</p>
+          )}
+
+          <ul className="mt-2 space-y-1">
+            {participants.map((p, idx) => (
+              <li
+                key={idx}
+                className="flex justify-between items-center bg-white p-2 rounded shadow"
+              >
+                {p}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveParticipant(idx)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  ❌
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Add Items */}
         <div>
           <label className="block font-medium mb-1">Select Item Type</label>
           <select
@@ -267,6 +369,7 @@ function CreateCapsule() {
           ➕ Add Item
         </button>
 
+        {/* Items List */}
         <div className="mt-6 space-y-4">
           {items.length === 0 ? (
             <p className="text-center text-gray-500">No items added yet.</p>

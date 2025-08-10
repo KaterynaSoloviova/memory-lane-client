@@ -75,6 +75,17 @@ function ViewCapsulePage() {
       )
       .then((res) => setCapsule(res.data))
       .catch((err) => console.error("Error updating capsule:", err));
+    capsule.emails.forEach((email) => {
+      axios
+        .post(
+          `${BASE_URL}/api/invitations`,
+          { email, capsule: id },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+        .catch((err) => console.error("Error sending invitation:", err));
+    });
     navigate(`/capsules`);
   };
 
