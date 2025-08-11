@@ -6,6 +6,7 @@ import { BASE_URL } from "../config/config";
 import { isLocked, isUnlocked, isDraft } from "../utils/validators";
 import imagePlaceholder from "../assets/image-placeholder.jpg";
 
+
 function MyCapsules() {
   const { user } = useContext(AuthContext);
   const [capsules, setCapsules] = useState([]);

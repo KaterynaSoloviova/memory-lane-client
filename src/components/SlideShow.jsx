@@ -13,20 +13,86 @@ export default function SlideShow({
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const audioRef = useRef(null);
+  const videoRef = useRef(null);
+  const timerRef = useRef(null);
 
-  // Go to next slide
-  const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % items.length);
-  const prevSlide = () =>
+  const currentItem = items[currentIndex];
+  const isVideo = currentItem.type === "video";
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Clear any existing timer
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  // Go to the next slide after pause
+  const resumeSlideshow = () => {
+    setIsPaused(false);
+    nextSlide(); // immediately go to next slide
+  };
+
+  // Navigation helpers
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % items.length);
+  };
+  const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  };
 
-  // Autoplay effect
+  // Single useEffect for slide timer and video playback
   useEffect(() => {
-    if (!autoplay) return;
-    const timer = setInterval(() => {
-      nextSlide();
-    }, interval);
-    return () => clearInterval(timer); // cleanup
-  }, [autoplay, interval, items.length]);
+    clearTimer();
+
+    if (!autoplay || isPaused) return; // <-- stop if paused
+
+    if (isVideo && videoRef.current) {
+      const video = videoRef.current;
+      video.currentTime = 0;
+
+      const handleLoadedMetadata = () => {
+        // Set up a fallback timer based on video duration as backup
+        if (video.duration && isFinite(video.duration)) {
+          const fallbackTimer = setTimeout(() => {
+            nextSlide();
+          }, (video.duration + 2) * 1000); // Add 2 second buffer
+          
+          // Store the timer reference to clear it later
+          video._fallbackTimer = fallbackTimer;
+        }
+      };
+
+      // Add fallback timer listener
+      video.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+      video.play().catch((e) => {
+        console.warn("Video play failed:", e);
+        // If play fails, advance to next slide after 2 seconds
+        setTimeout(() => nextSlide(), 2000);
+      });
+
+      return () => {
+        if (video) {
+          video.pause();
+          video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+          
+          // Clear fallback timer if it exists
+          if (video._fallbackTimer) {
+            clearTimeout(video._fallbackTimer);
+            delete video._fallbackTimer;
+          }
+        }
+      };
+    } else if (!isVideo) {
+      // Only set timer for non-video items
+      timerRef.current = setTimeout(() => {
+        nextSlide();
+      }, interval);
+      return () => clearTimer();
+    }
+  }, [currentIndex, autoplay, interval, isVideo, isPaused]);
 
   // Audio control functions
   const togglePlayPause = () => {
@@ -53,31 +119,26 @@ export default function SlideShow({
     if (audioRef.current) {
       audioRef.current.volume = volume;
       audioRef.current.loop = true;
-      // Auto-play music when slideshow opens
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch((error) => {
-        console.log("Auto-play prevented by browser:", error);
-        // Browser might block auto-play, so we keep the play button visible
-      });
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {
+          // Autoplay might be blocked
+        });
     }
   }, []);
 
-  // Handle background music changes
+  // Update audio source when backgroundMusic changes
   useEffect(() => {
     if (audioRef.current && backgroundMusic) {
       audioRef.current.src = backgroundMusic;
       audioRef.current.load();
-      // Auto-play new music
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch((error) => {
-        console.log("Auto-play prevented by browser:", error);
-      });
+      audioRef.current
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {});
     }
   }, [backgroundMusic]);
-
-  const currentItem = items[currentIndex];
 
   const slideVariants = {
     enter: { opacity: 0, y: 30, rotate: -2 },
@@ -87,8 +148,6 @@ export default function SlideShow({
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-
-
       <div className="relative">
         <AnimatePresence mode="wait">
           <motion.div
@@ -102,54 +161,88 @@ export default function SlideShow({
             style={{
               height: "500px",
               backgroundColor: "#f9f5e8",
-              backgroundImage: "url('/paper-texture.png')", // Add a retro paper texture
+              backgroundImage: "url('/paper-texture.png')",
               backgroundSize: "cover",
             }}
           >
-            <motion.div
-              className="w-full h-full flex items-center justify-center text-center px-4"
-              style={{
-                backgroundColor:
-                  memoryStyles[currentItem.style]?.backgroundColor ||
-                  memoryStyles.default.backgroundColor,
-                backgroundImage:
-                  memoryStyles[currentItem.style]?.backgroundImage || "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                fontFamily:
-                  memoryStyles[currentItem.style]?.fontFamily ||
-                  memoryStyles.default.fontFamily,
-                fontSize:
-                  memoryStyles[currentItem.style]?.fontSize ||
-                  memoryStyles.default.fontSize,
-                color:
-                  memoryStyles[currentItem.style]?.color ||
-                  memoryStyles.default.color,
-                minHeight: "400px",
-                whiteSpace: "pre-wrap",
-                overflowWrap: "break-word",
-                width: "100%",
-                boxSizing: "border-box",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-              }}
-              whileHover={{ scale: 1.02 }}
-              dangerouslySetInnerHTML={{ __html: currentItem.content }}
-            />
+            {isVideo ? (
+              <video
+                ref={videoRef}
+                src={currentItem.content}
+                style={{ 
+                  maxWidth: "100%", 
+                  maxHeight: "100%",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain"
+                }}
+                controls={false}
+                autoPlay
+                muted={false}
+                playsInline
+                loop={false}
+                preload="metadata"
+                onError={(e) => {
+                  console.error("Video error:", e);
+                  // If video fails to load, move to next slide after 2 seconds
+                  setTimeout(() => nextSlide(), 2000);
+                }}
+                onEnded={() => {
+                  nextSlide();
+                }}
+              />
+            ) : (
+              <motion.div
+                className="w-full h-full flex items-center justify-center text-center px-4"
+                style={{
+                  backgroundColor:
+                    memoryStyles[currentItem.style]?.backgroundColor ||
+                    memoryStyles.default.backgroundColor,
+                  backgroundImage:
+                    memoryStyles[currentItem.style]?.backgroundImage || "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  fontFamily:
+                    memoryStyles[currentItem.style]?.fontFamily ||
+                    memoryStyles.default.fontFamily,
+                  fontSize:
+                    memoryStyles[currentItem.style]?.fontSize ||
+                    memoryStyles.default.fontSize,
+                  color:
+                    memoryStyles[currentItem.style]?.color ||
+                    memoryStyles.default.color,
+                  minHeight: "400px",
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "break-word",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+                whileHover={{ scale: 1.02 }}
+                dangerouslySetInnerHTML={{ __html: currentItem.content }}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
 
         {/* Navigation Buttons */}
         <button
-          onClick={prevSlide}
+          onClick={() => {
+            clearTimer();
+            prevSlide();
+          }}
           className="absolute left-[-60px] top-1/2 -translate-y-1/2 bg-[#d4c5a3] text-[#4a3f35] p-3 rounded-full shadow hover:bg-[#c0af8f] transition"
         >
           ◀
         </button>
         <button
-          onClick={nextSlide}
+          onClick={() => {
+            clearTimer();
+            nextSlide();
+          }}
           className="absolute right-[-60px] top-1/2 -translate-y-1/2 bg-[#d4c5a3] text-[#4a3f35] p-3 rounded-full shadow hover:bg-[#c0af8f] transition"
         >
           ▶
@@ -161,8 +254,20 @@ export default function SlideShow({
         {currentIndex + 1} / {items.length}
       </div>
 
+      {/* Slide Show Pause */}
+
+      <button
+        onClick={() => {
+          if (isPaused) resumeSlideshow();
+          else setIsPaused(true);
+        }}
+      >
+        {isPaused ? "Resume Slideshow" : "Pause Slideshow"}
+      </button>
+
       {/* Background Music Audio Element */}
       <audio ref={audioRef} src={backgroundMusic} preload="metadata" />
+
       <br />
 
       {/* Music Controls */}
@@ -186,7 +291,9 @@ export default function SlideShow({
             onChange={handleVolumeChange}
             className="w-20 h-2 bg-[#d4c5a3] rounded-lg appearance-none cursor-pointer"
             style={{
-              background: `linear-gradient(to right, #d4c5a3 0%, #d4c5a3 ${volume * 100}%, #e8e0d0 ${volume * 100}%, #e8e0d0 100%)`
+              background: `linear-gradient(to right, #d4c5a3 0%, #d4c5a3 ${
+                volume * 100
+              }%, #e8e0d0 ${volume * 100}%, #e8e0d0 100%)`,
             }}
           />
         </div>

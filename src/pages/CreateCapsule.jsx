@@ -5,7 +5,16 @@ import { AuthContext } from "../contexts/AuthContext";
 import TiptapEditor from "../components/TiptapEditor";
 import { useNavigate, useParams } from "react-router-dom";
 import { memoryStyles } from "../utils/styles";
-import { Trash2, Plus, ChevronUp, ChevronDown, X, Play, Pause, Volume2 } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  ChevronUp,
+  ChevronDown,
+  X,
+  Play,
+  Pause,
+  Volume2,
+} from "lucide-react";
 
 function CreateCapsule() {
   const { user } = useContext(AuthContext);
@@ -37,28 +46,32 @@ function CreateCapsule() {
   const [previewVolume, setPreviewVolume] = useState(0.5);
   const audioPreviewRef = useRef(null);
 
+  const videoInputRef = useRef(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [videoUploading, setVideoUploading] = useState(false);
+
   // Available background music options
   const backgroundMusicOptions = [
     {
       id: "presentation-music-1.mp3",
       name: "Presentation Music 1",
-      duration: "0:58"
+      duration: "0:58",
     },
     {
-      id: "presentation-music-2.mp3", 
+      id: "presentation-music-2.mp3",
       name: "Presentation Music 2",
-      duration: "1:49"
+      duration: "1:49",
     },
     {
       id: "presentation-music-3.mp3",
       name: "Presentation Music 3",
-      duration: "1:12"
+      duration: "1:12",
     },
     {
       id: "promo-music-1.mp3",
       name: "Promo Music 1",
-      duration: "1:06"
-    }
+      duration: "1:06",
+    },
   ];
 
   useEffect(() => {
@@ -123,6 +136,54 @@ function CreateCapsule() {
     }
   };
 
+  const handleCloudinaryVideoUpload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "wombat-kombat");
+
+    try {
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/dtjylc9ny/video/upload",
+        formData
+      );
+      return res.data.secure_url;
+    } catch (err) {
+      console.error("Cloudinary video upload failed", err);
+      setError("Video upload failed");
+      return "";
+    }
+  };
+
+  const handleVideoClick = () => {
+    videoInputRef.current?.click();
+  };
+
+  const handleVideoChange = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setVideoUploading(true);
+      try {
+        const uploadedUrl = await handleCloudinaryVideoUpload(
+          e.target.files[0]
+        );
+        if (uploadedUrl) {
+          setItems((prev) => [
+            ...prev,
+            { type: "video", content: uploadedUrl },
+          ]);
+          setVideoPreview(uploadedUrl);
+        }
+      } catch (error) {
+        console.error("Video upload failed", error);
+      } finally {
+        setVideoUploading(false);
+      }
+      e.target.value = null;
+    }
+  };
+
+  const handleClearVideo = () => {
+    setVideoPreview(null);
+  };
   const handleClick = () => {
     fileInputRef.current.click();
   };
@@ -161,6 +222,7 @@ function CreateCapsule() {
   };
 
   const handleAddItem = () => {
+    if (!textContent.trim()) return;
     setItems((prev) => [
       ...prev,
       {
@@ -172,6 +234,23 @@ function CreateCapsule() {
     setTextContent("");
   };
 
+  const handleAddVideoItem = () => {
+    if (!newVideoUrl.trim()) {
+      alert("Please enter a video URL");
+      return;
+    }
+
+    setItems((prev) => [
+      ...prev,
+      {
+        type: "video",
+        content: newVideoUrl.trim(), // direct link or embed URL
+      },
+    ]);
+
+    setNewVideoUrl(""); // clear the input
+  };
+
   const handleDeleteItem = (index) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
@@ -180,7 +259,10 @@ function CreateCapsule() {
     if (index > 0) {
       setItems((prev) => {
         const newItems = [...prev];
-        [newItems[index], newItems[index - 1]] = [newItems[index - 1], newItems[index]];
+        [newItems[index], newItems[index - 1]] = [
+          newItems[index - 1],
+          newItems[index],
+        ];
         return newItems;
       });
     }
@@ -190,7 +272,10 @@ function CreateCapsule() {
     if (index < items.length - 1) {
       setItems((prev) => {
         const newItems = [...prev];
-        [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
+        [newItems[index], newItems[index + 1]] = [
+          newItems[index + 1],
+          newItems[index],
+        ];
         return newItems;
       });
     }
@@ -458,12 +543,12 @@ function CreateCapsule() {
                 >
                   <div
                     className="w-28 h-16"
-                    style={{ 
+                    style={{
                       backgroundImage: s.backgroundImage,
                       backgroundSize: "100% 100%",
                       backgroundPosition: "center",
                       backgroundRepeat: "no-repeat",
-                      opacity: 0.7
+                      opacity: 0.7,
                     }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-black drop-shadow-lg">
@@ -478,10 +563,10 @@ function CreateCapsule() {
         {/* Background Music Selection */}
         <div>
           <label className="block font-medium mb-1">Background Music</label>
-          
+
           {/* Audio Preview Element */}
           <audio ref={audioPreviewRef} preload="metadata" />
-          
+
           <div className="grid grid-cols-2 gap-3">
             {backgroundMusicOptions.map((music) => (
               <button
@@ -504,13 +589,17 @@ function CreateCapsule() {
               </button>
             ))}
           </div>
-          
+
           {/* Music Preview Controls */}
           {selectedMusic && (
             <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-sm font-medium text-gray-700">
-                  Preview: {backgroundMusicOptions.find(m => m.id === selectedMusic)?.name}
+                  Preview:{" "}
+                  {
+                    backgroundMusicOptions.find((m) => m.id === selectedMusic)
+                      ?.name
+                  }
                 </div>
                 <button
                   type="button"
@@ -526,7 +615,7 @@ function CreateCapsule() {
                   {isPlayingPreview ? "Stop" : "Play Preview"}
                 </button>
               </div>
-              
+
               {/* Volume Control */}
               <div className="flex items-center gap-2">
                 <Volume2 size={16} className="text-gray-600" />
@@ -539,7 +628,9 @@ function CreateCapsule() {
                   onChange={handlePreviewVolumeChange}
                   className="flex-1 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${previewVolume * 100}%, #e5e7eb ${previewVolume * 100}%, #e5e7eb 100%)`
+                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${
+                      previewVolume * 100
+                    }%, #e5e7eb ${previewVolume * 100}%, #e5e7eb 100%)`,
                   }}
                 />
                 <span className="text-sm text-gray-600 w-8 text-right">
@@ -601,6 +692,68 @@ function CreateCapsule() {
         >
           ➕ Add Item
         </button>
+
+        {/* --- VIDEO UPLOAD --- */}
+        <div className="mb-6">
+          <label className="block font-medium mb-1">Insert Video</label>
+
+          {/* Hidden file input */}
+          <input
+            type="file"
+            accept="video/*"
+            ref={videoInputRef}
+            onChange={async (e) => {
+              if (e.target.files && e.target.files[0]) {
+                setVideoUploading(true);
+                setError(""); // clear error on new upload
+                try {
+                  const uploadedUrl = await handleCloudinaryVideoUpload(
+                    e.target.files[0]
+                  );
+                  if (uploadedUrl) {
+                    setItems((prev) => [
+                      ...prev,
+                      { type: "video", content: uploadedUrl },
+                    ]);
+                    setVideoPreview(uploadedUrl);
+                  }
+                } catch (err) {
+                  console.error("Video upload failed", err);
+                } finally {
+                  setVideoUploading(false);
+                }
+                e.target.value = null; // reset to allow same file again
+              }
+            }}
+            style={{ display: "none" }}
+          />
+
+          {/* Upload Button */}
+          <button
+            type="button"
+            onClick={() => videoInputRef.current?.click()}
+            disabled={videoUploading}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            {videoUploading ? "Uploading..." : "Upload Video"}
+          </button>
+
+          {/* Video Preview */}
+          {videoPreview && (
+            <div className="mt-4">
+              <video width="320" height="240" controls src={videoPreview} />
+              <button
+                type="button"
+                onClick={() => setVideoPreview(null)}
+                className="mt-2 text-red-600"
+              >
+                Remove Preview
+              </button>
+            </div>
+          )}
+        </div>
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
         {/* Items List */}
         <div className="mt-6 space-y-4">
@@ -679,13 +832,25 @@ function CreateCapsule() {
                     textAlign: "center",
                   }}
                 >
-                  <div
-                    dangerouslySetInnerHTML={{ __html: item.content }}
-                    style={{
-                      maxWidth: "80%",
-                      padding: "15px",
-                    }}
-                  />
+                  {item.type === "text" && (
+                    <div
+                      dangerouslySetInnerHTML={{ __html: item.content }}
+                      style={{
+                        maxWidth: "80%",
+                        padding: "15px",
+                      }}
+                    />
+                  )}
+
+                  {item.type === "video" && (
+                    <div style={{ maxWidth: "100%" }}>
+                      <video
+                        src={item.content}
+                        controls
+                        style={{ width: "100%", borderRadius: "8px" }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             ))

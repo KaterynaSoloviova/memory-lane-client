@@ -7,6 +7,8 @@ import { isDraft, isLocked, isOwner } from "../utils/validators";
 import Countdown from "../components/Countdown";
 
 import SlideShow from "../components/SlideShow";
+import CommentSection from "../components/CommentSection";
+
 
 function ViewCapsulePage() {
   const { id } = useParams();
@@ -42,18 +44,26 @@ function ViewCapsulePage() {
   }
 
   const items = capsule.items || [];
-  const backgroundMusic = capsule.backgroundMusic || "/music/presentation-music-1.mp3";
-  
+  const backgroundMusic =
+    capsule.backgroundMusic || "/music/presentation-music-1.mp3";
+
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">{capsule.title}</h1>
       <p className="text-gray-600 mb-8">{capsule.description}</p>
 
       {items.length > 0 ? (
-        <SlideShow items={items} autoplay interval={4000} backgroundMusic={`/music/${backgroundMusic}`} />
+        <SlideShow
+          items={items}
+          autoplay
+          interval={4000}
+          backgroundMusic={`/music/${backgroundMusic}`}
+        />
       ) : (
         <p className="text-center text-gray-500">No items to display.</p>
       )}
+
+      <CommentSection capsuleId={capsule._id}/>
 
       {editMode && (
         <div className="mt-8 flex gap-4 justify-center">
