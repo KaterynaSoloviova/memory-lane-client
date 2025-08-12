@@ -203,12 +203,15 @@ export default function SlideShow({
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   fontFamily:
+                    currentItem.fontFamily ||
                     memoryStyles[currentItem.style]?.fontFamily ||
                     memoryStyles.default.fontFamily,
                   fontSize:
+                    currentItem.fontSize ||
                     memoryStyles[currentItem.style]?.fontSize ||
                     memoryStyles.default.fontSize,
                   color:
+                    currentItem.fontColor ||
                     memoryStyles[currentItem.style]?.color ||
                     memoryStyles.default.color,
                   minHeight: "400px",
@@ -254,24 +257,23 @@ export default function SlideShow({
         {currentIndex + 1} / {items.length}
       </div>
 
-      {/* Slide Show Pause */}
-
-      <button
-        onClick={() => {
-          if (isPaused) resumeSlideshow();
-          else setIsPaused(true);
-        }}
-      >
-        {isPaused ? "Resume Slideshow" : "Pause Slideshow"}
-      </button>
-
       {/* Background Music Audio Element */}
       <audio ref={audioRef} src={backgroundMusic} preload="metadata" />
 
-      <br />
-
       {/* Music Controls */}
       <div className="mb-4 flex items-center justify-center gap-4 bg-[#f9f5e8] p-3 rounded-lg border border-[#d4c5a3]">
+
+        <button
+          onClick={() => {
+            if (isPaused) resumeSlideshow();
+            else setIsPaused(true);
+          }}
+          className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
+        >
+          {isPaused ? <Play size={18} /> : <Pause size={18} />}
+          {isPaused ? "Resume Slideshow" : "Pause Slideshow"}
+        </button>
+        
         <button
           onClick={togglePlayPause}
           className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"

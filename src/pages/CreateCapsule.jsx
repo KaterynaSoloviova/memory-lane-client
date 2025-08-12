@@ -36,6 +36,11 @@ function CreateCapsule() {
   const [participants, setParticipants] = useState([]);
 
   const [textContent, setTextContent] = useState("");
+  
+  // Font properties for new items
+  const [newItemFontSize, setNewItemFontSize] = useState("16px");
+  const [newItemFontFamily, setNewItemFontFamily] = useState("Georgia, serif");
+  const [newItemFontColor, setNewItemFontColor] = useState("#8B4513");
 
   const [newParticipant, setNewParticipant] = useState("");
   const [participantError, setParticipantError] = useState("");
@@ -55,6 +60,9 @@ function CreateCapsule() {
   // Edit item state
   const [editingItemIndex, setEditingItemIndex] = useState(null);
   const [editingContent, setEditingContent] = useState("");
+  const [editingFontSize, setEditingFontSize] = useState("16px");
+  const [editingFontFamily, setEditingFontFamily] = useState("Georgia, serif");
+  const [editingFontColor, setEditingFontColor] = useState("#8B4513");
 
   // Available background music options
   const backgroundMusicOptions = [
@@ -235,6 +243,9 @@ function CreateCapsule() {
         type: "text",
         content: textContent,
         style: styleKey || "default",
+        fontSize: newItemFontSize,
+        fontFamily: newItemFontFamily,
+        fontColor: newItemFontColor,
       },
     ]);
     setTextContent("");
@@ -292,6 +303,9 @@ function CreateCapsule() {
     if (item.type === "text") {
       setEditingItemIndex(index);
       setEditingContent(item.content);
+      setEditingFontSize(item.fontSize || "16px");
+      setEditingFontFamily(item.fontFamily || "Georgia, serif");
+      setEditingFontColor(item.fontColor || "#8B4513");
     }
   };
 
@@ -302,17 +316,26 @@ function CreateCapsule() {
         newItems[editingItemIndex] = {
           ...newItems[editingItemIndex],
           content: editingContent,
+          fontSize: editingFontSize,
+          fontFamily: editingFontFamily,
+          fontColor: editingFontColor,
         };
         return newItems;
       });
       setEditingItemIndex(null);
       setEditingContent("");
+      setEditingFontSize("16px");
+      setEditingFontFamily("Georgia, serif");
+      setEditingFontColor("#8B4513");
     }
   };
 
   const handleCancelEdit = () => {
     setEditingItemIndex(null);
     setEditingContent("");
+    setEditingFontSize("16px");
+    setEditingFontFamily("Georgia, serif");
+    setEditingFontColor("#8B4513");
   };
 
   // Audio preview functions
@@ -686,6 +709,81 @@ function CreateCapsule() {
           <label className="block font-medium mb-1">Insert Text</label>
           <TiptapEditor content={textContent} onChange={setTextContent} />
 
+          {/* Font Customization for New Items */}
+          <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+            <h4 className="text-[#8B4513] font-semibold mb-3" style={{fontFamily: 'Georgia, serif'}}>
+              Font Settings
+            </h4>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Font Size */}
+              <div>
+                <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                  Font Size
+                </label>
+                <select
+                  value={newItemFontSize}
+                  onChange={(e) => setNewItemFontSize(e.target.value)}
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                >
+                  <option value="12px">12px - Small</option>
+                  <option value="14px">14px - Regular</option>
+                  <option value="16px">16px - Medium</option>
+                  <option value="18px">18px - Large</option>
+                  <option value="20px">20px - X-Large</option>
+                  <option value="24px">24px - XX-Large</option>
+                  <option value="28px">28px - Huge</option>
+                  <option value="32px">32px - Massive</option>
+                </select>
+              </div>
+
+              {/* Font Family */}
+              <div>
+                <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                  Font Family
+                </label>
+                <select
+                  value={newItemFontFamily}
+                  onChange={(e) => setNewItemFontFamily(e.target.value)}
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                >
+                  <option value="Georgia, serif">Georgia (Serif)</option>
+                  <option value="Times New Roman, serif">Times New Roman</option>
+                  <option value="Arial, sans-serif">Arial (Sans-serif)</option>
+                  <option value="Helvetica, sans-serif">Helvetica</option>
+                  <option value="Verdana, sans-serif">Verdana</option>
+                  <option value="Courier New, monospace">Courier New</option>
+                  <option value="Palatino, serif">Palatino</option>
+                  <option value="Garamond, serif">Garamond</option>
+                  <option value="Brush Script MT, cursive">Brush Script</option>
+                  <option value="Comic Sans MS, cursive">Comic Sans</option>
+                </select>
+              </div>
+
+              {/* Font Color */}
+              <div>
+                <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                  Font Color
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    value={newItemFontColor}
+                    onChange={(e) => setNewItemFontColor(e.target.value)}
+                    className="w-12 h-10 border-2 border-[#e8d5b7] rounded-lg cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={newItemFontColor}
+                    onChange={(e) => setNewItemFontColor(e.target.value)}
+                    className="flex-1 border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none text-sm"
+                    placeholder="#8B4513"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="mt-4">
             <label className="block font-medium mb-1">Preview</label>
             <div
@@ -720,6 +818,9 @@ function CreateCapsule() {
                 style={{
                   maxWidth: "80%",
                   padding: "20px",
+                  fontSize: newItemFontSize,
+                  fontFamily: newItemFontFamily,
+                  color: newItemFontColor,
                 }}
               />
             </div>
@@ -896,6 +997,100 @@ function CreateCapsule() {
                             content={editingContent}
                             onChange={setEditingContent}
                           />
+                          
+                          {/* Font Customization Controls */}
+                          <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                            <h4 className="text-[#8B4513] font-semibold mb-3" style={{fontFamily: 'Georgia, serif'}}>
+                              Font Customization
+                            </h4>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              {/* Font Size */}
+                              <div>
+                                <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                                  Font Size
+                                </label>
+                                <select
+                                  value={editingFontSize}
+                                  onChange={(e) => setEditingFontSize(e.target.value)}
+                                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                                >
+                                  <option value="12px">12px - Small</option>
+                                  <option value="14px">14px - Regular</option>
+                                  <option value="16px">16px - Medium</option>
+                                  <option value="18px">18px - Large</option>
+                                  <option value="20px">20px - X-Large</option>
+                                  <option value="24px">24px - XX-Large</option>
+                                  <option value="28px">28px - Huge</option>
+                                  <option value="32px">32px - Massive</option>
+                                </select>
+                              </div>
+
+                              {/* Font Family */}
+                              <div>
+                                <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                                  Font Family
+                                </label>
+                                <select
+                                  value={editingFontFamily}
+                                  onChange={(e) => setEditingFontFamily(e.target.value)}
+                                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                                >
+                                  <option value="Georgia, serif">Georgia (Serif)</option>
+                                  <option value="Times New Roman, serif">Times New Roman</option>
+                                  <option value="Arial, sans-serif">Arial (Sans-serif)</option>
+                                  <option value="Helvetica, sans-serif">Helvetica</option>
+                                  <option value="Verdana, sans-serif">Verdana</option>
+                                  <option value="Courier New, monospace">Courier New</option>
+                                  <option value="Palatino, serif">Palatino</option>
+                                  <option value="Garamond, serif">Garamond</option>
+                                  <option value="Brush Script MT, cursive">Brush Script</option>
+                                  <option value="Comic Sans MS, cursive">Comic Sans</option>
+                                </select>
+                              </div>
+
+                              {/* Font Color */}
+                              <div>
+                                <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                                  Font Color
+                                </label>
+                                <div className="flex gap-2">
+                                  <input
+                                    type="color"
+                                    value={editingFontColor}
+                                    onChange={(e) => setEditingFontColor(e.target.value)}
+                                    className="w-12 h-10 border-2 border-[#e8d5b7] rounded-lg cursor-pointer"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={editingFontColor}
+                                    onChange={(e) => setEditingFontColor(e.target.value)}
+                                    className="flex-1 border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none text-sm"
+                                    placeholder="#8B4513"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Preview */}
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-[#8B4513] mb-2">
+                                Font Preview
+                              </label>
+                              <div 
+                                className="p-3 border border-[#e8d5b7] rounded-lg bg-white max-h-32 overflow-y-auto"
+                                style={{
+                                  fontSize: editingFontSize,
+                                  fontFamily: editingFontFamily,
+                                  color: editingFontColor,
+                                }}
+                                dangerouslySetInnerHTML={{ 
+                                  __html: editingContent || "Start typing to see preview..." 
+                                }}
+                              />
+                            </div>
+                          </div>
+
                           <div className="flex gap-4 mt-6 justify-center">
                             <button
                               type="button"
@@ -921,6 +1116,9 @@ function CreateCapsule() {
                           style={{
                             maxWidth: "80%",
                             padding: "15px",
+                            fontSize: item.fontSize || "16px",
+                            fontFamily: item.fontFamily || "Georgia, serif",
+                            color: item.fontColor || "#8B4513",
                           }}
                         />
                       )}
