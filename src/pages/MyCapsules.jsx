@@ -4,10 +4,14 @@ import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
 import { isLocked, isUnlocked, isDraft } from "../utils/validators";
-import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
+import {
+  VintageDecorations,
+  VintageOrnament,
+  VintageContainer,
+  vintageClasses,
+} from "../utils/vintageStyles.jsx";
 import imagePlaceholder from "../assets/image-placeholder.jpg";
-import { Plus, Trash2, PillBottle } from "lucide-react";
-
+import { Plus, Trash2, Camera} from "lucide-react";
 
 function MyCapsules() {
   const { user } = useContext(AuthContext);
@@ -87,17 +91,27 @@ function MyCapsules() {
   return (
     <main className={vintageClasses.pageContainer}>
       <VintageDecorations />
-      
+
       <section className="relative z-10 px-6 py-16">
         <div className="max-w-6xl mx-auto">
-          <VintageContainer className="text-center mb-6">
-            <VintageOrnament symbol="🕰️" />
-            <h2 className="text-5xl font-bold mb-6 text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>
-              📁 My Capsules
+          <VintageContainer
+            className="text-center mb-8"
+            style={{ paddingTop: "12px", paddingBottom: "12px" }}
+          >
+            <div className="flex justify-center mb-4">
+              <Camera size={28} color="#8B4513" />
+            </div>
+
+            <h2
+              className="text-5xl font-bold mb-4 text-[#8B4513] tracking-wide"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              <span style={{ fontSize: "3 rem" }}>💌</span> My Capsules
             </h2>
+
             <button
               onClick={() => navigate("/create-capsule")}
-              className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors mx-auto"
+              className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] mb-5 px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors mx-auto"
             >
               <Plus size={18} />
               Create New Capsule
@@ -126,62 +140,77 @@ function MyCapsules() {
           {filteredCapsules.length === 0 ? (
             <div className="text-center py-12">
               <VintageContainer padding="p-8">
-                <p className="text-2xl text-[#A0522D] italic" style={{fontFamily: 'Georgia, serif'}}>No capsules found.</p>
-                <p className="text-lg text-[#8B4513] mt-4">Start preserving your precious memories today!</p>
+                <p
+                  className="text-2xl text-[#A0522D] italic"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  No capsules found.
+                </p>
+                <p className="text-lg text-[#8B4513] mt-4">
+                  Start preserving your precious memories today!
+                </p>
               </VintageContainer>
             </div>
           ) : (
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredCapsules.map((cap) => {
-            const { status, date, dateLabel } = getCapsuleStatus(cap);
+              {filteredCapsules.map((cap) => {
+                const { status, date, dateLabel } = getCapsuleStatus(cap);
 
-            return (
-              <div
-                key={cap._id}
-                onClick={() => handleCardClick(cap)}
-                className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-4 border-[#e8d5b7] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] cursor-pointer"
-              >
-                <figure className="w-full h-48 overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={cap.image || imagePlaceholder}
-                    alt={cap.title}
-                  />
-                </figure>
-
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-3 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>{cap.title}</h3>
-                  <p className="text-[#A0522D] text-sm mb-4" style={{fontFamily: 'Georgia, serif'}}>
-                    {dateLabel}:{" "}
-                    {date ? new Date(date).toLocaleDateString() : "N/A"}
-                  </p>
-                  <span
-                    className={`inline-block mb-4 px-4 py-2 text-sm rounded-full capitalize font-semibold ${
-                      status === "locked"
-                        ? "bg-gradient-to-r from-[#8B4513] to-[#A0522D] text-white"
-                        : status === "unlocked"
-                        ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white"
-                        : "bg-gradient-to-r from-[#f5e6b8] to-[#efdaa5] text-[#8B4513] border-2 border-[#CD853F]"
-                    }`}
+                return (
+                  <div
+                    key={cap._id}
+                    onClick={() => handleCardClick(cap)}
+                    className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-4 border-[#e8d5b7] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] cursor-pointer"
                   >
-                    {status}
-                  </span>
+                    <figure className="w-full h-48 overflow-hidden">
+                      <img
+                        className="w-full h-full object-cover"
+                        src={cap.image || imagePlaceholder}
+                        alt={cap.title}
+                      />
+                    </figure>
 
-                  {/* Delete button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(cap._id);
-                    }}
-                    className="flex items-center justify-center w-8 h-8 bg-[#d4c5a3] text-[#4a3f35] rounded-full hover:bg-[#c0af8f] transition-colors"
-                    aria-label="Delete capsule"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+                    <div className="p-6">
+                      <h3
+                        className="text-2xl font-bold mb-3 text-[#8B4513]"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {cap.title}
+                      </h3>
+                      <p
+                        className="text-[#A0522D] text-sm mb-4"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {dateLabel}:{" "}
+                        {date ? new Date(date).toLocaleDateString() : "N/A"}
+                      </p>
+                      <span
+                        className={`inline-block mb-4 px-4 py-2 text-sm rounded-full capitalize font-semibold ${
+                          status === "locked"
+                            ? "bg-gradient-to-r from-[#8B4513] to-[#A0522D] text-white"
+                            : status === "unlocked"
+                            ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white"
+                            : "bg-gradient-to-r from-[#f5e6b8] to-[#efdaa5] text-[#8B4513] border-2 border-[#CD853F]"
+                        }`}
+                      >
+                        {status}
+                      </span>
+
+                      {/* Delete button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(cap._id);
+                        }}
+                        className="flex items-center justify-center w-8 h-8 bg-[#d4c5a3] text-[#4a3f35] rounded-full hover:bg-[#c0af8f] transition-colors"
+                        aria-label="Delete capsule"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
