@@ -60,6 +60,11 @@ function CreateCapsule() {
   const [videoPreview, setVideoPreview] = useState(null);
   const [videoUploading, setVideoUploading] = useState(false);
 
+  // Audio upload state
+  const [uploadedAudio, setUploadedAudio] = useState([]);
+  const [audioUploading, setAudioUploading] = useState(false);
+  const audioInputRef = useRef(null);
+
   // Edit item state
   const [editingItemIndex, setEditingItemIndex] = useState(null);
   const [editingContent, setEditingContent] = useState("");
@@ -67,29 +72,7 @@ function CreateCapsule() {
   const [editingFontFamily, setEditingFontFamily] = useState("Georgia, serif");
   const [editingFontColor, setEditingFontColor] = useState("#8B4513");
 
-  // Available background music options
-  const backgroundMusicOptions = [
-    {
-      id: "presentation-music-1.mp3",
-      name: "Presentation Music 1",
-      duration: "0:58",
-    },
-    {
-      id: "presentation-music-2.mp3",
-      name: "Presentation Music 2",
-      duration: "1:49",
-    },
-    {
-      id: "presentation-music-3.mp3",
-      name: "Presentation Music 3",
-      duration: "1:12",
-    },
-    {
-      id: "promo-music-1.mp3",
-      name: "Promo Music 1",
-      duration: "1:06",
-    },
-  ];
+  // Remove default background music options - only custom uploads allowed
 
   useEffect(() => {
     if (id) {
@@ -114,6 +97,18 @@ function CreateCapsule() {
           setParticipants(cap.emails || []);
           setSelectedMusic(cap.backgroundMusic || "");
           setSlideshowTimeout(cap.slideshowTimeout || 5000);
+          
+          // If backgroundMusic exists, add it to uploadedAudio (all audio is now custom)
+          if (cap.backgroundMusic) {
+            const customAudio = {
+              id: cap.backgroundMusic,
+              name: "Custom Audio",
+              duration: "Custom",
+              isCustom: true,
+              url: cap.backgroundMusic
+            };
+            setUploadedAudio([customAudio]);
+          }
           setLoading(false);
         } catch (err) {
           setError("Failed to load capsule data.");
@@ -172,6 +167,24 @@ function CreateCapsule() {
     }
   };
 
+  const handleCloudinaryAudioUpload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "wombat-kombat");
+
+    try {
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/dtjylc9ny/video/upload", // Cloudinary uses video endpoint for audio
+        formData
+      );
+      return res.data.secure_url;
+    } catch (err) {
+      console.error("Cloudinary audio upload failed", err);
+      setError("Audio upload failed");
+      return "";
+    }
+  };
+
   const handleVideoClick = () => {
     videoInputRef.current?.click();
   };
@@ -201,6 +214,42 @@ function CreateCapsule() {
 
   const handleClearVideo = () => {
     setVideoPreview(null);
+  };
+
+  const handleAudioUpload = async (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setAudioUploading(true);
+      setError("");
+      try {
+        const uploadedUrl = await handleCloudinaryAudioUpload(e.target.files[0]);
+        if (uploadedUrl) {
+          const fileName = e.target.files[0].name;
+          const newAudio = {
+            id: uploadedUrl,
+            name: fileName.replace(/\.[^/.]+$/, ""), // Remove file extension
+            duration: "Custom",
+            isCustom: true,
+            url: uploadedUrl
+          };
+          setUploadedAudio(prev => [...prev, newAudio]);
+          setSelectedMusic(uploadedUrl); // Auto-select the uploaded audio
+        }
+      } catch (error) {
+        console.error("Audio upload failed", error);
+        setError("Audio upload failed. Please try again.");
+      } finally {
+        setAudioUploading(false);
+      }
+      e.target.value = null; // Reset input
+    }
+  };
+
+  const handleRemoveUploadedAudio = (audioId) => {
+    setUploadedAudio(prev => prev.filter(audio => audio.id !== audioId));
+    // If the removed audio was selected, clear the selection
+    if (selectedMusic === audioId) {
+      setSelectedMusic("");
+    }
   };
   const handleClick = () => {
     fileInputRef.current.click();
@@ -354,8 +403,8 @@ function CreateCapsule() {
           audioPreviewRef.current.pause();
           audioPreviewRef.current.currentTime = 0;
         }
-        // Set new source and play
-        audioPreviewRef.current.src = `/music/${selectedMusic}`;
+        // Set new source and play - all audio is now custom
+        audioPreviewRef.current.src = selectedMusic;
         audioPreviewRef.current.play();
         setIsPlayingPreview(true);
       }
@@ -412,7 +461,6 @@ function CreateCapsule() {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
         setMessage("Capsule updated successfully!");
-        navigate(`/capsules`);
       } else {
         const res = await axios.post(`${BASE_URL}/api/capsules`, capsuleData, {
           headers: { Authorization: `Bearer ${storedToken}` },
@@ -635,27 +683,104 @@ function CreateCapsule() {
                 {/* Audio Preview Element */}
                 <audio ref={audioPreviewRef} preload="metadata" />
 
-                <div className="grid grid-cols-2 gap-3">
-                  {backgroundMusicOptions.map((music) => (
+                {/* Audio Upload Section */}
+                <div className="mb-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-[#8B4513] font-semibold" style={{ fontFamily: 'Georgia, serif' }}>
+                      Upload Custom Audio
+                    </h4>
+                    <input
+                      type="file"
+                      ref={audioInputRef}
+                      accept="audio/*"
+                      onChange={handleAudioUpload}
+                      className="hidden"
+                    />
                     <button
-                      key={music.id}
                       type="button"
-                      onClick={() => setSelectedMusic(music.id)}
-                      className={`border rounded-lg p-3 text-left transition-all ${selectedMusic === music.id
-                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
-                          : "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50"
-                        }`}
+                      onClick={() => audioInputRef.current?.click()}
+                      disabled={audioUploading}
+                      className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-4 py-2 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <div className="font-medium text-gray-900">{music.name}</div>
-                      <div className="text-sm text-gray-500">{music.duration}</div>
-                      {selectedMusic === music.id && (
-                        <div className="mt-2 text-blue-600 text-sm font-medium">
-                          ✓ Selected
-                        </div>
+                      {audioUploading ? (
+                        <>
+                          <span className="animate-spin inline-block mr-2">⏳</span>
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <span className="mr-2">🎵</span>
+                          Upload Audio
+                        </>
                       )}
                     </button>
-                  ))}
+                  </div>
+
+                  {/* Display uploaded audio files */}
+                  {uploadedAudio.length > 0 && (
+                    <div className="space-y-2">
+                      <h5 className="text-sm font-medium text-[#8B4513]">Your Uploaded Audio:</h5>
+                      {uploadedAudio.map((audio) => (
+                        <div
+                          key={audio.id}
+                          className="flex items-center justify-between bg-white p-2 rounded border border-[#e8d5b7]"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">🎵</span>
+                            <span className="text-sm text-[#8B4513]">{audio.name}</span>
+                            <span className="text-xs text-[#A0522D]">({audio.duration})</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveUploadedAudio(audio.id)}
+                            className="text-red-600 hover:text-red-800 p-1"
+                            title="Remove audio"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
+
+                {/* Display uploaded audio selection grid */}
+                {uploadedAudio.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {uploadedAudio.map((audio) => (
+                      <button
+                        key={audio.id}
+                        type="button"
+                        onClick={() => setSelectedMusic(audio.id)}
+                        className={`border rounded-lg p-3 text-left transition-all ${selectedMusic === audio.id
+                            ? "border-[#CD853F] bg-[#fdf9f4] ring-2 ring-[#CD853F] ring-opacity-50"
+                            : "border-[#e8d5b7] bg-[#fefcf8] hover:border-[#CD853F] hover:bg-[#fdf9f4]"
+                          }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">🎵</span>
+                          <div className="font-medium text-[#8B4513]">{audio.name}</div>
+                        </div>
+                        <div className="text-sm text-[#A0522D]">{audio.duration}</div>
+                        {selectedMusic === audio.id && (
+                          <div className="mt-2 text-[#CD853F] text-sm font-medium">
+                            ✓ Selected
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center p-8 bg-[#fefcf8] border-2 border-dashed border-[#e8d5b7] rounded-lg">
+                    <span className="text-4xl mb-3 block">🎵</span>
+                    <p className="text-[#A0522D] font-medium" style={{ fontFamily: 'Georgia, serif' }}>
+                      No background music uploaded yet
+                    </p>
+                    <p className="text-sm text-[#A0522D] mt-1">
+                      Upload an audio file above to add background music to your capsule
+                    </p>
+                  </div>
+                )}
 
                 {/* Music Preview Controls */}
                 {selectedMusic && (
@@ -664,8 +789,8 @@ function CreateCapsule() {
                       <div className="text-sm font-medium text-gray-700">
                         Preview:{" "}
                         {
-                          backgroundMusicOptions.find((m) => m.id === selectedMusic)
-                            ?.name
+                          uploadedAudio.find((a) => a.id === selectedMusic)?.name ||
+                          "Unknown"
                         }
                       </div>
                       <button

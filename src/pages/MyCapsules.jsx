@@ -90,7 +90,7 @@ function MyCapsules() {
       
       <section className="relative z-10 px-6 py-16">
         <div className="max-w-6xl mx-auto">
-          <VintageContainer className="text-center mb-8">
+          <VintageContainer className="text-center mb-6">
             <VintageOrnament symbol="🕰️" />
             <h2 className="text-5xl font-bold mb-6 text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>
               📁 My Capsules

@@ -30,7 +30,7 @@ export const vintageClasses = {
 export const VintageDecorations = () => (
   <>
     {/* Vintage decorative background elements */}
-    <div className="absolute inset-0 opacity-[0.03]">
+    <div className="absolute inset-0 opacity-[0.05]">
       <div className="absolute top-20 left-16 w-40 h-40 border-2 border-[#8B4513] rounded-full transform rotate-12"></div>
       <div className="absolute top-60 right-32 w-28 h-28 border border-[#CD853F] rounded-full transform -rotate-6"></div>
       <div className="absolute bottom-40 left-1/4 w-24 h-24 border border-[#D2691E] rounded-full transform rotate-45"></div>
