@@ -23,10 +23,10 @@ function HomePage() {
     </div>
 
       {/* Hero section */}
-      <section className="relative z-10 px-6 py-4">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         <div className="max-w-4xl mx-auto">
           {/* Ornate vintage frame card */}
-          <div className="relative bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-6 border-[#e8d5b7] p-8 text-center">
+          <div className="relative bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-xl sm:rounded-2xl shadow-xl border-4 sm:border-6 border-[#e8d5b7] p-4 sm:p-6 lg:p-8 text-center">
             {/* Decorative corner elements */}
             <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#CD853F] rounded-tl-lg"></div>
             <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#CD853F] rounded-tr-lg"></div>
@@ -34,16 +34,16 @@ function HomePage() {
             <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#CD853F] rounded-br-lg"></div>
 
             {/* Vintage ornamental divider */}
-            <div className="flex justify-center items-center mb-6">
-              <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
-              <span className="text-3xl mx-3 text-[#CD853F]">❦</span>
-              <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <div className="w-8 sm:w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
+              <span className="text-2xl sm:text-3xl mx-2 sm:mx-3 text-[#CD853F]">❦</span>
+              <div className="w-8 sm:w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
             </div>
 
-            <div className="flex justify-center items-center mb-6">
-              <span className="text-4xl mr-3 text-[#CD853F]">🤎</span>
-              <h1 className="text-5xl font-bold text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>Memory Lane</h1>
-              <span className="text-4xl ml-3 text-[#CD853F]">🤎</span>
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <span className="text-2xl sm:text-3xl lg:text-4xl mr-2 sm:mr-3 text-[#CD853F]">🤎</span>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>Memory Lane</h1>
+              <span className="text-2xl sm:text-3xl lg:text-4xl ml-2 sm:ml-3 text-[#CD853F]">🤎</span>
             </div>
             
             {/* Vintage ornamental divider */}
@@ -60,20 +60,20 @@ function HomePage() {
               Create digital time capsules filled with love, laughter, and memories to cherish forever
             </p>
 
-            <div className="flex justify-center gap-6 flex-wrap mb-6">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 mb-4 sm:mb-6 px-2">
               <button
                 onClick={() => navigate("/signup")}
-                className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-8 py-3 rounded-full font-semibold text-lg shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center gap-3"
+                className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center justify-center gap-2 sm:gap-3"
               >
-                <span className="text-xl">✨</span>
+                <span className="text-lg sm:text-xl">✨</span>
                 Begin Your Journey
               </button>
 
               <NavLink
                 to="/demo"
-                className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-8 py-3 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-3"
+                className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 sm:gap-3"
               >
-                <Eye className="w-5 h-5" />
+                <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                 View Demo
               </NavLink>
             </div>
@@ -92,22 +92,22 @@ function HomePage() {
       </section>
 
       {/* How it works section */}
-      <section className="relative z-10 bg-gradient-to-r from-[#f4e8d6] via-[#f0e2d0] to-[#ecdcc8] pt-6 pb-8 px-6">
+      <section className="relative z-10 bg-gradient-to-r from-[#f4e8d6] via-[#f0e2d0] to-[#ecdcc8] pt-4 sm:pt-6 pb-6 sm:pb-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Section header with vintage styling */}
-          <div className="text-center mb-12">
-            <div className="flex justify-center items-center mb-6">
-              <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
-              <span className="text-3xl mx-4 text-[#CD853F]">❦</span>
-              <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="flex justify-center items-center mb-4 sm:mb-6">
+              <div className="w-16 sm:w-24 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
+              <span className="text-2xl sm:text-3xl mx-3 sm:mx-4 text-[#CD853F]">❦</span>
+              <div className="w-16 sm:w-24 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
             </div>
-            <h2 className="text-5xl font-bold text-[#8B4513] mb-4" style={{fontFamily: 'Georgia, serif'}}>How it works</h2>
-            <p className="text-xl text-[#A0522D] italic">Your journey to preserving precious memories</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#8B4513] mb-3 sm:mb-4" style={{fontFamily: 'Georgia, serif'}}>How it works</h2>
+            <p className="text-lg sm:text-xl text-[#A0522D] italic px-4">Your journey to preserving precious memories</p>
           </div>
 
           <div className="hidden lg:flex lg:items-stretch lg:justify-center lg:gap-4">
             <div className="text-center group flex-1">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <Package className="w-16 h-16 text-[#CD853F]" />
                 </div>
@@ -122,7 +122,7 @@ function HomePage() {
             </div>
             
             <div className="text-center group flex-1">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <Users className="w-16 h-16 text-[#CD853F]" />
                 </div>
@@ -137,7 +137,7 @@ function HomePage() {
             </div>
             
             <div className="text-center group flex-1">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <ImagePlus className="w-16 h-16 text-[#CD853F]" />
                 </div>
@@ -152,7 +152,7 @@ function HomePage() {
             </div>
             
             <div className="text-center group flex-1">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <Unlock className="w-16 h-16 text-[#CD853F]" />
                 </div>
@@ -165,7 +165,7 @@ function HomePage() {
           {/* Mobile/tablet grid layout without arrows */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch lg:hidden">
             <div className="text-center group h-full">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <Package className="w-16 h-16 text-[#CD853F]" />
                 </div>
@@ -175,7 +175,7 @@ function HomePage() {
             </div>
             
             <div className="text-center group h-full">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <Users className="w-16 h-16 text-[#CD853F]" />
                 </div>
@@ -185,7 +185,7 @@ function HomePage() {
             </div>
             
             <div className="text-center group h-full">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <ImagePlus className="w-16 h-16 text-[#CD853F]" />
                 </div>
@@ -195,7 +195,7 @@ function HomePage() {
             </div>
             
             <div className="text-center group h-full">
-              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-3xl p-8 shadow-xl border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
+              <div className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl border-3 lg:border-4 border-[#e8d5b7] transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] relative overflow-hidden h-full flex flex-col">
                 <div className="mb-6 flex justify-center">
                   <Unlock className="w-16 h-16 text-[#CD853F]" />
                 </div>

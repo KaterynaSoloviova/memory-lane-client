@@ -92,21 +92,21 @@ function MyCapsules() {
     <main className={vintageClasses.pageContainer}>
       <VintageDecorations />
 
-      <section className="relative z-10 px-6 py-16">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="max-w-6xl mx-auto">
           <VintageContainer
-            className="text-center mb-8"
+            className="text-center mb-6 sm:mb-8"
             style={{ paddingTop: "12px", paddingBottom: "12px" }}
           >
-            <div className="flex justify-center mb-4">
-              <Camera size={28} color="#8B4513" />
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <Camera size={24} className="sm:w-7 sm:h-7" color="#8B4513" />
             </div>
 
             <h2
-              className="text-5xl font-bold mb-4 text-[#8B4513] tracking-wide"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-[#8B4513] tracking-wide"
               style={{ fontFamily: "Georgia, serif" }}
             >
-              <span style={{ fontSize: "3 rem" }}>💌</span> My Capsules
+              <span className="text-2xl sm:text-3xl lg:text-4xl">💌</span> My Capsules
             </h2>
 
             <button

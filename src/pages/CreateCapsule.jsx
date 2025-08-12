@@ -16,6 +16,12 @@ import {
   Pause,
   Volume2,
   Edit,
+  Clock,
+  Package,
+  Video,
+  Save,
+  Eye,
+  Music,
 } from "lucide-react";
 
 function CreateCapsule() {
@@ -48,6 +54,7 @@ function CreateCapsule() {
   const fileInputRef = useRef(null);
 
   const [styleKey, setStyleKey] = useState("default");
+  const [isStyleSectionOpen, setIsStyleSectionOpen] = useState(false);
   const [selectedMusic, setSelectedMusic] = useState("");
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
   const [previewVolume, setPreviewVolume] = useState(0.5);
@@ -147,6 +154,20 @@ function CreateCapsule() {
       setError("Image upload failed");
       return "";
     }
+  };
+
+  // --- Image Upload for TiptapEditor ---
+  const handleEditorImageUpload = (callback) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const url = await handleCloudinaryUpload(e.target.files[0]);
+        callback(url);
+      }
+    };
+    input.click();
   };
 
   const handleCloudinaryVideoUpload = async (file) => {
@@ -491,12 +512,13 @@ function CreateCapsule() {
     <main className={vintageClasses.pageContainer}>
       <VintageDecorations />
 
-      <section className="relative z-10 px-6 py-16">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="max-w-4xl mx-auto">
           <VintageContainer className="text-center">
-            <VintageOrnament symbol="🕰️" />
-            <h2 className="text-5xl font-bold mb-8 text-[#8B4513] tracking-wide" style={{ fontFamily: 'Georgia, serif' }}>
-              📦 {id ? "Edit" : "Create"} Time Capsule
+            <VintageOrnament symbol="❦" />
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 text-[#8B4513] tracking-wide flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4" style={{ fontFamily: 'Georgia, serif' }}>
+              <Package className="w-8 sm:w-10 lg:w-12 h-8 sm:h-10 lg:h-12 text-[#CD853F]" />
+              <span className="text-center">{id ? "Edit" : "Create"} Time Capsule</span>
             </h2>
             <VintageOrnament size="sm" symbol="✦" />
 
@@ -510,13 +532,13 @@ function CreateCapsule() {
                 e.preventDefault();
                 handleSave();
               }}
-              className="space-y-6 text-left"
+              className="space-y-4 sm:space-y-6 text-left"
             >
               {/* Title */}
               <div>
-                <label className="block font-medium text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Title</label>
+                <label className="block font-bold text-lg sm:text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Title</label>
                 <input
-                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 sm:px-4 py-2 sm:py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none text-sm sm:text-base"
                   type="text"
                   value={title}
                   required
@@ -526,7 +548,7 @@ function CreateCapsule() {
 
               {/* Capsule Image Upload */}
               <div>
-                <label className="block font-medium text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Capsule Image</label>
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Capsule Image</label>
 
                 <input
                   type="file"
@@ -538,7 +560,7 @@ function CreateCapsule() {
 
                 <div
                   onClick={handleClick}
-                  className="cursor-pointer w-40 h-40 border-2 border-dashed border-[#CD853F] rounded-lg flex items-center justify-center overflow-hidden bg-[#fefcf8] hover:bg-[#f8f3ec] transition-colors"
+                  className="cursor-pointer w-full h-40 border-2 border-dashed border-[#CD853F] rounded-lg flex items-center justify-center overflow-hidden bg-[#fefcf8] hover:bg-[#f8f3ec] transition-colors"
                   title="Click to upload image"
                 >
                   {image ? (
@@ -566,7 +588,7 @@ function CreateCapsule() {
 
               {/* Description */}
               <div>
-                <label className="block font-medium text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Description</label>
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Description</label>
                 <textarea
                   className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none min-h-[100px]"
                   value={description}
@@ -577,7 +599,7 @@ function CreateCapsule() {
 
               {/* Unlock Date */}
               <div>
-                <label className="block font-medium text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Unlock Date</label>
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Unlock Date</label>
                 <input
                   className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
                   type="date"
@@ -596,13 +618,13 @@ function CreateCapsule() {
                     onChange={() => setIsPublic(!isPublic)}
                     className="w-5 h-5 text-[#CD853F] border-2 border-[#e8d5b7] rounded focus:ring-[#CD853F]"
                   />
-                  <span className="font-medium">Make Public</span>
+                  <span className="font-bold text-xl">Make Public</span>
                 </label>
               </div>
 
               {/* Add Participants */}
               <div>
-                <label className="block font-medium text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Participants</label>
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Participants</label>
                 <div className="flex gap-3">
                   <input
                     type="email"
@@ -644,41 +666,59 @@ function CreateCapsule() {
 
               {/* Choose style */}
               <div>
-                <label className="block font-medium mb-1">Choose style</label>
-                <div className="grid grid-cols-5 gap-2">
-                  {Object.keys(memoryStyles).map((key) => {
-                    const s = memoryStyles[key];
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => setStyleKey(key)}
-                        className={`border rounded overflow-hidden p-1 relative ${styleKey === key ? "ring-4 ring-yellow-300" : ""
-                          }`}
-                        aria-pressed={styleKey === key}
-                      >
-                        <div
-                          className="w-28 h-16"
-                          style={{
-                            backgroundImage: s.backgroundImage,
-                            backgroundSize: "100% 100%",
-                            backgroundPosition: "center",
-                            backgroundRepeat: "no-repeat",
-                            opacity: 0.7,
-                          }}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-black drop-shadow-lg">
-                          {s.label}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsStyleSectionOpen(!isStyleSectionOpen)}
+                  className="w-full flex items-center justify-between font-bold text-xl text-[#8B4513] mb-2 hover:text-[#CD853F] transition-colors p-3 border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
+                  style={{ fontFamily: 'Georgia, serif' }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span>Choose style</span>
+                    <span className="text-sm text-[#A0522D] opacity-75">(Click to expand)</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-lg">
+                      {isStyleSectionOpen ? <ChevronUp className="w-6 h-6" /> : <ChevronDown className="w-6 h-6" />}
+                    </span>
+                  </div>
+                </button>
+                
+                {isStyleSectionOpen && (
+                  <div className="grid grid-cols-5 gap-2 mt-2 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                    {Object.keys(memoryStyles).map((key) => {
+                      const s = memoryStyles[key];
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setStyleKey(key)}
+                          className={`border rounded overflow-hidden p-1 relative ${styleKey === key ? "ring-4 ring-yellow-300" : ""
+                            }`}
+                          aria-pressed={styleKey === key}
+                        >
+                          <div
+                            className="w-28 h-16"
+                            style={{
+                              backgroundImage: s.backgroundImage,
+                              backgroundSize: "100% 100%",
+                              backgroundPosition: "center",
+                              backgroundRepeat: "no-repeat",
+                              opacity: 0.7,
+                            }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-black drop-shadow-lg">
+                            {s.label}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Background Music Selection */}
               <div>
-                <label className="block font-medium mb-1">Background Music</label>
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Background Music</label>
 
                 {/* Audio Preview Element */}
                 <audio ref={audioPreviewRef} preload="metadata" />
@@ -700,7 +740,7 @@ function CreateCapsule() {
                       type="button"
                       onClick={() => audioInputRef.current?.click()}
                       disabled={audioUploading}
-                      className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-4 py-2 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                     >
                       {audioUploading ? (
                         <>
@@ -709,7 +749,7 @@ function CreateCapsule() {
                         </>
                       ) : (
                         <>
-                          <span className="mr-2">🎵</span>
+                          <span className="mr-2"><Music className="w-5 h-5" /></span>
                           Upload Audio
                         </>
                       )}
@@ -726,7 +766,7 @@ function CreateCapsule() {
                           className="flex items-center justify-between bg-white p-2 rounded border border-[#e8d5b7]"
                         >
                           <div className="flex items-center gap-2">
-                            <span className="text-lg">🎵</span>
+                            <Music className="w-5 h-5" />
                             <span className="text-sm text-[#8B4513]">{audio.name}</span>
                             <span className="text-xs text-[#A0522D]">({audio.duration})</span>
                           </div>
@@ -758,7 +798,7 @@ function CreateCapsule() {
                           }`}
                       >
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">🎵</span>
+                          <Music className="w-5 h-5" />
                           <div className="font-medium text-[#8B4513]">{audio.name}</div>
                         </div>
                         <div className="text-sm text-[#A0522D]">{audio.duration}</div>
@@ -771,8 +811,8 @@ function CreateCapsule() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center p-8 bg-[#fefcf8] border-2 border-dashed border-[#e8d5b7] rounded-lg">
-                    <span className="text-4xl mb-3 block">🎵</span>
+                  <div className="text-center p-3 bg-[#fefcf8] border-2 border-dashed border-[#e8d5b7] rounded-lg">
+                    <Music className="w-6 h-6 mx-auto mb-1 text-[#CD853F]" />
                     <p className="text-[#A0522D] font-medium" style={{ fontFamily: 'Georgia, serif' }}>
                       No background music uploaded yet
                     </p>
@@ -784,9 +824,9 @@ function CreateCapsule() {
 
                 {/* Music Preview Controls */}
                 {selectedMusic && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+                  <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
                     <div className="flex items-center justify-between mb-3">
-                      <div className="text-sm font-medium text-gray-700">
+                      <div className="text-sm font-semibold text-[#8B4513]" style={{ fontFamily: 'Georgia, serif' }}>
                         Preview:{" "}
                         {
                           uploadedAudio.find((a) => a.id === selectedMusic)?.name ||
@@ -797,9 +837,9 @@ function CreateCapsule() {
                         type="button"
                         onClick={toggleMusicPreview}
                         disabled={!selectedMusic}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors ${isPlayingPreview
-                            ? "bg-red-500 text-white hover:bg-red-600"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${isPlayingPreview
+                            ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg"
+                            : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] shadow-lg"
                           }`}
                       >
                         {isPlayingPreview ? <Pause size={16} /> : <Play size={16} />}
@@ -808,8 +848,8 @@ function CreateCapsule() {
                     </div>
 
                     {/* Volume Control */}
-                    <div className="flex items-center gap-2">
-                      <Volume2 size={16} className="text-gray-600" />
+                    <div className="flex items-center gap-3">
+                      <Volume2 size={16} className="text-[#8B4513]" />
                       <input
                         type="range"
                         min="0"
@@ -817,13 +857,13 @@ function CreateCapsule() {
                         step="0.1"
                         value={previewVolume}
                         onChange={handlePreviewVolumeChange}
-                        className="flex-1 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                        className="flex-1 h-3 bg-[#e8d5b7] rounded-lg appearance-none cursor-pointer hover:bg-[#dbc7a6] transition-colors"
                         style={{
-                          background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${previewVolume * 100
-                            }%, #e5e7eb ${previewVolume * 100}%, #e5e7eb 100%)`,
+                          background: `linear-gradient(to right, #CD853F 0%, #CD853F ${previewVolume * 100
+                            }%, #e8d5b7 ${previewVolume * 100}%, #e8d5b7 100%)`,
                         }}
                       />
-                      <span className="text-sm text-gray-600 w-8 text-right">
+                      <span className="text-sm font-semibold text-[#8B4513] w-10 text-right" style={{ fontFamily: 'Georgia, serif' }}>
                         {Math.round(previewVolume * 100)}%
                       </span>
                     </div>
@@ -833,7 +873,7 @@ function CreateCapsule() {
 
               {/* Slideshow Timeout Setting */}
               <div>
-                <label className="block font-medium mb-1">Slideshow Timeout (seconds per slide)</label>
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Slideshow Timeout (seconds per slide)</label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
                     { value: 3000, label: "3 seconds" },
@@ -886,8 +926,8 @@ function CreateCapsule() {
               </div>
 
               <div className="mt-4">
-                <label className="block font-medium mb-1">Insert Text</label>
-                <TiptapEditor content={textContent} onChange={setTextContent} />
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Insert Text</label>
+                <TiptapEditor content={textContent} onChange={setTextContent} onImageUpload={handleEditorImageUpload} />
 
                 {/* Font Customization for New Items */}
                 <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
@@ -965,44 +1005,46 @@ function CreateCapsule() {
                 </div>
 
                 <div className="mt-4">
-                  <label className="block font-medium mb-1">Preview</label>
-                  <div
-                    className="p-4 rounded shadow-sm border relative"
-                    style={{
-                      backgroundColor:
-                        memoryStyles[styleKey]?.backgroundColor ||
-                        memoryStyles.default.backgroundColor,
-                      backgroundImage:
-                        memoryStyles[styleKey]?.backgroundImage || "none",
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      fontFamily:
-                        memoryStyles[styleKey]?.fontFamily ||
-                        memoryStyles.default.fontFamily,
-                      fontSize:
-                        memoryStyles[styleKey]?.fontSize ||
-                        memoryStyles.default.fontSize,
-                      color:
-                        memoryStyles[styleKey]?.color || memoryStyles.default.color,
-                      minHeight: "400px",
-                      whiteSpace: "pre-wrap",
-                      overflowWrap: "break-word",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      textAlign: "center",
-                    }}
-                  >
+                  <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Preview</label>
+                  <div className="p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
                     <div
-                      dangerouslySetInnerHTML={{ __html: textContent }}
+                      className="p-6 rounded-lg shadow-lg border-2 border-[#dbc7a6] relative overflow-hidden"
                       style={{
-                        maxWidth: "80%",
-                        padding: "20px",
-                        fontSize: newItemFontSize,
-                        fontFamily: newItemFontFamily,
-                        color: newItemFontColor,
+                        backgroundColor:
+                          memoryStyles[styleKey]?.backgroundColor ||
+                          memoryStyles.default.backgroundColor,
+                        backgroundImage:
+                          memoryStyles[styleKey]?.backgroundImage || "none",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        fontFamily:
+                          memoryStyles[styleKey]?.fontFamily ||
+                          memoryStyles.default.fontFamily,
+                        fontSize:
+                          memoryStyles[styleKey]?.fontSize ||
+                          memoryStyles.default.fontSize,
+                        color:
+                          memoryStyles[styleKey]?.color || memoryStyles.default.color,
+                        minHeight: "400px",
+                        whiteSpace: "pre-wrap",
+                        overflowWrap: "break-word",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        textAlign: "center",
                       }}
-                    />
+                    >
+                      <div
+                        dangerouslySetInnerHTML={{ __html: textContent }}
+                        style={{
+                          maxWidth: "80%",
+                          padding: "20px",
+                          fontSize: newItemFontSize,
+                          fontFamily: newItemFontFamily,
+                          color: newItemFontColor,
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1011,69 +1053,95 @@ function CreateCapsule() {
                 <button
                   type="button"
                   onClick={handleAddItem}
-                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center"
                 >
-                  <span className="text-lg mr-2">➕</span>
+                  <span className="text-xl mr-2"><Plus className="w-5 h-5" /></span>
                   Add Memory
                 </button>
               </div>
 
               {/* --- VIDEO UPLOAD --- */}
               <div className="mb-6">
-                <label className="block font-medium mb-1">Insert Video</label>
+                <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Insert Video</label>
 
-                {/* Hidden file input */}
-                <input
-                  type="file"
-                  accept="video/*"
-                  ref={videoInputRef}
-                  onChange={async (e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setVideoUploading(true);
-                      setError(""); // clear error on new upload
-                      try {
-                        const uploadedUrl = await handleCloudinaryVideoUpload(
-                          e.target.files[0]
-                        );
-                        if (uploadedUrl) {
-                          setItems((prev) => [
-                            ...prev,
-                            { type: "video", content: uploadedUrl },
-                          ]);
-                          setVideoPreview(uploadedUrl);
+                {/* Video Upload Section */}
+                <div className="mb-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-[#8B4513] font-semibold" style={{ fontFamily: 'Georgia, serif' }}>
+                      Upload Custom Video
+                    </h4>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      ref={videoInputRef}
+                      onChange={async (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setVideoUploading(true);
+                          setError(""); // clear error on new upload
+                          try {
+                            const uploadedUrl = await handleCloudinaryVideoUpload(
+                              e.target.files[0]
+                            );
+                            if (uploadedUrl) {
+                              setItems((prev) => [
+                                ...prev,
+                                { type: "video", content: uploadedUrl },
+                              ]);
+                              setVideoPreview(uploadedUrl);
+                            }
+                          } catch (err) {
+                            console.error("Video upload failed", err);
+                          } finally {
+                            setVideoUploading(false);
+                          }
+                          e.target.value = null; // reset to allow same file again
                         }
-                      } catch (err) {
-                        console.error("Video upload failed", err);
-                      } finally {
-                        setVideoUploading(false);
-                      }
-                      e.target.value = null; // reset to allow same file again
-                    }
-                  }}
-                  style={{ display: "none" }}
-                />
-
-                {/* Upload Button */}
-                <button
-                  type="button"
-                  onClick={() => videoInputRef.current?.click()}
-                  disabled={videoUploading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded"
-                >
-                  {videoUploading ? "Uploading..." : "Upload Video"}
-                </button>
+                      }}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => videoInputRef.current?.click()}
+                      disabled={videoUploading}
+                      className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    >
+                      {videoUploading ? (
+                        <>
+                          <span className="animate-spin inline-block mr-2">⏳</span>
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <span className="mr-2"><Video className="w-5 h-5" /></span>
+                          Upload Video
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
 
                 {/* Video Preview */}
                 {videoPreview && (
-                  <div className="mt-4">
-                    <video width="320" height="240" controls src={videoPreview} />
-                    <button
-                      type="button"
-                      onClick={() => setVideoPreview(null)}
-                      className="mt-2 text-red-600"
-                    >
-                      Remove Preview
-                    </button>
+                  <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                    <h4 className="text-[#8B4513] font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>
+                      Video Preview
+                    </h4>
+                    <div className="flex flex-col items-center">
+                      <video 
+                        width="320" 
+                        height="240" 
+                        controls 
+                        src={videoPreview} 
+                        className="rounded-lg shadow-md border-2 border-[#dbc7a6]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setVideoPreview(null)}
+                        className="mt-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+                      >
+                        Remove Preview
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -1081,14 +1149,16 @@ function CreateCapsule() {
               {error && <p className="text-red-500 mb-4">{error}</p>}
 
               {/* Items List */}
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 space-y-6">
                 {items.length === 0 ? (
-                  <p className="text-center text-gray-500">No items added yet.</p>
+                  <div className="text-center p-8 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                    <p className="text-[#A0522D]" style={{ fontFamily: 'Georgia, serif' }}>No memories added yet.</p>
+                  </div>
                 ) : (
                   items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="border rounded-lg bg-white shadow-md p-4 flex flex-col items-center relative"
+                      className="border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] shadow-lg p-6 flex flex-col items-center relative"
                     >
                       {/* Reorder buttons */}
                       <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
@@ -1096,9 +1166,9 @@ function CreateCapsule() {
                           type="button"
                           onClick={() => handleMoveItemUp(idx)}
                           disabled={idx === 0}
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-sm ${idx === 0
+                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-md transition-all duration-300 ${idx === 0
                               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                              : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+                              : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] cursor-pointer transform hover:scale-105"
                             }`}
                         >
                           <ChevronUp size={14} />
@@ -1107,9 +1177,9 @@ function CreateCapsule() {
                           type="button"
                           onClick={() => handleMoveItemDown(idx)}
                           disabled={idx === items.length - 1}
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-sm ${idx === items.length - 1
+                          className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-md transition-all duration-300 ${idx === items.length - 1
                               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                              : "bg-blue-500 text-white hover:bg-blue-600 cursor-pointer"
+                              : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] cursor-pointer transform hover:scale-105"
                             }`}
                         >
                           <ChevronDown size={14} />
@@ -1120,7 +1190,7 @@ function CreateCapsule() {
                       <button
                         type="button"
                         onClick={() => handleDeleteItem(idx)}
-                        className="absolute top-3 right-3 bg-red-500 text-white hover:bg-red-600 rounded-full p-2 shadow-sm z-10 w-6 h-6 flex items-center justify-center"
+                        className="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-full p-2 shadow-lg z-10 w-8 h-8 flex items-center justify-center transition-all duration-300 transform hover:scale-105"
                       >
                         <X size={14} />
                       </button>
@@ -1130,7 +1200,7 @@ function CreateCapsule() {
                         <button
                           type="button"
                           onClick={() => handleEditItem(idx)}
-                          className="absolute bottom-3 right-3 bg-blue-500 text-white hover:bg-blue-600 rounded-full p-2 shadow-sm z-10 w-8 h-8 flex items-center justify-center"
+                          className="absolute bottom-3 right-3 bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] rounded-full p-2 shadow-lg z-10 w-9 h-9 flex items-center justify-center transition-all duration-300 transform hover:scale-105"
                           title="Edit memory"
                         >
                           <Edit size={14} />
@@ -1138,7 +1208,7 @@ function CreateCapsule() {
                       )}
 
                       <div
-                        className="prose max-w-full p-4 rounded relative"
+                        className="prose max-w-full p-6 rounded-lg shadow-lg border-2 border-[#dbc7a6] relative overflow-hidden"
                         style={{
                           backgroundColor:
                             memoryStyles[item.style]?.backgroundColor ||
@@ -1174,6 +1244,7 @@ function CreateCapsule() {
                                 <TiptapEditor
                                   content={editingContent}
                                   onChange={setEditingContent}
+                                  onImageUpload={handleEditorImageUpload}
                                 />
 
                                 {/* Font Customization Controls */}
@@ -1275,7 +1346,7 @@ function CreateCapsule() {
                                     onClick={handleSaveEdit}
                                     className={vintageClasses.button.primary}
                                   >
-                                    <span className="text-lg mr-2">✨</span>
+                                    <span className="text-lg mr-2"><Save className="w-5 h-5" /></span>
                                     Save Changes
                                   </button>
                                   <button
@@ -1283,7 +1354,7 @@ function CreateCapsule() {
                                     onClick={handleCancelEdit}
                                     className={vintageClasses.button.secondary}
                                   >
-                                    <span className="text-lg mr-2">✖️</span>
+                                    <span className="text-lg mr-2"><X className="w-5 h-5" /></span>
                                     Cancel
                                   </button>
                                 </div>

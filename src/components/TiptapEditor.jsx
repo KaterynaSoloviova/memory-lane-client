@@ -24,10 +24,7 @@ import {
   Link as LinkIcon,
   Image as ImageIcon,
 } from "lucide-react";
-import ImageUpload from "../components/ImageUpload";
-
-const TiptapEditor = ({ content, onChange }) => {
-  const [showImageUpload, setShowImageUpload] = useState(false);
+const TiptapEditor = ({ content, onChange, onImageUpload }) => {
 
   const editor = useEditor({
     extensions: [
@@ -35,7 +32,7 @@ const TiptapEditor = ({ content, onChange }) => {
         blockquote: {
           HTMLAttributes: {
             class:
-              "border-l-4 border-[#5A7D1A] pl-4 py-2 bg-base-200/50 italic",
+              "border-l-4 border-[#CD853F] pl-4 py-2 bg-[#fdf9f4] italic text-[#8B4513]",
           },
         },
         bulletList: {
@@ -63,11 +60,11 @@ const TiptapEditor = ({ content, onChange }) => {
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-blue-500 underline",
+          class: "text-[#CD853F] underline hover:text-[#D2691E]",
         },
       }),
       Placeholder.configure({
-        placeholder: "Start writing your blog post...",
+        placeholder: "Start writing your memory content...",
       }),
       TextAlign.configure({
         types: ["heading", "paragraph", "blockquote"],
@@ -96,24 +93,17 @@ const TiptapEditor = ({ content, onChange }) => {
   };
 
   return (
-    <div>
-      <div className="bg-base-200 p-2 border-b border-base-300">
+    <div className="border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] overflow-hidden">
+      <div className="bg-gradient-to-r from-[#f8f3ec] to-[#fdf9f4] p-3 border-b border-[#e8d5b7]">
         <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("bold")
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("bold")
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Bold"
           >
             <Bold className="w-4 h-4" />
@@ -122,18 +112,11 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("italic")
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("italic")
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Italic"
           >
             <Italic className="w-4 h-4" />
@@ -142,18 +125,11 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("bulletList")
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("bulletList")
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Bullet List"
           >
             <List className="w-4 h-4" />
@@ -162,18 +138,11 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("orderedList")
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("orderedList")
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Numbered List"
           >
             <ListOrdered className="w-4 h-4" />
@@ -182,18 +151,11 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("blockquote")
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("blockquote")
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Quote"
           >
             <Quote className="w-4 h-4" />
@@ -202,18 +164,11 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign("left").run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("textAlign", { align: "left" })
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("textAlign", { align: "left" })
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Align Left"
           >
             <AlignLeft className="w-4 h-4" />
@@ -222,18 +177,11 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign("center").run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("textAlign", { align: "center" })
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("textAlign", { align: "center" })
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Align Center"
           >
             <AlignCenter className="w-4 h-4" />
@@ -242,18 +190,11 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign("right").run()}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("textAlign", { align: "right" })
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("textAlign", { align: "right" })
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Align Right"
           >
             <AlignRight className="w-4 h-4" />
@@ -262,69 +203,45 @@ const TiptapEditor = ({ content, onChange }) => {
           <button
             type="button"
             onClick={setLink}
-            className={`btn btn-sm transition-all duration-200 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("link")
-                ? "text-white border-none shadow-md"
-                : "btn-ghost hover:bg-base-300"
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
             }`}
-            style={
-              editor.isActive("link")
-                ? {
-                    background: "linear-gradient(135deg, #5A7D1A, #d89d20)",
-                  }
-                : {}
-            }
             title="Add Link"
           >
             <LinkIcon className="w-4 h-4" />
           </button>
 
-          <div className="relative">
-            <button
-              type="button"
-              className="btn btn-sm btn-ghost"
-              title="Upload Image"
-              onClick={() => setShowImageUpload(!showImageUpload)}
-            >
-              <ImageIcon className="w-4 h-4" />
-            </button>
-            {showImageUpload && (
-              <div className="absolute top-full left-0 mt-2 z-50 bg-base-100 border border-base-300 rounded-lg shadow-lg p-4 min-w-[300px]">
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="text-sm font-semibold">Upload Image</h4>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-xs"
-                    onClick={() => setShowImageUpload(false)}
-                  >
-                    ✕
-                  </button>
-                </div>
-                <ImageUpload
-                  onUploadSuccess={(url) => {
-                    if (editor) {
-                      editor
-                        .chain()
-                        .focus()
-                        .setImage({
-                          src: url,
-                          alt: "Uploaded image",
-                        })
-                        .run();
-                    }
-                    setShowImageUpload(false);
-                  }}
-                  compact={true}
-                />
-              </div>
-            )}
-          </div>
+          <button
+            type="button"
+            className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
+            title="Upload Image"
+            onClick={() => {
+              if (onImageUpload) {
+                onImageUpload((url) => {
+                  if (editor && url) {
+                    editor
+                      .chain()
+                      .focus()
+                      .setImage({
+                        src: url,
+                        alt: "Uploaded image",
+                      })
+                      .run();
+                  }
+                });
+              }
+            }}
+          >
+            <ImageIcon className="w-4 h-4" />
+          </button>
 
           <button
             type="button"
             onClick={() => editor.chain().focus().undo().run()}
             disabled={!editor.can().undo()}
-            className="btn btn-sm btn-ghost disabled:opacity-50"
+            className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F] disabled:opacity-50 disabled:cursor-not-allowed"
             title="Undo"
           >
             <Undo className="w-4 h-4" />
@@ -334,7 +251,7 @@ const TiptapEditor = ({ content, onChange }) => {
             type="button"
             onClick={() => editor.chain().focus().redo().run()}
             disabled={!editor.can().redo()}
-            className="btn btn-sm btn-ghost disabled:opacity-50"
+            className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F] disabled:opacity-50 disabled:cursor-not-allowed"
             title="Redo"
           >
             <Redo className="w-4 h-4" />
@@ -343,7 +260,7 @@ const TiptapEditor = ({ content, onChange }) => {
       </div>
 
       {/* Editor */}
-      <div className="border border-gray-300 p-4 rounded min-h-[150px]">
+      <div className="p-4 min-h-[150px] bg-white text-[#4A4A4A]" style={{fontFamily: 'Georgia, serif'}}>
         <EditorContent editor={editor} />
       </div>
     </div>
