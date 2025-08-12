@@ -8,6 +8,7 @@ import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses }
 import Countdown from "../components/Countdown";
 import SlideShow from "../components/SlideShow";
 import CommentSection from "../components/CommentSection";
+import { Trash2, Lock } from "lucide-react";
 
 
 function ViewCapsulePage() {
@@ -75,7 +76,7 @@ function ViewCapsulePage() {
               <SlideShow
                 items={items}
                 autoplay
-                interval={4000}
+                interval={capsule.slideshowTimeout || 5000}
                 backgroundMusic={`/music/${backgroundMusic}`}
               />
             </div>
@@ -90,7 +91,7 @@ function ViewCapsulePage() {
           </div>
 
           {editMode && (
-            <VintageContainer className="text-center">
+            <div className="mb-4 flex items-center justify-center gap-4 bg-[#f9f5e8] p-3 rounded-lg border border-[#d4c5a3]">
               <div className="flex gap-6 justify-center">
                 <button
                   onClick={() => {
@@ -102,9 +103,9 @@ function ViewCapsulePage() {
                       .then(() => navigate("/capsules"))
                       .catch((err) => console.error("Error deleting capsule:", err));
                   }}
-                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+                  className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
                 >
-                  <span className="text-xl mr-2">🗑️</span>
+                  <Trash2 size={18} />
                   Delete Capsule
                 </button>
                 <button
@@ -133,13 +134,13 @@ function ViewCapsulePage() {
                       })
                       .catch((err) => console.error("Error locking capsule:", err));
                   }}
-                  className={vintageClasses.button.primary}
+                  className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
                 >
-                  <span className="text-xl mr-2">🔒</span>
+                  <Lock size={18} />
                   Lock Capsule
                 </button>
               </div>
-            </VintageContainer>
+            </div>
           )}
         </div>
       </section>

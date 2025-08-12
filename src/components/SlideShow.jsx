@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { memoryStyles } from "../utils/styles";
-import { Play, Pause, Volume2 } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Music } from "lucide-react";
 
 export default function SlideShow({
   items,
@@ -278,8 +278,7 @@ export default function SlideShow({
           onClick={togglePlayPause}
           className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
         >
-          {isPlaying ? <Pause size={18} /> : <Play size={18} />}
-          {isPlaying ? "Pause Music" : "Play Music"}
+          {isPlaying ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
 
         <div className="flex items-center gap-2">

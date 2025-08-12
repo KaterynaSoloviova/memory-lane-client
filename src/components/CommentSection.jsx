@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
 import EmojiPicker from "emoji-picker-react";
+import { MessageSquare, Smile, Send } from "lucide-react";
 
 export default function CommentSection({ capsuleId }) {
   const [comments, setComments] = useState([]);
@@ -39,30 +40,35 @@ export default function CommentSection({ capsuleId }) {
 };
 
   return (
-    <div className="mt-4 border-t pt-3">
-      <h4 className="font-semibold mb-2">💬 Comments</h4>
+    <div className="bg-[#f9f5e8] p-4 rounded-lg border border-[#d4c5a3]">
+      <h4 className="flex items-center gap-2 font-semibold mb-4 text-[#4a3f35]">
+        <MessageSquare size={18} />
+        Comments
+      </h4>
       {comments.length === 0 && (
-        <p className="text-sm text-gray-500">No comments yet.</p>
+        <p className="text-sm text-[#7a6a57] mb-4">No comments yet.</p>
       )}
-      <ul className="space-y-2 mb-3">
+      <ul className="space-y-3 mb-4">
         {comments.map((c) => (
-          <li key={c._id} className="retro-comment p-2 rounded bg-yellow-100 border border-yellow-300">
-            <strong>{c.author?.username || "Anonymous"}:</strong> {c.content}
-            <div className="text-xs text-gray-500">
+          <li key={c._id} className="bg-[#e8e0d0] p-3 rounded border border-[#d4c5a3]">
+            <strong className="text-[#4a3f35]">{c.author?.username || "Anonymous"}:</strong> 
+            <span className="text-[#4a3f35] ml-2">{c.content}</span>
+            <div className="text-xs text-[#7a6a57] mt-1">
               {new Date(c.createdAt).toLocaleString()}
             </div>
           </li>
         ))}
       </ul>
 
-      <div className="relative flex items-center gap-2 mb-2">
+      <div className="relative flex items-center gap-2 mb-3">
         <button
           type="button"
           onClick={() => setShowPicker((val) => !val)}
-          className="text-xl"
+          className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-3 py-1 rounded-full hover:bg-[#c0af8f] transition-colors"
           aria-label="Toggle emoji picker"
         >
-          😊
+          <Smile size={16} />
+          Emoji
         </button>
         {showPicker && (
           <div className="absolute bottom-full mb-2 z-10">
@@ -71,19 +77,20 @@ export default function CommentSection({ capsuleId }) {
         )}
       </div>
 
-      <form onSubmit={handleAddComment} className="flex gap-2">
+      <form onSubmit={handleAddComment} className="flex gap-3">
         <input
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write a comment..."
-          className="border rounded flex-1 px-2 py-1"
+          className="border border-[#d4c5a3] rounded-lg flex-1 px-3 py-2 bg-white text-[#4a3f35] placeholder-[#7a6a57] focus:outline-none focus:border-[#c0af8f]"
           required
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+          className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
         >
+          <Send size={16} />
           Post
         </button>
       </form>
