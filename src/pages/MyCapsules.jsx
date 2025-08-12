@@ -6,6 +6,7 @@ import { BASE_URL } from "../config/config";
 import { isLocked, isUnlocked, isDraft } from "../utils/validators";
 import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 import imagePlaceholder from "../assets/image-placeholder.jpg";
+import { Plus, Trash2, PillBottle } from "lucide-react";
 
 
 function MyCapsules() {
@@ -96,26 +97,25 @@ function MyCapsules() {
             </h2>
             <button
               onClick={() => navigate("/create-capsule")}
-              className={vintageClasses.button.primary}
+              className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors mx-auto"
             >
-              <span className="text-xl mr-2">✨</span>
+              <Plus size={18} />
               Create New Capsule
             </button>
             <VintageOrnament size="sm" symbol="✦" />
           </VintageContainer>
 
           {/* Filter buttons */}
-          <div className="flex gap-4 justify-center mb-8">
+          <div className="bg-[#f9f5e8] p-3 rounded-lg border border-[#d4c5a3] mb-8 flex gap-4 justify-center">
             {["all", "locked", "unlocked", "draft"].map((type) => (
               <button
                 key={type}
                 onClick={() => setFilter(type)}
-                className={`px-6 py-3 rounded-full capitalize font-semibold transition-all duration-300 transform hover:scale-105 ${
+                className={`px-4 py-2 rounded-full capitalize transition-colors ${
                   filter === type
-                    ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white shadow-lg"
-                    : "bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-2 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white"
+                    ? "bg-[#c0af8f] text-[#4a3f35]"
+                    : "bg-[#d4c5a3] text-[#4a3f35] hover:bg-[#c0af8f]"
                 }`}
-                style={{fontFamily: 'Georgia, serif'}}
               >
                 {type}
               </button>
@@ -141,9 +141,9 @@ function MyCapsules() {
                 onClick={() => handleCardClick(cap)}
                 className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-4 border-[#e8d5b7] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] cursor-pointer"
               >
-                <figure class="max-w-lg">
+                <figure className="w-full h-48 overflow-hidden">
                   <img
-                    class="h-auto max-w-full rounded-lg"
+                    className="w-full h-full object-cover"
                     src={cap.image || imagePlaceholder}
                     alt={cap.title}
                   />
@@ -173,9 +173,10 @@ function MyCapsules() {
                       e.stopPropagation();
                       handleDelete(cap._id);
                     }}
-                    className="block text-red-600 hover:text-red-800 text-sm font-medium transition-colors"
+                    className="flex items-center justify-center w-8 h-8 bg-[#d4c5a3] text-[#4a3f35] rounded-full hover:bg-[#c0af8f] transition-colors"
+                    aria-label="Delete capsule"
                   >
-                    🗑️ Delete
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>
