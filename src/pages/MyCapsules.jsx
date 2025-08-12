@@ -4,6 +4,7 @@ import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
 import { isLocked, isUnlocked, isDraft } from "../utils/validators";
+import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 import imagePlaceholder from "../assets/image-placeholder.jpg";
 
 
@@ -83,39 +84,54 @@ function MyCapsules() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">📁 My Capsules</h2>
-        <button
-          onClick={() => navigate("/create-capsule")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          + Create Capsule
-        </button>
-      </div>
+    <main className={vintageClasses.pageContainer}>
+      <VintageDecorations />
+      
+      <section className="relative z-10 px-6 py-16">
+        <div className="max-w-6xl mx-auto">
+          <VintageContainer className="text-center mb-8">
+            <VintageOrnament symbol="🕰️" />
+            <h2 className="text-5xl font-bold mb-6 text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>
+              📁 My Capsules
+            </h2>
+            <button
+              onClick={() => navigate("/create-capsule")}
+              className={vintageClasses.button.primary}
+            >
+              <span className="text-xl mr-2">✨</span>
+              Create New Capsule
+            </button>
+            <VintageOrnament size="sm" symbol="✦" />
+          </VintageContainer>
 
-      {/* Filter buttons */}
-      <div className="flex gap-3 mb-6">
-        {["all", "locked", "unlocked", "draft"].map((type) => (
-          <button
-            key={type}
-            onClick={() => setFilter(type)}
-            className={`px-4 py-2 rounded capitalize ${
-              filter === type
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            {type}
-          </button>
-        ))}
-      </div>
+          {/* Filter buttons */}
+          <div className="flex gap-4 justify-center mb-8">
+            {["all", "locked", "unlocked", "draft"].map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilter(type)}
+                className={`px-6 py-3 rounded-full capitalize font-semibold transition-all duration-300 transform hover:scale-105 ${
+                  filter === type
+                    ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white shadow-lg"
+                    : "bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-2 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white"
+                }`}
+                style={{fontFamily: 'Georgia, serif'}}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
 
-      {/* Capsules Grid */}
-      {filteredCapsules.length === 0 ? (
-        <p>No capsules found.</p>
-      ) : (
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          {/* Capsules Grid */}
+          {filteredCapsules.length === 0 ? (
+            <div className="text-center py-12">
+              <VintageContainer padding="p-8">
+                <p className="text-2xl text-[#A0522D] italic" style={{fontFamily: 'Georgia, serif'}}>No capsules found.</p>
+                <p className="text-lg text-[#8B4513] mt-4">Start preserving your precious memories today!</p>
+              </VintageContainer>
+            </div>
+          ) : (
+            <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filteredCapsules.map((cap) => {
             const { status, date, dateLabel } = getCapsuleStatus(cap);
 
@@ -123,7 +139,7 @@ function MyCapsules() {
               <div
                 key={cap._id}
                 onClick={() => handleCardClick(cap)}
-                className={`bg-white rounded shadow overflow-hidden transition hover:shadow-lg cursor-pointer`}
+                className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-4 border-[#e8d5b7] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] cursor-pointer"
               >
                 <figure class="max-w-lg">
                   <img
@@ -133,19 +149,19 @@ function MyCapsules() {
                   />
                 </figure>
 
-                <div className="p-4">
-                  <h3 className="text-xl font-bold mb-2">{cap.title}</h3>
-                  <p className="text-gray-600 text-sm">
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold mb-3 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>{cap.title}</h3>
+                  <p className="text-[#A0522D] text-sm mb-4" style={{fontFamily: 'Georgia, serif'}}>
                     {dateLabel}:{" "}
                     {date ? new Date(date).toLocaleDateString() : "N/A"}
                   </p>
                   <span
-                    className={`inline-block mt-3 px-3 py-1 text-sm rounded capitalize ${
+                    className={`inline-block mb-4 px-4 py-2 text-sm rounded-full capitalize font-semibold ${
                       status === "locked"
-                        ? "bg-gray-300"
+                        ? "bg-gradient-to-r from-[#8B4513] to-[#A0522D] text-white"
                         : status === "unlocked"
-                        ? "bg-green-300"
-                        : "bg-yellow-300"
+                        ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white"
+                        : "bg-gradient-to-r from-[#f5e6b8] to-[#efdaa5] text-[#8B4513] border-2 border-[#CD853F]"
                     }`}
                   >
                     {status}
@@ -157,17 +173,19 @@ function MyCapsules() {
                       e.stopPropagation();
                       handleDelete(cap._id);
                     }}
-                    className="mt-3 block text-red-600 hover:underline text-sm"
+                    className="block text-red-600 hover:text-red-800 text-sm font-medium transition-colors"
                   >
-                    Delete
+                    🗑️ Delete
                   </button>
                 </div>
               </div>
             );
           })}
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </section>
+    </main>
   );
 }
 

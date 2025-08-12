@@ -4,8 +4,8 @@ import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
 import { isDraft, isLocked, isOwner } from "../utils/validators";
+import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 import Countdown from "../components/Countdown";
-
 import SlideShow from "../components/SlideShow";
 import CommentSection from "../components/CommentSection";
 
@@ -35,11 +35,21 @@ function ViewCapsulePage() {
 
   if (isLocked(capsule)) {
     return (
-      <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-        <h2 className="text-2xl font-bold mb-4">{capsule.title}</h2>
-        <p className="mb-4">This capsule is locked until:</p>
-        <Countdown unlockDate={capsule.unlockedDate} />
-      </div>
+      <main className={vintageClasses.pageContainer}>
+        <VintageDecorations />
+        
+        <section className="relative z-10 px-6 py-16">
+          <div className="max-w-3xl mx-auto">
+            <VintageContainer className="text-center">
+              <VintageOrnament symbol="🔒" />
+              <h2 className="text-4xl font-bold mb-8 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>{capsule.title}</h2>
+              <p className="text-xl text-[#A0522D] mb-8 italic" style={{fontFamily: 'Georgia, serif'}}>This capsule is locked until:</p>
+              <Countdown unlockDate={capsule.unlockedDate} />
+              <VintageOrnament size="sm" symbol="✦" />
+            </VintageContainer>
+          </div>
+        </section>
+      </main>
     );
   }
 
@@ -48,72 +58,92 @@ function ViewCapsulePage() {
     capsule.backgroundMusic || "/music/presentation-music-1.mp3";
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">{capsule.title}</h1>
-      <p className="text-gray-600 mb-8">{capsule.description}</p>
+    <main className={vintageClasses.pageContainer}>
+      <VintageDecorations />
+      
+      <section className="relative z-10 px-6 py-16">
+        <div className="max-w-4xl mx-auto">
+          <VintageContainer className="text-center mb-8">
+            <VintageOrnament symbol="🔓" />
+            <h1 className="text-5xl font-bold mb-6 text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>{capsule.title}</h1>
+            <p className="text-xl text-[#A0522D] leading-relaxed italic" style={{fontFamily: 'Georgia, serif'}}>{capsule.description}</p>
+            <VintageOrnament size="sm" symbol="✦" />
+          </VintageContainer>
 
-      {items.length > 0 ? (
-        <SlideShow
-          items={items}
-          autoplay
-          interval={4000}
-          backgroundMusic={`/music/${backgroundMusic}`}
-        />
-      ) : (
-        <p className="text-center text-gray-500">No items to display.</p>
-      )}
+          {items.length > 0 ? (
+            <div className="mb-8">
+              <SlideShow
+                items={items}
+                autoplay
+                interval={4000}
+                backgroundMusic={`/music/${backgroundMusic}`}
+              />
+            </div>
+          ) : (
+            <VintageContainer padding="p-8" className="text-center mb-8">
+              <p className="text-2xl text-[#A0522D] italic" style={{fontFamily: 'Georgia, serif'}}>No items to display.</p>
+            </VintageContainer>
+          )}
 
-      <CommentSection capsuleId={capsule._id}/>
+          <div className="mb-8">
+            <CommentSection capsuleId={capsule._id}/>
+          </div>
 
-      {editMode && (
-        <div className="mt-8 flex gap-4 justify-center">
-          <button
-            onClick={() => {
-              const token = localStorage.getItem("authToken");
-              axios
-                .delete(`${BASE_URL}/api/capsules/${id}`, {
-                  headers: { Authorization: `Bearer ${token}` },
-                })
-                .then(() => navigate("/capsules"))
-                .catch((err) => console.error("Error deleting capsule:", err));
-            }}
-            className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700"
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => {
-              const token = localStorage.getItem("authToken");
-              axios
-                .post(
-                  `${BASE_URL}/api/capsules/${id}/lock`,
-                  {},
-                  {
-                    headers: { Authorization: `Bearer ${token}` },
-                  }
-                )
-                .then(() => {
-                  // Send invitations after locking
-                  capsule.emails.forEach((email) => {
-                    axios.post(
-                      `${BASE_URL}/api/invitations`,
-                      { email, capsule: id },
-                      {
+          {editMode && (
+            <VintageContainer className="text-center">
+              <div className="flex gap-6 justify-center">
+                <button
+                  onClick={() => {
+                    const token = localStorage.getItem("authToken");
+                    axios
+                      .delete(`${BASE_URL}/api/capsules/${id}`, {
                         headers: { Authorization: `Bearer ${token}` },
-                      }
-                    );
-                  });
-                  navigate("/capsules");
-                })
-                .catch((err) => console.error("Error locking capsule:", err));
-            }}
-            className="bg-yellow-600 text-white px-6 py-2 rounded hover:bg-yellow-700"
-          >
-            Lock
-          </button>
+                      })
+                      .then(() => navigate("/capsules"))
+                      .catch((err) => console.error("Error deleting capsule:", err));
+                  }}
+                  className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-8 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  <span className="text-xl mr-2">🗑️</span>
+                  Delete Capsule
+                </button>
+                <button
+                  onClick={() => {
+                    const token = localStorage.getItem("authToken");
+                    axios
+                      .post(
+                        `${BASE_URL}/api/capsules/${id}/lock`,
+                        {},
+                        {
+                          headers: { Authorization: `Bearer ${token}` },
+                        }
+                      )
+                      .then(() => {
+                        // Send invitations after locking
+                        capsule.emails.forEach((email) => {
+                          axios.post(
+                            `${BASE_URL}/api/invitations`,
+                            { email, capsule: id },
+                            {
+                              headers: { Authorization: `Bearer ${token}` },
+                            }
+                          );
+                        });
+                        navigate("/capsules");
+                      })
+                      .catch((err) => console.error("Error locking capsule:", err));
+                  }}
+                  className={vintageClasses.button.primary}
+                >
+                  <span className="text-xl mr-2">🔒</span>
+                  Lock Capsule
+                </button>
+              </div>
+            </VintageContainer>
+          )}
         </div>
-      )}
-    </div>
+      </section>
+    </main>
   );
 }
 

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
+import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
+import imagePlaceholder from "../assets/image-placeholder.jpg";
 
 function PublicCapsulesPage() {
   const [capsules, setCapsules] = useState([]);
@@ -15,30 +17,45 @@ function PublicCapsulesPage() {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Public Capsules</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {capsules.map((capsule) => (
-          <div
-            key={capsule._id}
-            className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition"
-            onClick={() => navigate(`/public/${capsule._id}`)}
-          >
-            <img
-              src={capsule.items?.find((item) => item.type === "image")?.url || "/placeholder.jpg"}
-              alt={capsule.title}
-              className="h-48 w-full object-cover"
-            />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold">{capsule.title}</h2>
-              <p className="text-gray-500 text-sm">
-                Unlocked: {new Date(capsule.unlockedDate).toLocaleDateString()}
-              </p>
-            </div>
+    <main className={vintageClasses.pageContainer}>
+      <VintageDecorations />
+      
+      <section className="relative z-10 px-6 py-16">
+        <div className="max-w-6xl mx-auto">
+          <VintageContainer className="text-center mb-12">
+            <VintageOrnament symbol="📚" />
+            <h1 className="text-5xl font-bold mb-6 text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>Public Capsules</h1>
+            <p className="text-xl text-[#A0522D] italic leading-relaxed" style={{fontFamily: 'Georgia, serif'}}>
+              Discover memories shared by the community
+            </p>
+            <VintageOrnament size="sm" symbol="✦" />
+          </VintageContainer>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {capsules.map((capsule) => (
+              <div
+                key={capsule._id}
+                className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-4 border-[#e8d5b7] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F]"
+                onClick={() => navigate(`/public/${capsule._id}`)}
+              >
+                <img
+                  src={capsule.image || imagePlaceholder}
+                  alt={capsule.title}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-6">
+                  <h2 className="text-2xl font-bold mb-3 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>{capsule.title}</h2>
+                  <p className="text-[#A0522D] text-sm flex items-center gap-2" style={{fontFamily: 'Georgia, serif'}}>
+                    <span className="text-lg">🔓</span>
+                    Unlocked: {new Date(capsule.unlockedDate).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      </section>
+    </main>
   );
 }
 

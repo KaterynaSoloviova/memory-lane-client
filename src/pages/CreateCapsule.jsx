@@ -5,6 +5,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import TiptapEditor from "../components/TiptapEditor";
 import { useNavigate, useParams } from "react-router-dom";
 import { memoryStyles } from "../utils/styles";
+import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 import {
   Trash2,
   Plus,
@@ -14,6 +15,7 @@ import {
   Play,
   Pause,
   Volume2,
+  Edit,
 } from "lucide-react";
 
 function CreateCapsule() {
@@ -49,6 +51,10 @@ function CreateCapsule() {
   const videoInputRef = useRef(null);
   const [videoPreview, setVideoPreview] = useState(null);
   const [videoUploading, setVideoUploading] = useState(false);
+  
+  // Edit item state
+  const [editingItemIndex, setEditingItemIndex] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
 
   // Available background music options
   const backgroundMusicOptions = [
@@ -281,6 +287,34 @@ function CreateCapsule() {
     }
   };
 
+  const handleEditItem = (index) => {
+    const item = items[index];
+    if (item.type === "text") {
+      setEditingItemIndex(index);
+      setEditingContent(item.content);
+    }
+  };
+
+  const handleSaveEdit = () => {
+    if (editingItemIndex !== null) {
+      setItems((prev) => {
+        const newItems = [...prev];
+        newItems[editingItemIndex] = {
+          ...newItems[editingItemIndex],
+          content: editingContent,
+        };
+        return newItems;
+      });
+      setEditingItemIndex(null);
+      setEditingContent("");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItemIndex(null);
+    setEditingContent("");
+  };
+
   // Audio preview functions
   const toggleMusicPreview = () => {
     if (audioPreviewRef.current) {
@@ -378,130 +412,137 @@ function CreateCapsule() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 mt-8 bg-yellow-50 font-retro rounded shadow-lg">
-      <h2 className="text-3xl font-bold mb-4">
-        📦 {id ? "Edit" : "Create"} Time Capsule
-      </h2>
+    <main className={vintageClasses.pageContainer}>
+      <VintageDecorations />
+      
+      <section className="relative z-10 px-6 py-16">
+        <div className="max-w-4xl mx-auto">
+          <VintageContainer className="text-center">
+            <VintageOrnament symbol="🕰️" />
+            <h2 className="text-5xl font-bold mb-8 text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>
+              📦 {id ? "Edit" : "Create"} Time Capsule
+            </h2>
+            <VintageOrnament size="sm" symbol="✦" />
 
-      {error && <p className="mb-4 text-center text-red-600">{error}</p>}
-      {message && <p className="mb-4 text-center text-green-600">{message}</p>}
+            {error && <p className="mb-4 text-center text-red-600">{error}</p>}
+            {message && <p className="mb-4 text-center text-green-600">{message}</p>}
 
-      {loading && <p className="mb-4 text-center">Loading...</p>}
+            {loading && <p className="mb-4 text-center text-[#8B4513]">Loading...</p>}
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSave();
-        }}
-        className="space-y-4"
-      >
-        {/* Title */}
-        <div>
-          <label className="block font-medium">Title</label>
-          <input
-            className="w-full border rounded px-3 py-2"
-            type="text"
-            value={title}
-            required
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-
-        {/* Capsule Image Upload */}
-
-        <div>
-          <label className="block font-medium mb-1">Capsule Image</label>
-
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            onChange={handleChange}
-          />
-
-          <div
-            onClick={handleClick}
-            className="cursor-pointer w-40 h-40 border border-dashed border-gray-400 rounded flex items-center justify-center overflow-hidden"
-            title="Click to upload image"
-          >
-            {image ? (
-              <img
-                src={image}
-                alt="Capsule"
-                className="object-contain w-full h-full"
-              />
-            ) : (
-              <div className="text-gray-400 text-center px-2">
-                Click here to upload capsule image
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSave();
+              }}
+              className="space-y-6 text-left"
+            >
+              {/* Title */}
+              <div>
+                <label className="block font-medium text-[#8B4513] mb-2" style={{fontFamily: 'Georgia, serif'}}>Title</label>
+                <input
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                  type="text"
+                  value={title}
+                  required
+                  onChange={(e) => setTitle(e.target.value)}
+                />
               </div>
-            )}
-          </div>
-          {image && (
-            <button
-              type="button"
-              onClick={handleClear}
-              className="mt-2 text-sm text-red-600 hover:underline"
-            >
-              Clear Image
-            </button>
-          )}
-        </div>
 
-        {/* Description */}
-        <div>
-          <label className="block font-medium">Description</label>
-          <textarea
-            className="w-full border rounded px-3 py-2"
-            value={description}
-            required
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
+              {/* Capsule Image Upload */}
+              <div>
+                <label className="block font-medium text-[#8B4513] mb-2" style={{fontFamily: 'Georgia, serif'}}>Capsule Image</label>
 
-        {/* Unlock Date */}
-        <div>
-          <label className="block font-medium">Unlock Date</label>
-          <input
-            className="w-full border rounded px-3 py-2"
-            type="date"
-            value={unlockedDate}
-            required
-            onChange={(e) => setUnlockedDate(e.target.value)}
-          />
-        </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleChange}
+                />
 
-        {/* Public Toggle */}
-        <div>
-          <label className="inline-flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={isPublic}
-              onChange={() => setIsPublic(!isPublic)}
-            />
-            <span>Make Public</span>
-          </label>
-        </div>
+                <div
+                  onClick={handleClick}
+                  className="cursor-pointer w-40 h-40 border-2 border-dashed border-[#CD853F] rounded-lg flex items-center justify-center overflow-hidden bg-[#fefcf8] hover:bg-[#f8f3ec] transition-colors"
+                  title="Click to upload image"
+                >
+                  {image ? (
+                    <img
+                      src={image}
+                      alt="Capsule"
+                      className="object-contain w-full h-full"
+                    />
+                  ) : (
+                    <div className="text-[#A0522D] text-center px-2" style={{fontFamily: 'Georgia, serif'}}>
+                      Click here to upload capsule image
+                    </div>
+                  )}
+                </div>
+                {image && (
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="mt-2 text-sm text-red-600 hover:underline"
+                  >
+                    Clear Image
+                  </button>
+                )}
+              </div>
 
-        {/* Add Participants */}
-        <div className="mt-6">
-          <label className="block font-medium mb-1">Participants</label>
-          <div className="flex gap-2">
-            <input
-              type="email"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Enter participant email"
-              value={newParticipant}
-              onChange={(e) => setNewParticipant(e.target.value)}
-            />
-            <button
-              type="button"
-              onClick={handleAddParticipant}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
-              <Plus size={18} />
-            </button>
-          </div>
+              {/* Description */}
+              <div>
+                <label className="block font-medium text-[#8B4513] mb-2" style={{fontFamily: 'Georgia, serif'}}>Description</label>
+                <textarea
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none min-h-[100px]"
+                  value={description}
+                  required
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+
+              {/* Unlock Date */}
+              <div>
+                <label className="block font-medium text-[#8B4513] mb-2" style={{fontFamily: 'Georgia, serif'}}>Unlock Date</label>
+                <input
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                  type="date"
+                  value={unlockedDate}
+                  required
+                  onChange={(e) => setUnlockedDate(e.target.value)}
+                />
+              </div>
+
+              {/* Public Toggle */}
+              <div>
+                <label className="inline-flex items-center gap-3 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>
+                  <input
+                    type="checkbox"
+                    checked={isPublic}
+                    onChange={() => setIsPublic(!isPublic)}
+                    className="w-5 h-5 text-[#CD853F] border-2 border-[#e8d5b7] rounded focus:ring-[#CD853F]"
+                  />
+                  <span className="font-medium">Make Public</span>
+                </label>
+              </div>
+
+              {/* Add Participants */}
+              <div>
+                <label className="block font-medium text-[#8B4513] mb-2" style={{fontFamily: 'Georgia, serif'}}>Participants</label>
+                <div className="flex gap-3">
+                  <input
+                    type="email"
+                    className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                    placeholder="Enter participant email"
+                    value={newParticipant}
+                    onChange={(e) => setNewParticipant(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddParticipant}
+                    className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
           {participantError && (
             <p className="text-red-600 mt-1">{participantError}</p>
           )}
@@ -685,13 +726,16 @@ function CreateCapsule() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleAddItem}
-          className="mt-3 bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
-        >
-          ➕ Add Item
-        </button>
+              <div className="flex justify-center mt-6">
+                <button
+                  type="button"
+                  onClick={handleAddItem}
+                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  <span className="text-lg mr-2">➕</span>
+                  Add Memory
+                </button>
+              </div>
 
         {/* --- VIDEO UPLOAD --- */}
         <div className="mb-6">
@@ -797,10 +841,22 @@ function CreateCapsule() {
                 <button
                   type="button"
                   onClick={() => handleDeleteItem(idx)}
-                  className="absolute top-3 right-3 bg-red-500 text-white hover:bg-blue-600 rounded-full p-2 shadow-sm z-10 w-6 h-6 flex items-center justify-center"
+                  className="absolute top-3 right-3 bg-red-500 text-white hover:bg-red-600 rounded-full p-2 shadow-sm z-10 w-6 h-6 flex items-center justify-center"
                 >
-                  <X size={18} strokeWidth={8} />
+                  <X size={14} />
                 </button>
+
+                {/* Edit button - positioned in bottom right */}
+                {item.type === "text" && editingItemIndex !== idx && (
+                  <button
+                    type="button"
+                    onClick={() => handleEditItem(idx)}
+                    className="absolute bottom-3 right-3 bg-blue-500 text-white hover:bg-blue-600 rounded-full p-2 shadow-sm z-10 w-8 h-8 flex items-center justify-center"
+                    title="Edit memory"
+                  >
+                    <Edit size={14} />
+                  </button>
+                )}
 
                 <div
                   className="prose max-w-full p-4 rounded relative"
@@ -833,13 +889,42 @@ function CreateCapsule() {
                   }}
                 >
                   {item.type === "text" && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: item.content }}
-                      style={{
-                        maxWidth: "80%",
-                        padding: "15px",
-                      }}
-                    />
+                    <>
+                      {editingItemIndex === idx ? (
+                        <div style={{ width: "100%", padding: "20px" }}>
+                          <TiptapEditor
+                            content={editingContent}
+                            onChange={setEditingContent}
+                          />
+                          <div className="flex gap-4 mt-6 justify-center">
+                            <button
+                              type="button"
+                              onClick={handleSaveEdit}
+                              className={vintageClasses.button.primary}
+                            >
+                              <span className="text-lg mr-2">✨</span>
+                              Save Changes
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleCancelEdit}
+                              className={vintageClasses.button.secondary}
+                            >
+                              <span className="text-lg mr-2">✖️</span>
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          dangerouslySetInnerHTML={{ __html: item.content }}
+                          style={{
+                            maxWidth: "80%",
+                            padding: "15px",
+                          }}
+                        />
+                      )}
+                    </>
                   )}
 
                   {item.type === "video" && (
@@ -857,30 +942,35 @@ function CreateCapsule() {
           )}
         </div>
 
-        <div className="flex gap-4 mt-6">
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800"
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+              <div className="flex gap-6 mt-8 justify-center">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={vintageClasses.button.primary}
+                >
+                  <span className="text-xl mr-2">✨</span>
+                  {loading ? "Saving..." : "Save Capsule"}
+                </button>
 
-          <button
-            type="button"
-            onClick={handlePreview}
-            disabled={!id || loading}
-            className={`px-6 py-2 rounded border ${
-              id && !loading
-                ? "border-green-600 text-green-600 hover:bg-green-100 cursor-pointer"
-                : "text-gray-400 border-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Preview
-          </button>
+                <button
+                  type="button"
+                  onClick={handlePreview}
+                  disabled={!id || loading}
+                  className={`${vintageClasses.button.secondary} ${
+                    !id || loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  <span className="text-xl mr-2">👁️</span>
+                  Preview
+                </button>
+              </div>
+            </form>
+          </VintageContainer>
         </div>
-      </form>
-    </div>
+      </section>
+    </main>
   );
 }
 

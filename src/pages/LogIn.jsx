@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
+import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ function Login() {
       .then((response) => {
         storeToken(response.data.authToken);
         authenticateUser();
-        navigate("/"); // Go back to HomePage
+        navigate("/"); 
       })
       .catch((error) => {
         const errorDescription =
@@ -31,53 +32,71 @@ function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
+    <main className={vintageClasses.pageContainer}>
+      <VintageDecorations />
+      
+      <section className="relative z-10 px-6 py-16">
+        <div className="max-w-md mx-auto">
+          <VintageContainer className="text-center">
+            <VintageOrnament symbol="🔑" />
+            <h2 className="text-4xl font-bold mb-8 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>Welcome Back</h2>
 
-      <form onSubmit={handleLoginSubmit} className="grid gap-4">
-        <label htmlFor="email" className="text-left font-bold text-gray-700">
-          Email
-        </label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border rounded p-2"
-          autoComplete="email"
-        />
+            <form onSubmit={handleLoginSubmit} className="space-y-6 text-left">
+              <div>
+                <label htmlFor="email" className="block font-medium text-[#8B4513] mb-2" style={{fontFamily: 'Georgia, serif'}}>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                  autoComplete="email"
+                />
+              </div>
 
-        <label htmlFor="password" className="text-left font-bold text-gray-700">
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border rounded p-2"
-          autoComplete="current-password"
-        />
+              <div>
+                <label htmlFor="password" className="block font-medium text-[#8B4513] mb-2" style={{fontFamily: 'Georgia, serif'}}>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full border-2 border-[#e8d5b7] rounded-lg px-4 py-3 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                  autoComplete="current-password"
+                />
+              </div>
 
-        <button
-          type="submit"
-          className="bg-blue-500 text-white rounded py-2 hover:bg-blue-600 transition"
-        >
-          Log In
-        </button>
-      </form>
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className={vintageClasses.button.primary}
+                >
+                  <span className="text-xl mr-2">🔑</span>
+                  Log In
+                </button>
+              </div>
+            </form>
 
-      {errorMessage && (
-        <p className="mt-4 text-red-600 font-medium">{errorMessage}</p>
-      )}
+            {errorMessage && (
+              <p className="mt-6 text-red-600 font-medium text-center">{errorMessage}</p>
+            )}
 
-      <p className="mt-6 text-center">
-        Don&apos;t have an account?{" "}
-        <Link to="/signup" className="text-blue-600 underline">
-          Sign Up
-        </Link>
-      </p>
-    </div>
+            <VintageOrnament size="sm" symbol="✦" />
+            
+            <p className="text-center text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>
+              Don&apos;t have an account?{" "}
+              <Link to="/signup" className="text-[#CD853F] hover:text-[#D2691E] font-semibold underline transition-colors">
+                Sign Up
+              </Link>
+            </p>
+          </VintageContainer>
+        </div>
+      </section>
+    </main>
   );
 }
 
