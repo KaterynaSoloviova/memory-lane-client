@@ -19,9 +19,6 @@ function Footer() {
           >
             GitHub
           </a>
-          <NavLink to="/about" className="text-[#8B4513] hover:text-[#D2691E] transition-colors underline">
-            About Me
-          </NavLink>
         </div>
       </div>
     </footer>
