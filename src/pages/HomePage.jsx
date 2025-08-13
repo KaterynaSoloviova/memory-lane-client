@@ -1,9 +1,12 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 import { Heart, Package, Users, ImagePlus, Unlock, Library, Eye } from 'lucide-react';
 
 
 function HomePage() {
   const navigate = useNavigate();
+  const { isLoggedIn } = useContext(AuthContext);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#f9f5f0] via-[#f5ede3] to-[#f0e4d1] relative overflow-hidden font-serif">
@@ -60,23 +63,54 @@ function HomePage() {
               Create digital time capsules filled with love, laughter, and memories to cherish forever
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 mb-4 sm:mb-6 px-2">
-              <button
-                onClick={() => navigate("/signup")}
-                className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center justify-center gap-2 sm:gap-3"
-              >
-                <span className="text-lg sm:text-xl">✨</span>
-                Begin Your Journey
-              </button>
+            {/* Conditional buttons based on authentication status */}
+            {isLoggedIn ? (
+              // For logged-in users: 3 buttons
+              <div className="flex flex-col lg:flex-row justify-center gap-3 lg:gap-4 mb-4 sm:mb-6 px-2">
+                <NavLink
+                  to="/demo"
+                  className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 py-2.5 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  View Demo
+                </NavLink>
 
-              <NavLink
-                to="/demo"
-                className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 sm:gap-3"
-              >
-                <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-                View Demo
-              </NavLink>
-            </div>
+                <button
+                  onClick={() => navigate("/create-capsule")}
+                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-2.5 rounded-full font-semibold text-base shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center justify-center gap-2"
+                >
+                  <span className="text-lg">✨</span>
+                  Create Your First Capsule
+                </button>
+
+                <button
+                  onClick={() => navigate("/public")}
+                  className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 py-2.5 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                >
+                  <Library className="w-4 h-4" />
+                  Browse Public Capsules
+                </button>
+              </div>
+            ) : (
+              // For non-logged-in users: 2 buttons
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 mb-4 sm:mb-6 px-2">
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center justify-center gap-2 sm:gap-3"
+                >
+                  <span className="text-lg sm:text-xl">✨</span>
+                  Begin Your Journey
+                </button>
+
+                <NavLink
+                  to="/demo"
+                  className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 sm:gap-3"
+                >
+                  <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                  View Demo
+                </NavLink>
+              </div>
+            )}
 
             <div className="flex justify-center items-center mb-4">
               <div className="w-10 h-px bg-gradient-to-r from-transparent via-[#A0522D] to-transparent"></div>
@@ -207,69 +241,71 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="relative z-10 bg-gradient-to-br from-[#f9f5f0] via-[#f5ede3] to-[#f0e4d1] py-4 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-6 border-[#e8d5b7] p-6 text-center">
-            {/* Decorative corner elements */}
-            <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#CD853F] rounded-tl-lg"></div>
-            <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#CD853F] rounded-tr-lg"></div>
-            <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[#CD853F] rounded-bl-lg"></div>
-            <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#CD853F] rounded-br-lg"></div>
+      {/* Call to Action Section - Only show for non-logged-in users */}
+      {!isLoggedIn && (
+        <section className="relative z-10 bg-gradient-to-br from-[#f9f5f0] via-[#f5ede3] to-[#f0e4d1] py-4 px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-6 border-[#e8d5b7] p-6 text-center">
+              {/* Decorative corner elements */}
+              <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-[#CD853F] rounded-tl-lg"></div>
+              <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-[#CD853F] rounded-tr-lg"></div>
+              <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-[#CD853F] rounded-bl-lg"></div>
+              <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-[#CD853F] rounded-br-lg"></div>
 
-            <div className="flex justify-center items-center mb-4">
-              <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
-              <span className="text-3xl mx-3 text-[#CD853F]">❦</span>
-              <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
+              <div className="flex justify-center items-center mb-4">
+                <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
+                <span className="text-3xl mx-3 text-[#CD853F]">❦</span>
+                <div className="w-12 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
+              </div>
+
+              <h2 className="text-4xl font-bold text-[#8B4513] mb-3 leading-tight" style={{fontFamily: 'Georgia, serif'}}>
+                Start Preserving Your Precious Moments Today
+              </h2>
+
+              <div className="flex justify-center items-center mb-3">
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#D2691E] to-transparent"></div>
+                <span className="text-xl mx-3 text-[#D2691E]">✦</span>
+                <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#D2691E] to-transparent"></div>
+              </div>
+              
+              <p className="text-lg text-[#8B4513] mb-3 font-medium italic leading-relaxed" style={{fontFamily: 'Georgia, serif'}}>
+                Every day creates new memories worth treasuring
+              </p>
+              <p className="text-base text-[#A0522D] mb-5 leading-relaxed font-light">
+                Don't let them fade away – capture them in a beautiful digital time capsule that will bring joy for years to come
+              </p>
+
+              <div className="flex justify-center gap-6 flex-wrap mb-4">
+                <button
+                  onClick={() => navigate("/create-capsule")}
+                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-8 py-3 rounded-full font-semibold text-lg shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center gap-3"
+                >
+                  <span className="text-xl">✨</span>
+                  Create Your First Capsule
+                </button>
+
+                <button
+                  onClick={() => navigate("/public")}
+                  className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-8 py-3 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-3"
+                >
+                  <Library className="w-5 h-5" />
+                  Browse Public Capsules
+                </button>
+              </div>
+
+              <div className="flex justify-center items-center mb-3">
+                <div className="w-10 h-px bg-gradient-to-r from-transparent via-[#A0522D] to-transparent"></div>
+                <span className="text-base mx-3 text-[#A0522D]">❦</span>
+                <div className="w-10 h-px bg-gradient-to-r from-transparent via-[#A0522D] to-transparent"></div>
+              </div>
+
+              <p className="text-sm text-[#8B4513] italic font-light leading-relaxed" style={{fontFamily: 'Georgia, serif'}}>
+                "Every moment is a gift worth preserving"
+              </p>
             </div>
-
-            <h2 className="text-4xl font-bold text-[#8B4513] mb-3 leading-tight" style={{fontFamily: 'Georgia, serif'}}>
-              Start Preserving Your Precious Moments Today
-            </h2>
-
-            <div className="flex justify-center items-center mb-3">
-              <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#D2691E] to-transparent"></div>
-              <span className="text-xl mx-3 text-[#D2691E]">✦</span>
-              <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#D2691E] to-transparent"></div>
-            </div>
-            
-            <p className="text-lg text-[#8B4513] mb-3 font-medium italic leading-relaxed" style={{fontFamily: 'Georgia, serif'}}>
-              Every day creates new memories worth treasuring
-            </p>
-            <p className="text-base text-[#A0522D] mb-5 leading-relaxed font-light">
-              Don't let them fade away – capture them in a beautiful digital time capsule that will bring joy for years to come
-            </p>
-
-            <div className="flex justify-center gap-6 flex-wrap mb-4">
-              <button
-                onClick={() => navigate("/create-capsule")}
-                className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-8 py-3 rounded-full font-semibold text-lg shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center gap-3"
-              >
-                <span className="text-xl">✨</span>
-                Create Your First Capsule
-              </button>
-
-              <button
-                onClick={() => navigate("/public")}
-                className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-8 py-3 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-3"
-              >
-                <Library className="w-5 h-5" />
-                Browse Public Capsules
-              </button>
-            </div>
-
-            <div className="flex justify-center items-center mb-3">
-              <div className="w-10 h-px bg-gradient-to-r from-transparent via-[#A0522D] to-transparent"></div>
-              <span className="text-base mx-3 text-[#A0522D]">❦</span>
-              <div className="w-10 h-px bg-gradient-to-r from-transparent via-[#A0522D] to-transparent"></div>
-            </div>
-
-            <p className="text-sm text-[#8B4513] italic font-light leading-relaxed" style={{fontFamily: 'Georgia, serif'}}>
-              "Every moment is a gift worth preserving"
-            </p>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Inspirational Quote Section */}
       <section className="relative z-10 bg-gradient-to-r from-[#f4e8d6] via-[#f0e2d0] to-[#ecdcc8] py-8 px-6">
