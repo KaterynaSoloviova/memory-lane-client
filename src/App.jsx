@@ -11,6 +11,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import MyCapsules from "./pages/MyCapsules";
 import PublicCapsulesPage from "./pages/PublicCapsulesPage";
 import ViewCapsulePage from "./pages/ViewCapsulePage";
+import AboutMePage from "./pages/About";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/demo" element={<DemoCapsule />} />
+        <Route path="/about" element={<AboutMePage />} />
         <Route
           path="/capsules"
           element={
