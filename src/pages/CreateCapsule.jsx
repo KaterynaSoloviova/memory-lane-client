@@ -692,7 +692,7 @@ function CreateCapsule() {
                           key={key}
                           type="button"
                           onClick={() => setStyleKey(key)}
-                          className={`border rounded overflow-hidden p-1 relative ${styleKey === key ? "ring-4 ring-yellow-300" : ""
+                          className={`border-2 rounded-lg overflow-hidden p-1 relative ${styleKey === key ? "border-[#CD853F] ring-2 ring-[#CD853F]" : "border-[#e8d5b7] hover:border-[#CD853F]"
                             }`}
                           aria-pressed={styleKey === key}
                         >
@@ -700,13 +700,14 @@ function CreateCapsule() {
                             className="w-28 h-16"
                             style={{
                               backgroundImage: s.backgroundImage,
-                              backgroundSize: "100% 100%",
+                              backgroundSize: "cover",
                               backgroundPosition: "center",
                               backgroundRepeat: "no-repeat",
-                              opacity: 0.7,
+                              margin: "0 auto",
+                              position: "relative",
                             }}
                           />
-                          <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-black drop-shadow-lg">
+                          <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-[#8B4513] drop-shadow-lg" style={{ fontFamily: 'Georgia, serif' }}>
                             {s.label}
                           </div>
                         </button>

@@ -31,7 +31,7 @@ function AboutMePage() {
                 <span className="text-2xl sm:text-3xl mx-3 sm:mx-4 text-[#CD853F]">❦</span>
                 <div className="w-12 sm:w-16 h-px bg-gradient-to-r from-transparent via-[#CD853F] to-transparent"></div>
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#8B4513] mb-3" style={{fontFamily: 'Georgia, serif'}}>About Me</h1>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#8B4513] mb-3" style={{fontFamily: 'Georgia, serif'}}>About Me</h1>
               <div className="flex justify-center items-center">
                 <div className="w-10 h-px bg-gradient-to-r from-transparent via-[#D2691E] to-transparent"></div>
                 <span className="text-xl mx-3 text-[#D2691E]">✦</span>
