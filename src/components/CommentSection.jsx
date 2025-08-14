@@ -1,23 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
 import EmojiPicker from "emoji-picker-react";
-import { MessageSquare, Smile, Send } from "lucide-react";
+import { MessageSquare, Smile, Send, LogIn } from "lucide-react";
+import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-export default function CommentSection({ capsuleId }) {
+export default function CommentSection({ capsuleId, isPublicView = false }) {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState("");
   const token = localStorage.getItem("authToken");
   const [showPicker, setShowPicker] = useState(false);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  
+  // Check if user is authenticated - for public views, require authentication to see/post comments
+  const isAuthenticated = !!user && !!token;
+  const showComments = !isPublicView || isAuthenticated;
 
   useEffect(() => {
-    axios
-      .get(`${BASE_URL}/api/comments/${capsuleId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setComments(res.data))
-      .catch((err) => console.error("Failed to fetch comments:", err));
-  }, [capsuleId, token]);
+    // Only fetch comments if user should see them
+    if (showComments) {
+      axios
+        .get(`${BASE_URL}/api/comments/${capsuleId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => setComments(res.data))
+        .catch((err) => console.error("Failed to fetch comments:", err));
+    }
+  }, [capsuleId, token, showComments]);
 
   const handleAddComment = (e) => {
     e.preventDefault();
@@ -38,6 +49,34 @@ export default function CommentSection({ capsuleId }) {
   setContent((prev) => prev + event.emoji);
   setShowPicker(false); 
 };
+
+  // If this is a public view and user is not authenticated, show login prompt
+  if (isPublicView && !isAuthenticated) {
+    return (
+      <div className="bg-[#f9f5e8] p-4 rounded-lg border border-[#d4c5a3]">
+        <h4 className="flex items-center gap-2 font-semibold mb-4 text-[#4a3f35]">
+          <MessageSquare size={18} />
+          Comments
+        </h4>
+        <div className="text-center py-8">
+          <LogIn className="w-12 h-12 text-[#CD853F] mx-auto mb-4" />
+          <p className="text-[#8B4513] text-lg font-semibold mb-2" style={{fontFamily: 'Georgia, serif'}}>
+            Login Required
+          </p>
+          <p className="text-[#A0522D] mb-4" style={{fontFamily: 'Georgia, serif'}}>
+            Please log in to view and post comments on public capsules.
+          </p>
+          <button
+            onClick={() => navigate('/login')}
+            className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2 mx-auto"
+          >
+            <LogIn size={18} />
+            Log In to Comment
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#f9f5e8] p-4 rounded-lg border border-[#d4c5a3]">

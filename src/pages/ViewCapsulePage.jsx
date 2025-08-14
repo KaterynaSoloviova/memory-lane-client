@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
@@ -21,6 +21,10 @@ function ViewCapsulePage() {
   const { user } = useContext(AuthContext);
   const [capsule, setCapsule] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check if this is a public capsule view
+  const isPublicView = location.pathname.startsWith('/public/');
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -120,7 +124,7 @@ function ViewCapsulePage() {
           )}
 
           <div className="mb-8">
-            <CommentSection capsuleId={capsule._id} />
+            <CommentSection capsuleId={capsule._id} isPublicView={isPublicView} />
           </div>
 
           {editMode && (
