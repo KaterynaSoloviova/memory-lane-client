@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { memoryStyles } from "../utils/styles";
 import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 import { uploadImage, uploadVideo, uploadAudio } from "../utils/cloudinaryUpload";
+import VintageLoader from "../components/VintageLoader";
 import {
   Trash2,
   Plus,
@@ -457,7 +458,14 @@ function CreateCapsule() {
             {error && <p className="mb-4 text-center text-red-600">{error}</p>}
             {message && <p className="mb-4 text-center text-green-600">{message}</p>}
 
-            {loading && <p className="mb-4 text-center text-[#8B4513]">Loading...</p>}
+            {loading && (
+              <div className="mb-4">
+                <VintageLoader 
+                  size="sm" 
+                  message="Saving your precious memories..." 
+                />
+              </div>
+            )}
 
             <form
               onSubmit={(e) => {

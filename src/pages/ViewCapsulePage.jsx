@@ -13,6 +13,7 @@ import {
 import Countdown from "../components/Countdown";
 import SlideShow from "../components/SlideShow";
 import CommentSection from "../components/CommentSection";
+import VintageLoader from "../components/VintageLoader";
 import { Trash2, Lock } from "lucide-react";
 import { Unlock } from "lucide-react";
 
@@ -40,7 +41,19 @@ function ViewCapsulePage() {
     capsule && user && isDraft(capsule) && isOwner(capsule, user._id);
 
   if (!capsule) {
-    return <p className="p-6">Loading...</p>;
+    return (
+      <main className={vintageClasses.pageContainer}>
+        <VintageDecorations />
+        <section className="relative z-10 px-6 py-16">
+          <div className="max-w-4xl mx-auto">
+            <VintageLoader 
+              size="lg" 
+              message="Opening time capsule..."
+            />
+          </div>
+        </section>
+      </main>
+    );
   }
 
   if (isLocked(capsule)) {
