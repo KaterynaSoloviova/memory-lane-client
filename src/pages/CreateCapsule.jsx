@@ -777,26 +777,29 @@ function CreateCapsule() {
                 {/* Music Preview Controls */}
                 {selectedMusic && (
                   <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-sm font-semibold text-[#8B4513]" style={{ fontFamily: 'Georgia, serif' }}>
+                    {/* Preview Header */}
+                    <div className="mb-3">
+                      <div className="text-sm font-semibold text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>
                         Preview:{" "}
                         {
                           uploadedAudio.find((a) => a.id === selectedMusic)?.name ||
                           "Unknown"
                         }
                       </div>
-                      <button
-                        type="button"
-                        onClick={toggleMusicPreview}
-                        disabled={!selectedMusic}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${isPlayingPreview
-                            ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg"
-                            : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] shadow-lg"
-                          }`}
-                      >
-                        {isPlayingPreview ? <Pause size={16} /> : <Play size={16} />}
-                        {isPlayingPreview ? "Stop" : "Play Preview"}
-                      </button>
+                      <div className="flex justify-center">
+                        <button
+                          type="button"
+                          onClick={toggleMusicPreview}
+                          disabled={!selectedMusic}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${isPlayingPreview
+                              ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg"
+                              : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] shadow-lg"
+                            }`}
+                        >
+                          {isPlayingPreview ? <Pause size={16} /> : <Play size={16} />}
+                          {isPlayingPreview ? "Stop" : "Play Preview"}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Volume Control */}
