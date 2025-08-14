@@ -25,7 +25,7 @@ function Header() {
           <NavLink to="/" className="flex items-center space-x-2 sm:space-x-3 group" onClick={closeMobileMenu}>
             <img src={logo} alt="Memory Lane Logo" className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 lg:h-18 lg:w-18 transition-transform group-hover:scale-105" />
             <div className="flex flex-col">
-              <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-[#8B4513] tracking-wide">Memory Lane</span>
+              <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-[#8B4513] tracking-wide" style={{fontFamily: 'Great Vibes, cursive', fontWeight: '400', letterSpacing: '0.02em'}}>Memory Lane</span>
               <span className="text-xs sm:text-sm text-[#A0522D] italic font-light hidden sm:block">Preserve. Cherish. Remember.</span>
             </div>
           </NavLink>

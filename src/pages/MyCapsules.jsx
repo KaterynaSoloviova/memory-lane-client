@@ -164,7 +164,7 @@ function MyCapsules() {
                   >
                     <figure className="w-full h-48 overflow-hidden">
                       <img
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-all duration-300 filter sepia-[0.8] contrast-[1.1] brightness-[0.9] saturate-[0.8] hover:sepia-0 hover:contrast-100 hover:brightness-100 hover:saturate-100"
                         src={cap.image || imagePlaceholder}
                         alt={cap.title}
                       />

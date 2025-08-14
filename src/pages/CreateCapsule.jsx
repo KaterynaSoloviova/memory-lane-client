@@ -22,6 +22,7 @@ import {
   Save,
   Eye,
   Music,
+  Info,
 } from "lucide-react";
 
 function CreateCapsule() {
@@ -78,6 +79,9 @@ function CreateCapsule() {
   const [editingFontSize, setEditingFontSize] = useState("16px");
   const [editingFontFamily, setEditingFontFamily] = useState("Georgia, serif");
   const [editingFontColor, setEditingFontColor] = useState("#8B4513");
+
+  // Tooltip state
+  const [showPublicTooltip, setShowPublicTooltip] = useState(false);
 
   // Remove default background music options - only custom uploads allowed
 
@@ -616,9 +620,28 @@ function CreateCapsule() {
                     type="checkbox"
                     checked={isPublic}
                     onChange={() => setIsPublic(!isPublic)}
-                    className="w-5 h-5 text-[#CD853F] border-2 border-[#e8d5b7] rounded focus:ring-[#CD853F]"
+                    className="w-5 h-5 text-[#CD853F] bg-[#fefcf8] border-2 border-[#e8d5b7] rounded focus:ring-2 focus:ring-[#CD853F] focus:ring-opacity-50 focus:border-[#CD853F] accent-[#CD853F]"
                   />
                   <span className="font-bold text-xl">Make Public</span>
+                  <div className="relative">
+                    <Info 
+                      className="w-5 h-5 text-[#CD853F] cursor-help"
+                      onMouseEnter={() => setShowPublicTooltip(true)}
+                      onMouseLeave={() => setShowPublicTooltip(false)}
+                    />
+                    {showPublicTooltip && (
+                      <div className="absolute left-6 top-0 z-50 bg-[#8B4513] text-white text-sm rounded-lg px-3 py-2 shadow-lg w-64">
+                        <div className="relative">
+                          <div className="leading-relaxed">
+                            Making your capsule public allows all website visitors to discover and view your time capsule.
+                            <br />
+                            Private capsules are only accessible to you and invited participants.
+                          </div>
+                          <div className="absolute left-0 top-1/2 transform -translate-x-full -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-[#8B4513]"></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </label>
               </div>
 
@@ -1345,17 +1368,17 @@ function CreateCapsule() {
                                   <button
                                     type="button"
                                     onClick={handleSaveEdit}
-                                    className={vintageClasses.button.primary}
+                                    className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-5 py-2.5 rounded-full font-semibold text-base shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center gap-2"
                                   >
-                                    <span className="text-lg mr-2"><Save className="w-5 h-5" /></span>
-                                    Save Changes
+                                    <Save className="w-4 h-4" />
+                                    Save
                                   </button>
                                   <button
                                     type="button"
                                     onClick={handleCancelEdit}
-                                    className={vintageClasses.button.secondary}
+                                    className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-5 py-2.5 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
                                   >
-                                    <span className="text-lg mr-2"><X className="w-5 h-5" /></span>
+                                    <X className="w-4 h-4" />
                                     Cancel
                                   </button>
                                 </div>

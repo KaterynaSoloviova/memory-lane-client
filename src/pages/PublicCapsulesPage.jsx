@@ -44,7 +44,7 @@ function PublicCapsulesPage() {
                 <img
                   src={capsule.image || imagePlaceholder}
                   alt={capsule.title}
-                  className="h-48 w-full object-cover"
+                  className="h-48 w-full object-cover transition-all duration-300 filter sepia-[0.8] contrast-[1.1] brightness-[0.9] saturate-[0.8] hover:sepia-0 hover:contrast-100 hover:brightness-100 hover:saturate-100"
                 />
                 <div className="p-6">
                   <h2 className="text-2xl font-bold mb-3 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>{capsule.title}</h2>
