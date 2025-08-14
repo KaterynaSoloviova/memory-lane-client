@@ -6,6 +6,7 @@ import TiptapEditor from "../components/TiptapEditor";
 import { useNavigate, useParams } from "react-router-dom";
 import { memoryStyles } from "../utils/styles";
 import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
+import { uploadImage, uploadVideo, uploadAudio } from "../utils/cloudinaryUpload";
 import {
   Trash2,
   Plus,
@@ -83,7 +84,6 @@ function CreateCapsule() {
   // Tooltip state
   const [showPublicTooltip, setShowPublicTooltip] = useState(false);
 
-  // Remove default background music options - only custom uploads allowed
 
   useEffect(() => {
     if (id) {
@@ -97,7 +97,7 @@ function CreateCapsule() {
           });
           const cap = res.data;
           setTitle(cap.title || "");
-          setImage(cap.image || ""); // Load existing capsule image
+          setImage(cap.image || "");
           setDescription(cap.description || "");
           setUnlockedDate(
             cap.unlockedDate ? cap.unlockedDate.slice(0, 10) : ""
@@ -143,16 +143,8 @@ function CreateCapsule() {
 
   // --- Cloudinary Upload ---
   const handleCloudinaryUpload = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "wombat-kombat");
-
     try {
-      const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/dtjylc9ny/image/upload",
-        formData
-      );
-      return res.data.secure_url;
+      return await uploadImage(file);
     } catch (err) {
       console.error("Cloudinary upload failed", err);
       setError("Image upload failed");
@@ -175,16 +167,8 @@ function CreateCapsule() {
   };
 
   const handleCloudinaryVideoUpload = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "wombat-kombat");
-
     try {
-      const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/dtjylc9ny/video/upload",
-        formData
-      );
-      return res.data.secure_url;
+      return await uploadVideo(file);
     } catch (err) {
       console.error("Cloudinary video upload failed", err);
       setError("Video upload failed");
@@ -193,52 +177,13 @@ function CreateCapsule() {
   };
 
   const handleCloudinaryAudioUpload = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "wombat-kombat");
-
     try {
-      const res = await axios.post(
-        "https://api.cloudinary.com/v1_1/dtjylc9ny/video/upload", // Cloudinary uses video endpoint for audio
-        formData
-      );
-      return res.data.secure_url;
+      return await uploadAudio(file);
     } catch (err) {
       console.error("Cloudinary audio upload failed", err);
       setError("Audio upload failed");
       return "";
     }
-  };
-
-  const handleVideoClick = () => {
-    videoInputRef.current?.click();
-  };
-
-  const handleVideoChange = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setVideoUploading(true);
-      try {
-        const uploadedUrl = await handleCloudinaryVideoUpload(
-          e.target.files[0]
-        );
-        if (uploadedUrl) {
-          setItems((prev) => [
-            ...prev,
-            { type: "video", content: uploadedUrl },
-          ]);
-          setVideoPreview(uploadedUrl);
-        }
-      } catch (error) {
-        console.error("Video upload failed", error);
-      } finally {
-        setVideoUploading(false);
-      }
-      e.target.value = null;
-    }
-  };
-
-  const handleClearVideo = () => {
-    setVideoPreview(null);
   };
 
   const handleAudioUpload = async (e) => {
@@ -327,23 +272,6 @@ function CreateCapsule() {
       },
     ]);
     setTextContent("");
-  };
-
-  const handleAddVideoItem = () => {
-    if (!newVideoUrl.trim()) {
-      alert("Please enter a video URL");
-      return;
-    }
-
-    setItems((prev) => [
-      ...prev,
-      {
-        type: "video",
-        content: newVideoUrl.trim(), // direct link or embed URL
-      },
-    ]);
-
-    setNewVideoUrl(""); // clear the input
   };
 
   const handleDeleteItem = (index) => {

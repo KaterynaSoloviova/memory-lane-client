@@ -4,7 +4,7 @@ function Countdown({ unlockDate }) {
   const calculateTimeLeft = () => {
     const difference = new Date(unlockDate) - new Date();
     if (difference <= 0) {
-      return null; // Time's up
+      return null;
     }
 
     return {
