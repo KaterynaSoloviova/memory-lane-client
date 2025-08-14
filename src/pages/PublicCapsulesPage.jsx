@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Library } from "lucide-react";
 import { BASE_URL } from "../config/config";
 import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 import imagePlaceholder from "../assets/image-placeholder.jpg";
@@ -23,7 +24,9 @@ function PublicCapsulesPage() {
       <section className="relative z-10 px-6 py-16">
         <div className="max-w-6xl mx-auto">
           <VintageContainer className="text-center mb-12">
-            <VintageOrnament symbol="📚" />
+            <div className="flex justify-center mb-6">
+              <Library className="w-16 h-16 text-[#CD853F]" />
+            </div>
             <h1 className="text-5xl font-bold mb-6 text-[#8B4513] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>Public Capsules</h1>
             <p className="text-xl text-[#A0522D] italic leading-relaxed" style={{fontFamily: 'Georgia, serif'}}>
               Discover memories shared by the community
