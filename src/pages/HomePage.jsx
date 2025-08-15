@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { Heart, Package, Users, ImagePlus, Unlock, Library, Eye } from 'lucide-react';
+import { Heart, Package, Users, ImagePlus, Unlock, Library } from 'lucide-react';
 
 
 function HomePage() {
@@ -65,29 +65,21 @@ function HomePage() {
 
             {/* Conditional buttons based on authentication status */}
             {isLoggedIn ? (
-              // For logged-in users: 3 buttons
-              <div className="flex flex-col lg:flex-row justify-center gap-3 lg:gap-4 mb-4 sm:mb-6 px-2">
-                <NavLink
-                  to="/demo"
-                  className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 py-2.5 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
-                >
-                  <Eye className="w-4 h-4" />
-                  View Demo
-                </NavLink>
-
+              // For logged-in users: 2 buttons
+              <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 mb-4 sm:mb-6 px-2">
                 <button
                   onClick={() => navigate("/create-capsule")}
-                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-2.5 rounded-full font-semibold text-base shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center justify-center gap-2"
+                  className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center justify-center gap-2 sm:gap-3"
                 >
-                  <span className="text-lg">✨</span>
+                  <span className="text-lg sm:text-xl">✨</span>
                   Create Your First Capsule
                 </button>
 
                 <button
                   onClick={() => navigate("/public")}
-                  className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 py-2.5 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                  className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 sm:gap-3"
                 >
-                  <Library className="w-4 h-4" />
+                  <Library className="w-4 h-4 sm:w-5 sm:h-5" />
                   Browse Public Capsules
                 </button>
               </div>
@@ -102,13 +94,13 @@ function HomePage() {
                   Begin Your Journey
                 </button>
 
-                <NavLink
-                  to="/demo"
+                <button
+                  onClick={() => navigate("/public")}
                   className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 sm:gap-3"
                 >
-                  <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-                  View Demo
-                </NavLink>
+                  <Library className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Browse Public Capsules
+                </button>
               </div>
             )}
 

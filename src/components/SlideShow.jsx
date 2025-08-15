@@ -5,13 +5,15 @@ import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
 export default function SlideShow({
   items,
-  autoplay = true,
+  autoplay = false, // Changed default to false
   interval = 5000,
   backgroundMusic = null,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
+  const [slideshowActive, setSlideshowActive] = useState(false); // New state for slideshow control
+  const [slideshowFinished, setSlideshowFinished] = useState(false); // New state to track if slideshow finished
   const audioRef = useRef(null);
   const videoRef = useRef(null);
   const timerRef = useRef(null);
@@ -36,17 +38,50 @@ export default function SlideShow({
 
   // Navigation helpers
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % items.length);
+    const nextIndex = currentIndex + 1;
+    if (nextIndex >= items.length) {
+      // Slideshow finished
+      setSlideshowFinished(true);
+      setSlideshowActive(false);
+      setIsPaused(false);
+      clearTimer();
+      return;
+    }
+    setCurrentIndex(nextIndex);
   };
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  };
+
+  // Start slideshow function
+  const startSlideshow = () => {
+    setSlideshowActive(true);
+    setSlideshowFinished(false);
+    setCurrentIndex(0);
+    setIsPaused(false);
+    
+    // Start background music if available
+    if (audioRef.current && backgroundMusic) {
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+        // Audio might be blocked, but slideshow can continue
+      });
+    }
+  };
+
+  // Restart slideshow function
+  const restartSlideshow = () => {
+    setSlideshowFinished(false);
+    setSlideshowActive(false);
+    setCurrentIndex(0);
+    setIsPaused(false);
+    clearTimer();
   };
 
   // Single useEffect for slide timer and video playback
   useEffect(() => {
     clearTimer();
 
-    if (!autoplay || isPaused) return; // <-- stop if paused
+    if (!slideshowActive || isPaused) return; // <-- stop if slideshow not active or paused
 
     if (isVideo && videoRef.current) {
       const video = videoRef.current;
@@ -92,7 +127,7 @@ export default function SlideShow({
       }, interval);
       return () => clearTimer();
     }
-  }, [currentIndex, autoplay, interval, isVideo, isPaused]);
+  }, [currentIndex, slideshowActive, interval, isVideo, isPaused]);
 
   // Audio control functions
   const togglePlayPause = () => {
@@ -119,12 +154,7 @@ export default function SlideShow({
     if (audioRef.current && backgroundMusic) {
       audioRef.current.volume = volume;
       audioRef.current.loop = true;
-      audioRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {
-          // Autoplay might be blocked
-        });
+      // Don't auto-play audio - wait for slideshow to start
     }
   }, [backgroundMusic, volume]);
 
@@ -133,10 +163,7 @@ export default function SlideShow({
     if (audioRef.current && backgroundMusic) {
       audioRef.current.src = backgroundMusic;
       audioRef.current.load();
-      audioRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => { });
+      // Don't auto-play audio - wait for slideshow to start
     }
   }, [backgroundMusic]);
 
@@ -231,30 +258,40 @@ export default function SlideShow({
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Buttons */}
-        <button
-          onClick={() => {
-            clearTimer();
-            prevSlide();
-          }}
-          className="absolute left-[-60px] top-1/2 -translate-y-1/2 bg-[#d4c5a3] text-[#4a3f35] p-3 rounded-full shadow hover:bg-[#c0af8f] transition"
-        >
-          ◀
-        </button>
-        <button
-          onClick={() => {
-            clearTimer();
-            nextSlide();
-          }}
-          className="absolute right-[-60px] top-1/2 -translate-y-1/2 bg-[#d4c5a3] text-[#4a3f35] p-3 rounded-full shadow hover:bg-[#c0af8f] transition"
-        >
-          ▶
-        </button>
+        {/* Navigation Buttons - only show when slideshow is active */}
+        {slideshowActive && (
+          <>
+            <button
+              onClick={() => {
+                clearTimer();
+                prevSlide();
+              }}
+              className="absolute left-[-60px] top-1/2 -translate-y-1/2 bg-[#d4c5a3] text-[#4a3f35] p-3 rounded-full shadow hover:bg-[#c0af8f] transition"
+            >
+              ◀
+            </button>
+            <button
+              onClick={() => {
+                clearTimer();
+                nextSlide();
+              }}
+              className="absolute right-[-60px] top-1/2 -translate-y-1/2 bg-[#d4c5a3] text-[#4a3f35] p-3 rounded-full shadow hover:bg-[#c0af8f] transition"
+            >
+              ▶
+            </button>
+          </>
+        )}
       </div>
 
       {/* Slide Counter */}
       <div className="mt-4 text-center text-sm text-[#7a6a57] mb-4">
-        {currentIndex + 1} / {items.length}
+        {slideshowActive ? (
+          `${currentIndex + 1} / ${items.length}`
+        ) : slideshowFinished ? (
+          "Slideshow completed! 🎉"
+        ) : (
+          "Click 'Start Slideshow' to begin"
+        )}
       </div>
 
       {/* Background Music Audio Element */}
@@ -262,41 +299,67 @@ export default function SlideShow({
 
       {/* Slideshow Controls */}
       <div className="mb-4 flex items-center justify-center gap-4 bg-[#f9f5e8] p-3 rounded-lg border border-[#d4c5a3]">
-        <button
-          onClick={() => {
-            if (isPaused) resumeSlideshow();
-            else setIsPaused(true);
-          }}
-          className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
-        >
-          {isPaused ? <Play size={18} /> : <Pause size={18} />}
-          {isPaused ? "Resume Slideshow" : "Pause Slideshow"}
-        </button>
-        {backgroundMusic && (<>        <button
-          onClick={togglePlayPause}
-          className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
-        >
-          {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
-        </button>
+        {/* Show different controls based on slideshow state */}
+        {!slideshowActive && !slideshowFinished ? (
+          // Start slideshow button
+          <button
+            onClick={startSlideshow}
+            className="flex items-center gap-2 bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            <Play size={18} />
+            Start Slideshow
+          </button>
+        ) : slideshowFinished ? (
+          // Slideshow finished - show restart button
+          <button
+            onClick={restartSlideshow}
+            className="flex items-center gap-2 bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+          >
+            <Play size={18} />
+            Restart Slideshow
+          </button>
+        ) : (
+          // Slideshow active - show pause/resume button
+          <button
+            onClick={() => {
+              if (isPaused) resumeSlideshow();
+              else setIsPaused(true);
+            }}
+            className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
+          >
+            {isPaused ? <Play size={18} /> : <Pause size={18} />}
+            {isPaused ? "Resume Slideshow" : "Pause Slideshow"}
+          </button>
+        )}
 
-          <div className="flex items-center gap-2">
-            <Volume2 size={18} className="text-[#4a3f35]" />
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={volume}
-              onChange={handleVolumeChange}
-              className="w-20 h-2 bg-[#d4c5a3] rounded-lg appearance-none cursor-pointer"
-              style={{
-                background: `linear-gradient(to right, #d4c5a3 0%, #d4c5a3 ${volume * 100
-                  }%, #e8e0d0 ${volume * 100}%, #e8e0d0 100%)`,
-              }}
-            />
-          </div>
-        </>)}
+        {/* Background Music Controls - only show when slideshow is active */}
+        {backgroundMusic && slideshowActive && (
+          <>
+            <button
+              onClick={togglePlayPause}
+              className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
+            >
+              {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </button>
 
+            <div className="flex items-center gap-2">
+              <Volume2 size={18} className="text-[#4a3f35]" />
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="w-20 h-2 bg-[#d4c5a3] rounded-lg appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #d4c5a3 0%, #d4c5a3 ${volume * 100
+                    }%, #e8e0d0 ${volume * 100}%, #e8e0d0 100%)`,
+                }}
+              />
+            </div>
+          </>
+        )}
       </div>
 
     </div>
