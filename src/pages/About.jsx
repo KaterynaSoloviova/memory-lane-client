@@ -72,7 +72,7 @@ function AboutMePage() {
                           GitHub
                         </a>
                         <a
-                          href="https://www.linkedin.com/in/kateryna-soloviova-b4629b157/"
+                          href="https://www.linkedin.com/in/kateryna-soloviova-webdeveloper/"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center text-[#8B4513] hover:text-[#CD853F] transition-colors duration-300 text-sm sm:text-base"
