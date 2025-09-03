@@ -33,6 +33,14 @@ export default function SlideShow({
   // Go to the next slide after pause
   const resumeSlideshow = () => {
     setIsPaused(false);
+    
+    // Resume background music if available
+    if (audioRef.current && backgroundMusic && isPlaying) {
+      audioRef.current.play().catch(() => {
+        // Audio might be blocked, but slideshow can continue
+      });
+    }
+    
     nextSlide(); // immediately go to next slide
   };
 
@@ -45,6 +53,13 @@ export default function SlideShow({
       setSlideshowActive(false);
       setIsPaused(false);
       clearTimer();
+      
+      // Stop background music when slideshow ends
+      if (audioRef.current && backgroundMusic) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0; // Reset to beginning
+        setIsPlaying(false);
+      }
       return;
     }
     setCurrentIndex(nextIndex);
@@ -75,6 +90,13 @@ export default function SlideShow({
     setCurrentIndex(0);
     setIsPaused(false);
     clearTimer();
+    
+    // Reset audio when restarting
+    if (audioRef.current && backgroundMusic) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
   };
 
   // Single useEffect for slide timer and video playback
@@ -322,8 +344,16 @@ export default function SlideShow({
           // Slideshow active - show pause/resume button
           <button
             onClick={() => {
-              if (isPaused) resumeSlideshow();
-              else setIsPaused(true);
+              if (isPaused) {
+                resumeSlideshow();
+              } else {
+                setIsPaused(true);
+                
+                // Pause background music when pausing slideshow
+                if (audioRef.current && backgroundMusic && isPlaying) {
+                  audioRef.current.pause();
+                }
+              }
             }}
             className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
           >
