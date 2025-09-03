@@ -5,7 +5,7 @@ import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
 export default function SlideShow({
   items,
-  autoplay = false, // Changed default to falsegogit
+  autoplay = false, // Changed default to false
   interval = 5000,
   backgroundMusic = null,
 }) {
@@ -21,6 +21,13 @@ export default function SlideShow({
   const currentItem = items[currentIndex];
   const isVideo = currentItem.type === "video";
   const [isPaused, setIsPaused] = useState(false);
+
+  // Function to detect if content has multiple images
+  const hasMultipleImages = (content) => {
+    if (!content) return false;
+    const imgMatches = content.match(/<img[^>]*>/gi);
+    return imgMatches && imgMatches.length > 1;
+  };
 
   // Clear any existing timer
   const clearTimer = () => {
@@ -275,7 +282,50 @@ export default function SlideShow({
                 }}
                 whileHover={{ scale: 1.02 }}
                 dangerouslySetInnerHTML={{ 
-                  __html: `<div style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">${currentItem.content}</div>`
+                  __html: hasMultipleImages(currentItem.content) ? `
+                    <div style="
+                      display: flex; 
+                      flex-direction: column; 
+                      align-items: center; 
+                      gap: 16px; 
+                      width: 100%; 
+                      max-height: 100%;
+                      overflow: hidden;
+                    ">
+                      <style>
+                        .slide-content img {
+                          max-width: 100%;
+                          max-height: 200px;
+                          width: auto;
+                          height: auto;
+                          object-fit: contain;
+                          border-radius: 6px;
+                          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                          margin: 4px 0;
+                        }
+                        .slide-content {
+                          display: flex;
+                          flex-direction: column;
+                          align-items: center;
+                          gap: 8px;
+                          width: 100%;
+                          height: 100%;
+                          padding: 4px;
+                          justify-content: center;
+                        }
+                        .slide-content p, .slide-content div {
+                          margin: 2px 0;
+                          word-wrap: break-word;
+                          font-size: 0.9em;
+                        }
+                      </style>
+                      <div class="slide-content">${currentItem.content}</div>
+                    </div>
+                  ` : `
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">
+                      ${currentItem.content}
+                    </div>
+                  `
                 }}
               />
             )}
