@@ -5,7 +5,7 @@ import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 
 export default function SlideShow({
   items,
-  autoplay = false, // Changed default to false
+  autoplay = false, // Changed default to falsegogit
   interval = 5000,
   backgroundMusic = null,
 }) {
@@ -242,7 +242,7 @@ export default function SlideShow({
               />
             ) : (
               <motion.div
-                className="w-full h-full flex items-center justify-center text-center px-4"
+                className="w-full h-full flex flex-col items-center justify-center text-center px-4 py-8"
                 style={{
                   backgroundColor:
                     memoryStyles[currentItem.style]?.backgroundColor ||
@@ -274,7 +274,9 @@ export default function SlideShow({
                   textAlign: "center",
                 }}
                 whileHover={{ scale: 1.02 }}
-                dangerouslySetInnerHTML={{ __html: currentItem.content }}
+                dangerouslySetInnerHTML={{ 
+                  __html: `<div style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">${currentItem.content}</div>`
+                }}
               />
             )}
           </motion.div>
