@@ -340,6 +340,14 @@ export default function SlideShow({
                           align-items: center;
                           justify-content: center;
                         }
+                        .slide-image-only p:empty {
+                          min-height: 1.2em;
+                          display: block;
+                        }
+                        .slide-image-only p:empty::before {
+                          content: " ";
+                          white-space: pre;
+                        }
                       </style>
                       <div class="slide-image-only">${currentItem.content}</div>
                     </div>
@@ -412,6 +420,14 @@ export default function SlideShow({
                           background-color: #fdf9f4;
                           font-style: italic;
                         }
+                        .slide-content p:empty {
+                          min-height: 1.2em;
+                          display: block;
+                        }
+                        .slide-content p:empty::before {
+                          content: " ";
+                          white-space: pre;
+                        }
                       </style>
                       <div class="slide-content">${currentItem.content}</div>
                     </div>
@@ -466,6 +482,14 @@ export default function SlideShow({
                           border-left: 4px solid #CD853F;
                           background-color: #fdf9f4;
                           font-style: italic;
+                        }
+                        .slide-text-content p:empty {
+                          min-height: 1.2em;
+                          display: block;
+                        }
+                        .slide-text-content p:empty::before {
+                          content: " ";
+                          white-space: pre;
                         }
                       </style>
                       <div class="slide-text-content">${currentItem.content}</div>

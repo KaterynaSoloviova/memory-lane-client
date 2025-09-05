@@ -444,6 +444,20 @@ function CreateCapsule() {
   return (
     <main className={vintageClasses.pageContainer}>
       <VintageDecorations />
+      
+      {/* CSS for empty paragraph visibility */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .preview-content p:empty {
+            min-height: 1.2em;
+            display: block;
+          }
+          .preview-content p:empty::before {
+            content: " ";
+            white-space: pre;
+          }
+        `
+      }} />
 
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="max-w-4xl mx-auto">
@@ -1005,6 +1019,7 @@ function CreateCapsule() {
                           fontFamily: newItemFontFamily,
                           color: newItemFontColor,
                         }}
+                        className="preview-content"
                       />
                     </div>
                   </div>
@@ -1289,7 +1304,7 @@ function CreateCapsule() {
                                       Font Preview
                                     </label>
                                     <div
-                                      className="p-3 border border-[#e8d5b7] rounded-lg bg-white max-h-32 overflow-y-auto"
+                                      className="p-3 border border-[#e8d5b7] rounded-lg bg-white max-h-32 overflow-y-auto preview-content"
                                       style={{
                                         fontSize: editingFontSize,
                                         fontFamily: editingFontFamily,
@@ -1331,6 +1346,7 @@ function CreateCapsule() {
                                   fontFamily: item.fontFamily || "Georgia, serif",
                                   color: item.fontColor || "#8B4513",
                                 }}
+                                className="preview-content"
                               />
                             )}
                           </>
