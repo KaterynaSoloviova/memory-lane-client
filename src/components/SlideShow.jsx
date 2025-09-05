@@ -14,6 +14,7 @@ export default function SlideShow({
   const [volume, setVolume] = useState(0.5);
   const [slideshowActive, setSlideshowActive] = useState(false); // New state for slideshow control
   const [slideshowFinished, setSlideshowFinished] = useState(false); // New state to track if slideshow finished
+  const [musicPlaying, setMusicPlaying] = useState(false); // Independent music control state
   const audioRef = useRef(null);
   const videoRef = useRef(null);
   const timerRef = useRef(null);
@@ -41,8 +42,8 @@ export default function SlideShow({
   const resumeSlideshow = () => {
     setIsPaused(false);
     
-    // Resume background music if available
-    if (audioRef.current && backgroundMusic && isPlaying) {
+    // Resume background music if available and music was playing
+    if (audioRef.current && backgroundMusic && musicPlaying) {
       audioRef.current.play().catch(() => {
         // Audio might be blocked, but slideshow can continue
       });
@@ -61,12 +62,7 @@ export default function SlideShow({
       setIsPaused(false);
       clearTimer();
       
-      // Stop background music when slideshow ends
-      if (audioRef.current && backgroundMusic) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0; // Reset to beginning
-        setIsPlaying(false);
-      }
+      // Don't stop background music when slideshow ends - let user control it
       return;
     }
     setCurrentIndex(nextIndex);
@@ -82,9 +78,12 @@ export default function SlideShow({
     setCurrentIndex(0);
     setIsPaused(false);
     
-    // Start background music if available
-    if (audioRef.current && backgroundMusic) {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {
+    // Start background music if available and not already playing
+    if (audioRef.current && backgroundMusic && !musicPlaying) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+        setMusicPlaying(true);
+      }).catch(() => {
         // Audio might be blocked, but slideshow can continue
       });
     }
@@ -98,12 +97,7 @@ export default function SlideShow({
     setIsPaused(false);
     clearTimer();
     
-    // Reset audio when restarting
-    if (audioRef.current && backgroundMusic) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-    }
+    // Don't reset audio when restarting - let user control music independently
   };
 
   // Single useEffect for slide timer and video playback
@@ -161,12 +155,18 @@ export default function SlideShow({
   // Audio control functions
   const togglePlayPause = () => {
     if (audioRef.current) {
-      if (isPlaying) {
+      if (musicPlaying) {
         audioRef.current.pause();
+        setMusicPlaying(false);
+        setIsPlaying(false);
       } else {
-        audioRef.current.play();
+        audioRef.current.play().then(() => {
+          setMusicPlaying(true);
+          setIsPlaying(true);
+        }).catch(() => {
+          // Audio might be blocked
+        });
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
@@ -400,11 +400,7 @@ export default function SlideShow({
                 resumeSlideshow();
               } else {
                 setIsPaused(true);
-                
-                // Pause background music when pausing slideshow
-                if (audioRef.current && backgroundMusic && isPlaying) {
-                  audioRef.current.pause();
-                }
+                // Don't pause background music when pausing slideshow - let user control it independently
               }
             }}
             className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
@@ -414,14 +410,15 @@ export default function SlideShow({
           </button>
         )}
 
-        {/* Background Music Controls - only show when slideshow is active */}
-        {backgroundMusic && slideshowActive && (
+        {/* Background Music Controls - show when background music is available */}
+        {backgroundMusic && (
           <>
             <button
               onClick={togglePlayPause}
               className="flex items-center gap-2 bg-[#d4c5a3] text-[#4a3f35] px-4 py-2 rounded-full hover:bg-[#c0af8f] transition-colors"
             >
-              {isPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              {musicPlaying ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              <span className="text-sm">{musicPlaying ? "Stop Music" : "Play Music"}</span>
             </button>
 
             <div className="flex items-center gap-2">
