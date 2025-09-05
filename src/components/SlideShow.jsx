@@ -30,6 +30,28 @@ export default function SlideShow({
     return imgMatches && imgMatches.length > 1;
   };
 
+  // Function to detect if content has only images (no text)
+  const hasOnlyImages = (content) => {
+    if (!content) return false;
+    const imgMatches = content.match(/<img[^>]*>/gi);
+    if (!imgMatches || imgMatches.length === 0) return false;
+    
+    // Remove all HTML tags and check for text content
+    const textContent = content.replace(/<img[^>]*>/gi, '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    return textContent.length === 0;
+  };
+
+  // Function to detect if content has both images and text
+  const hasImagesWithText = (content) => {
+    if (!content) return false;
+    const imgMatches = content.match(/<img[^>]*>/gi);
+    if (!imgMatches || imgMatches.length === 0) return false;
+    
+    // Remove all HTML tags and check for text content
+    const textContent = content.replace(/<img[^>]*>/gi, '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+    return textContent.length > 0;
+  };
+
   // Clear any existing timer
   const clearTimer = () => {
     if (timerRef.current) {
@@ -97,7 +119,13 @@ export default function SlideShow({
     setIsPaused(false);
     clearTimer();
     
-    // Don't reset audio when restarting - let user control music independently
+    // Reset audio when restarting slideshow
+    if (audioRef.current && backgroundMusic) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0; // Reset to beginning
+      setMusicPlaying(false);
+      setIsPlaying(false);
+    }
   };
 
   // Single useEffect for slide timer and video playback
@@ -249,7 +277,7 @@ export default function SlideShow({
               />
             ) : (
               <motion.div
-                className="w-full h-full flex flex-col items-center justify-center text-center px-4 py-8"
+                className="w-full h-full flex flex-col justify-center px-4 py-8"
                 style={{
                   backgroundColor:
                     memoryStyles[currentItem.style]?.backgroundColor ||
@@ -278,52 +306,169 @@ export default function SlideShow({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  textAlign: "center",
                 }}
                 whileHover={{ scale: 1.02 }}
                 dangerouslySetInnerHTML={{ 
-                  __html: hasMultipleImages(currentItem.content) ? `
+                  __html: hasOnlyImages(currentItem.content) ? `
                     <div style="
                       display: flex; 
                       flex-direction: column; 
-                      align-items: center; 
+                      justify-content: center;
                       gap: 16px; 
+                      width: 100%; 
+                      height: 100%;
+                      overflow: hidden;
+                      padding: 20px;
+                      box-sizing: border-box;
+                    ">
+                      <style>
+                        .slide-image-only img {
+                          max-width: 100%;
+                          max-height: 75vh;
+                          width: auto;
+                          height: auto;
+                          object-fit: contain;
+                          border-radius: 8px;
+                          box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                          display: block;
+                          margin: 0 auto;
+                        }
+                        .slide-image-only {
+                          width: 100%;
+                          height: 100%;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        }
+                      </style>
+                      <div class="slide-image-only">${currentItem.content}</div>
+                    </div>
+                  ` : hasImagesWithText(currentItem.content) ? `
+                    <div style="
+                      display: flex; 
+                      flex-direction: column; 
+                      gap: 0px; 
                       width: 100%; 
                       max-height: 100%;
                       overflow: hidden;
+                      padding: 0px;
+                      box-sizing: border-box;
                     ">
                       <style>
                         .slide-content img {
                           max-width: 100%;
-                          max-height: 200px;
+                          max-height: 50vh;
+                          min-height: 200px;
                           width: auto;
                           height: auto;
                           object-fit: contain;
                           border-radius: 6px;
                           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                          margin: 4px 0;
+                          display: block;
+                          margin: 0 auto;
                         }
                         .slide-content {
                           display: flex;
                           flex-direction: column;
-                          align-items: center;
-                          gap: 8px;
+                          gap: 0px;
                           width: 100%;
                           height: 100%;
-                          padding: 4px;
+                          padding: 0px;
                           justify-content: center;
                         }
                         .slide-content p, .slide-content div {
-                          margin: 2px 0;
                           word-wrap: break-word;
                           font-size: 0.9em;
+                          display: block;
+                          width: 100%;
+                        }
+                        /* Ensure text alignment from editor is preserved */
+                        .slide-content *[style*="text-align"] {
+                          /* Preserve any text-align style from editor */
+                        }
+                        /* Preserve text alignment from editor */
+                        .slide-content p[style*="text-align: left"], 
+                        .slide-content div[style*="text-align: left"] {
+                          text-align: left !important;
+                        }
+                        .slide-content p[style*="text-align: right"], 
+                        .slide-content div[style*="text-align: right"] {
+                          text-align: right !important;
+                        }
+                        .slide-content p[style*="text-align: center"], 
+                        .slide-content div[style*="text-align: center"] {
+                          text-align: center !important;
+                        }
+                        .slide-content p[style*="text-align: justify"], 
+                        .slide-content div[style*="text-align: justify"] {
+                          text-align: justify !important;
+                        }
+                        .slide-content ul, .slide-content ol {
+                          padding-left: 20px;
+                        }
+                        .slide-content blockquote {
+                          padding: 8px 16px;
+                          border-left: 4px solid #CD853F;
+                          background-color: #fdf9f4;
+                          font-style: italic;
                         }
                       </style>
                       <div class="slide-content">${currentItem.content}</div>
                     </div>
                   ` : `
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">
-                      ${currentItem.content}
+                    <div style="
+                      display: flex; 
+                      flex-direction: column; 
+                      gap: 0px; 
+                      width: 100%;
+                      padding: 0px;
+                      box-sizing: border-box;
+                    ">
+                      <style>
+                        .slide-text-content img {
+                          max-width: 100%;
+                          max-height: 50vh;
+                          min-height: 200px;
+                          width: auto;
+                          height: auto;
+                          object-fit: contain;
+                          border-radius: 6px;
+                          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                          display: block;
+                          margin: 0 auto;
+                        }
+                        /* Ensure text alignment from editor is preserved */
+                        .slide-text-content *[style*="text-align"] {
+                          /* Preserve any text-align style from editor */
+                        }
+                        /* Preserve text alignment from editor */
+                        .slide-text-content p[style*="text-align: left"], 
+                        .slide-text-content div[style*="text-align: left"] {
+                          text-align: left !important;
+                        }
+                        .slide-text-content p[style*="text-align: right"], 
+                        .slide-text-content div[style*="text-align: right"] {
+                          text-align: right !important;
+                        }
+                        .slide-text-content p[style*="text-align: center"], 
+                        .slide-text-content div[style*="text-align: center"] {
+                          text-align: center !important;
+                        }
+                        .slide-text-content p[style*="text-align: justify"], 
+                        .slide-text-content div[style*="text-align: justify"] {
+                          text-align: justify !important;
+                        }
+                        .slide-text-content ul, .slide-text-content ol {
+                          padding-left: 20px;
+                        }
+                        .slide-text-content blockquote {
+                          padding: 8px 16px;
+                          border-left: 4px solid #CD853F;
+                          background-color: #fdf9f4;
+                          font-style: italic;
+                        }
+                      </style>
+                      <div class="slide-text-content">${currentItem.content}</div>
                     </div>
                   `
                 }}

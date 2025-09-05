@@ -20,6 +20,7 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  AlignJustify,
   Link as LinkIcon,
   Image as ImageIcon,
 } from "lucide-react";
@@ -53,6 +54,7 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
       Image.configure({
         HTMLAttributes: {
           class: "max-w-full h-auto rounded-lg shadow-md",
+          style: "max-height: 400px; object-fit: contain;",
         },
         allowBase64: true,
       }),
@@ -66,7 +68,7 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
         placeholder: "Start writing your memory content...",
       }),
       TextAlign.configure({
-        types: ["heading", "paragraph", "blockquote"],
+        types: ["heading", "paragraph", "blockquote", "listItem"],
         alignments: ["left", "center", "right", "justify"],
       }),
       Underline,
@@ -88,6 +90,20 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
     const url = window.prompt("Enter URL:");
     if (url && editor) {
       editor.chain().focus().setLink({ href: url }).run();
+    }
+  };
+
+  const setLineHeight = (height) => {
+    if (editor) {
+      editor.chain().focus().setParagraph().run();
+      editor.commands.updateAttributes('paragraph', { style: `line-height: ${height}` });
+    }
+  };
+
+  const setParagraphSpacing = (spacing) => {
+    if (editor) {
+      editor.chain().focus().setParagraph().run();
+      editor.commands.updateAttributes('paragraph', { style: `margin: ${spacing}px 0` });
     }
   };
 
@@ -201,6 +217,19 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
 
           <button
             type="button"
+            onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
+              editor.isActive("textAlign", { align: "justify" })
+                ? "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white border-[#CD853F] shadow-md"
+                : "bg-white text-[#8B4513] border-[#e8d5b7] hover:bg-[#f8f3ec] hover:border-[#CD853F]"
+            }`}
+            title="Justify Text"
+          >
+            <AlignJustify className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
             onClick={setLink}
             className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border ${
               editor.isActive("link")
@@ -255,6 +284,36 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
           >
             <Redo className="w-4 h-4" />
           </button>
+
+          {/* Spacing Controls */}
+          <div className="flex items-center gap-1 border-l border-[#e8d5b7] pl-2 ml-2">
+            <span className="text-xs text-[#8B4513] font-medium">Line:</span>
+            <select
+              onChange={(e) => setLineHeight(e.target.value)}
+              className="text-xs border border-[#e8d5b7] rounded px-2 py-1 bg-white text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+              title="Line Height"
+            >
+              <option value="1.2">1.2</option>
+              <option value="1.4">1.4</option>
+              <option value="1.6" selected>1.6</option>
+              <option value="1.8">1.8</option>
+              <option value="2.0">2.0</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-[#8B4513] font-medium">Space:</span>
+            <select
+              onChange={(e) => setParagraphSpacing(e.target.value)}
+              className="text-xs border border-[#e8d5b7] rounded px-2 py-1 bg-white text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+              title="Paragraph Spacing"
+            >
+              <option value="4">Tight</option>
+              <option value="8" selected>Normal</option>
+              <option value="12">Loose</option>
+              <option value="16">Very Loose</option>
+            </select>
+          </div>
         </div>
       </div>
 
