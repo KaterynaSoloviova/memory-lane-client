@@ -994,7 +994,6 @@ function CreateCapsule() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        textAlign: "center",
                       }}
                     >
                       <div
