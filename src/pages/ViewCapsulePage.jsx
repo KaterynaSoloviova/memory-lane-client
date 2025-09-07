@@ -3,7 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
-import { isDraft, isLocked, isOwner } from "../utils/validators";
+import { isDraft, isLocked, isOwner, isParticipant } from "../utils/validators";
 import {
   VintageDecorations,
   VintageOrnament,
@@ -14,6 +14,7 @@ import Countdown from "../components/Countdown";
 import SlideShow from "../components/SlideShow";
 import CommentSection from "../components/CommentSection";
 import VintageLoader from "../components/VintageLoader";
+import CapsuleSharing from "../components/CapsuleSharing";
 import { Trash2, Lock } from "lucide-react";
 import { Unlock } from "lucide-react";
 
@@ -38,7 +39,7 @@ function ViewCapsulePage() {
   }, [id]);
 
   const editMode =
-    capsule && user && isDraft(capsule) && isOwner(capsule, user._id);
+    capsule && user && user._id && isDraft(capsule) && isOwner(capsule, user._id);
 
   if (!capsule) {
     return (
@@ -57,29 +58,77 @@ function ViewCapsulePage() {
   }
 
   if (isLocked(capsule)) {
+    const isCreator = user && user._id && isOwner(capsule, user._id);
+    const isParticipantUser = user && user._id && isParticipant(capsule, user._id);
+
     return (
       <main className={vintageClasses.pageContainer}>
         <VintageDecorations />
 
         <section className="relative z-10 px-6 py-16">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
+            {/* Capsule Image */}
+            {capsule.image && (
+              <div className="mb-8 text-center">
+                <img
+                  src={capsule.image}
+                  alt={capsule.title}
+                  className="w-64 h-64 object-cover rounded-lg mx-auto border-4 border-[#e8d5b7] shadow-lg"
+                />
+              </div>
+            )}
+
             <VintageContainer className="text-center">
               <VintageOrnament symbol="🔒" />
               <h2
-                className="text-4xl font-bold mb-8 text-[#8B4513]"
+                className="text-4xl font-bold mb-6 text-[#8B4513]"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 {capsule.title}
               </h2>
-              <p
-                className="text-xl text-[#A0522D] mb-8 italic"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                This capsule is locked until:
-              </p>
+              
+              {/* Description */}
+              {capsule.description && (
+                <p
+                  className="text-lg text-[#A0522D] mb-6 italic leading-relaxed"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  {capsule.description}
+                </p>
+              )}
+
+              {/* Different messaging for creator vs participant */}
+              {isCreator ? (
+                <p
+                  className="text-xl text-[#A0522D] mb-8 italic"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  This capsule is locked until:
+                </p>
+              ) : isParticipantUser ? (
+                <p
+                  className="text-xl text-[#A0522D] mb-8 italic"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  You're a participant! This capsule will unlock on:
+                </p>
+              ) : (
+                <p
+                  className="text-xl text-[#A0522D] mb-8 italic"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  This capsule is locked until:
+                </p>
+              )}
+              
               <Countdown unlockDate={capsule.unlockedDate} />
               <VintageOrnament size="sm" symbol="✦" />
             </VintageContainer>
+            
+            {/* Show sharing options only to the creator */}
+            {isCreator && (
+              <CapsuleSharing capsuleId={capsule._id} capsuleTitle={capsule.title} />
+            )}
           </div>
         </section>
       </main>
@@ -88,6 +137,7 @@ function ViewCapsulePage() {
 
   const items = capsule.items || [];
   const backgroundMusic = capsule.backgroundMusic; // Only custom audio URLs now
+  const isCreator = user && user._id && isOwner(capsule, user._id);
 
   return (
     <main className={vintageClasses.pageContainer}>
@@ -134,6 +184,11 @@ function ViewCapsulePage() {
                 No items to display.
               </p>
             </VintageContainer>
+          )}
+
+          {/* Show sharing options for creator (both locked and unlocked) */}
+          {isCreator && !capsule.isPublic && (
+            <CapsuleSharing capsuleId={capsule._id} capsuleTitle={capsule.title} />
           )}
 
           {!editMode && (

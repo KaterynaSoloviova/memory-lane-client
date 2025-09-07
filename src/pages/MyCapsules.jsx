@@ -11,13 +11,14 @@ import {
   vintageClasses,
 } from "../utils/vintageStyles.jsx";
 import imagePlaceholder from "../assets/image-placeholder.jpg";
-import { Plus, Trash2, Camera} from "lucide-react";
+import { Plus, Trash2, Camera, UserMinus, Crown} from "lucide-react";
 
 function MyCapsules() {
   const { user } = useContext(AuthContext);
   const [capsules, setCapsules] = useState([]);
   const [filter, setFilter] = useState("all");
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
@@ -32,8 +33,10 @@ function MyCapsules() {
       }
     };
 
-    fetchCapsules();
-  }, []);
+    if (user && user._id) {
+      fetchCapsules();
+    }
+  }, [user?._id]);
 
   if (!user) {
     return (
@@ -49,6 +52,16 @@ function MyCapsules() {
       })
       .then(() => setCapsules((prev) => prev.filter((c) => c._id !== id)))
       .catch((err) => console.error("Failed to delete capsule", err));
+  };
+
+  const handleLeaveCapsule = (id) => {
+    const storedToken = localStorage.getItem("authToken");
+    axios
+      .post(`${BASE_URL}/api/capsules/${id}/leave`, {}, {
+        headers: { Authorization: `Bearer ${storedToken}` },
+      })
+      .then(() => setCapsules((prev) => prev.filter((c) => c._id !== id)))
+      .catch((err) => console.error("Failed to leave capsule", err));
   };
 
   // Use imported helper functions to determine status
@@ -81,7 +94,9 @@ function MyCapsules() {
 
   const handleCardClick = (cap) => {
     const { status } = getCapsuleStatus(cap);
-    if (status === "draft") {
+    const isCreator = user && cap.createdBy && cap.createdBy._id === user._id;
+    
+    if (status === "draft" && isCreator) {
       navigate(`/create-capsule/${cap._id}`); // edit draft
     } else {
       navigate(`/capsule/${cap._id}`, { state: { editMode: false } }); // view unlocked in read-only mode
@@ -155,6 +170,8 @@ function MyCapsules() {
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {filteredCapsules.map((cap) => {
                 const { status, date, dateLabel } = getCapsuleStatus(cap);
+                const isCreator = user && cap.createdBy && cap.createdBy._id === user._id;
+                
 
                 return (
                   <div
@@ -162,12 +179,29 @@ function MyCapsules() {
                     onClick={() => handleCardClick(cap)}
                     className="bg-gradient-to-br from-[#fefcf8] via-[#fdf9f4] to-[#f8f3ec] rounded-2xl shadow-xl border-4 border-[#e8d5b7] overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#CD853F] cursor-pointer"
                   >
-                    <figure className="w-full h-48 overflow-hidden">
+                    <figure className="w-full h-48 overflow-hidden relative">
                       <img
                         className="w-full h-full object-cover transition-all duration-300 filter sepia-[0.8] contrast-[1.1] brightness-[0.9] saturate-[0.8] hover:sepia-0 hover:contrast-100 hover:brightness-100 hover:saturate-100"
                         src={cap.image || imagePlaceholder}
                         alt={cap.title}
                       />
+                      {/* Creator/Joined indicator */}
+                      <div className="absolute top-2 left-2">
+                        {isCreator ? (
+                          <div className="flex items-center gap-1 bg-[#8B4513] text-white px-2 py-1 rounded-full text-xs font-semibold">
+                            <Crown size={12} />
+                            Creator
+                          </div>
+                        ) : cap.isPublic ? (
+                          <div className="bg-[#6B7280] text-white px-2 py-1 rounded-full text-xs font-semibold">
+                            Public
+                          </div>
+                        ) : (
+                          <div className="bg-[#CD853F] text-white px-2 py-1 rounded-full text-xs font-semibold">
+                            Joined
+                          </div>
+                        )}
+                      </div>
                     </figure>
 
                     <div className="p-6">
@@ -196,17 +230,32 @@ function MyCapsules() {
                         {status}
                       </span>
 
-                      {/* Delete button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(cap._id);
-                        }}
-                        className="flex items-center justify-center w-8 h-8 bg-[#d4c5a3] text-[#4a3f35] rounded-full hover:bg-[#c0af8f] transition-colors"
-                        aria-label="Delete capsule"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {/* Action buttons */}
+                      <div className="flex justify-end">
+                        {isCreator ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(cap._id);
+                            }}
+                            className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-[#8B4513] to-[#A0522D] hover:from-[#A0522D] hover:to-[#8B4513] text-white rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 border-2 border-[#654321] hover:shadow-xl"
+                            aria-label="Delete capsule"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        ) : !cap.isPublic ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLeaveCapsule(cap._id);
+                            }}
+                            className="flex items-center justify-center w-8 h-8 bg-[#d4c5a3] text-[#4a3f35] rounded-full hover:bg-[#c0af8f] transition-colors"
+                            aria-label="Leave capsule"
+                          >
+                            <UserMinus size={14} />
+                          </button>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                 );

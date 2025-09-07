@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { BASE_URL } from "../config/config";
 import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
@@ -9,6 +9,8 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(undefined);
+  const [searchParams] = useSearchParams();
+  const capsuleId = searchParams.get('capsule');
 
   const navigate = useNavigate();
   const { storeToken, authenticateUser } = useContext(AuthContext);
@@ -19,10 +21,51 @@ function Login() {
 
     axios
       .post(`${BASE_URL}/auth/login`, requestBody)
-      .then((response) => {
+      .then(async (response) => {
         storeToken(response.data.authToken);
         authenticateUser();
-        navigate("/"); 
+        
+        // Wait for authentication to complete
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        // If there's a capsule ID in the URL, join the capsule
+        if (capsuleId) {
+          try {
+            const token = localStorage.getItem("authToken");
+            await axios.post(
+              `${BASE_URL}/api/capsules/${capsuleId}/join`,
+              {},
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            navigate("/capsules");
+          } catch (err) {
+            console.error("Error joining capsule:", err);
+            navigate("/capsules");
+          }
+        } else {
+          // Check if there's a pending capsule join
+          const pendingCapsuleJoin = localStorage.getItem("pendingCapsuleJoin");
+          if (pendingCapsuleJoin) {
+            localStorage.removeItem("pendingCapsuleJoin");
+            try {
+              const token = localStorage.getItem("authToken");
+              await axios.post(
+                `${BASE_URL}/api/capsules/${pendingCapsuleJoin}/join`,
+                {},
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+            } catch (err) {
+              console.error("Error joining pending capsule:", err);
+            }
+            navigate("/capsules");
+          } else {
+            navigate("/");
+          }
+        }
       })
       .catch((error) => {
         const errorDescription =
@@ -39,7 +82,14 @@ function Login() {
         <div className="max-w-md mx-auto">
           <VintageContainer className="text-center">
             <VintageOrnament symbol="🔑" />
-            <h2 className="text-4xl font-bold mb-8 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>Welcome Back</h2>
+            <h2 className="text-4xl font-bold mb-8 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>
+              {capsuleId ? 'Join Time Capsule' : 'Welcome Back'}
+            </h2>
+            {capsuleId && (
+              <p className="text-lg text-[#A0522D] mb-6 italic" style={{fontFamily: 'Georgia, serif'}}>
+                Log in to join this time capsule and be notified when it unlocks!
+              </p>
+            )}
 
             <form onSubmit={handleLoginSubmit} className="space-y-6 text-left">
               <div>

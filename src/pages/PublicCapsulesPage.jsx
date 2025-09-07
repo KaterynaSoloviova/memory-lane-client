@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Library } from "lucide-react";
+import { Library, Unlock } from "lucide-react";
 import { BASE_URL } from "../config/config";
 import { VintageDecorations, VintageOrnament, VintageContainer, vintageClasses } from "../utils/vintageStyles.jsx";
 import imagePlaceholder from "../assets/image-placeholder.jpg";
@@ -49,8 +49,8 @@ function PublicCapsulesPage() {
                 <div className="p-6">
                   <h2 className="text-2xl font-bold mb-3 text-[#8B4513]" style={{fontFamily: 'Georgia, serif'}}>{capsule.title}</h2>
                   <p className="text-[#A0522D] text-sm flex items-center gap-2" style={{fontFamily: 'Georgia, serif'}}>
-                    <span className="text-lg">🔓</span>
-                    Unlocked: {new Date(capsule.unlockedDate).toLocaleDateString()}
+                    <Unlock className="w-4 h-4" />
+                    Unlocked date: {new Date(capsule.unlockedDate).toLocaleDateString()}
                   </p>
                 </div>
               </div>

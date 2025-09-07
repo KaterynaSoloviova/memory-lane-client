@@ -24,10 +24,6 @@ export default function SlideShow({
   const isVideo = currentItem.type === "video";
   const [isPaused, setIsPaused] = useState(false);
 
-  // Debug logging
-  console.log('Current item:', currentItem);
-  console.log('Is video:', isVideo);
-
   // Function to detect if content has multiple images
   const hasMultipleImages = (content) => {
     if (!content) return false;
@@ -182,7 +178,6 @@ export default function SlideShow({
 
   // Single useEffect for slide timer and video playback
   useEffect(() => {
-    console.log('useEffect triggered - slideshowActive:', slideshowActive, 'isPaused:', isPaused, 'isVideo:', isVideo, 'currentIndex:', currentIndex);
     clearTimer();
 
     if (!slideshowActive || isPaused) return; // <-- stop if slideshow not active or paused
@@ -195,18 +190,12 @@ export default function SlideShow({
       // Immediately pause background music when video slide starts
       // We'll assume video has audio and pause background music by default
       if (audioRef.current) {
-        console.log('Pausing background music for video slide, musicPlaying:', musicPlaying);
-        console.log('Audio element paused before:', audioRef.current.paused);
-        console.log('Audio element currentTime:', audioRef.current.currentTime);
-        console.log('Audio element duration:', audioRef.current.duration);
-        
         // Force pause the audio
         audioRef.current.pause();
         
         // Also set the currentTime to 0 to ensure it stops
         audioRef.current.currentTime = 0;
         
-        console.log('Audio element paused after:', audioRef.current.paused);
         setBackgroundAudioPausedForVideo(true);
         
         // Double-check after a short delay

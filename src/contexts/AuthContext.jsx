@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { BASE_URL } from "../config/config";
 
@@ -22,7 +22,7 @@ function AuthProviderWrapper({ children }) {
   };
 
   // Verify token and set user
-  const authenticateUser = () => {
+  const authenticateUser = useCallback(() => {
     // Get the stored token from the localStorage
     const storedToken = localStorage.getItem("authToken");
 
@@ -58,13 +58,13 @@ function AuthProviderWrapper({ children }) {
       setIsLoading(false);
       setUser(null);
     }
-  };
+  }, []);
 
   // Logout
-  const logOutUser = () => {
+  const logOutUser = useCallback(() => {
     removeToken();
     authenticateUser();
-  };
+  }, [authenticateUser]);
 
   useEffect(() => {
     // Run the function after the initial render,
