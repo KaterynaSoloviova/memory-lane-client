@@ -15,6 +15,7 @@ export default function SlideShow({
   const [slideshowActive, setSlideshowActive] = useState(false); // New state for slideshow control
   const [slideshowFinished, setSlideshowFinished] = useState(false); // New state to track if slideshow finished
   const [musicPlaying, setMusicPlaying] = useState(false); // Independent music control state
+  const [backgroundAudioPausedForVideo, setBackgroundAudioPausedForVideo] = useState(false); // Track if background audio was paused for video
   const audioRef = useRef(null);
   const videoRef = useRef(null);
   const timerRef = useRef(null);
@@ -22,6 +23,10 @@ export default function SlideShow({
   const currentItem = items[currentIndex];
   const isVideo = currentItem.type === "video";
   const [isPaused, setIsPaused] = useState(false);
+
+  // Debug logging
+  console.log('Current item:', currentItem);
+  console.log('Is video:', isVideo);
 
   // Function to detect if content has multiple images
   const hasMultipleImages = (content) => {
@@ -52,6 +57,37 @@ export default function SlideShow({
     return textContent.length > 0;
   };
 
+  // Function to detect if video has audio
+  const checkVideoHasAudio = (videoElement) => {
+    return new Promise((resolve) => {
+      if (!videoElement) {
+        resolve(false);
+        return;
+      }
+
+      // Check if video has audio tracks (most reliable method)
+      if (videoElement.audioTracks && videoElement.audioTracks.length > 0) {
+        resolve(true);
+        return;
+      }
+
+      // Check if video has audio by examining the duration and other properties
+      // This is a more reliable fallback that doesn't interfere with playback
+      const hasAudio = videoElement.duration > 0 && 
+                      !videoElement.muted && 
+                      videoElement.volume > 0;
+      
+      if (hasAudio) {
+        resolve(true);
+        return;
+      }
+
+      // Final fallback: assume video has audio if we can't determine otherwise
+      // This ensures videos can play their audio
+      resolve(true);
+    });
+  };
+
   // Clear any existing timer
   const clearTimer = () => {
     if (timerRef.current) {
@@ -76,6 +112,14 @@ export default function SlideShow({
 
   // Navigation helpers
   const nextSlide = () => {
+    // Restore background audio if it was paused for video
+    if (backgroundAudioPausedForVideo && audioRef.current && musicPlaying) {
+      audioRef.current.play().catch(() => {
+        // Audio might be blocked, but slideshow can continue
+      });
+      setBackgroundAudioPausedForVideo(false);
+    }
+
     const nextIndex = currentIndex + 1;
     if (nextIndex >= items.length) {
       // Slideshow finished
@@ -90,6 +134,14 @@ export default function SlideShow({
     setCurrentIndex(nextIndex);
   };
   const prevSlide = () => {
+    // Restore background audio if it was paused for video
+    if (backgroundAudioPausedForVideo && audioRef.current && musicPlaying) {
+      audioRef.current.play().catch(() => {
+        // Audio might be blocked, but slideshow can continue
+      });
+      setBackgroundAudioPausedForVideo(false);
+    }
+
     setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
   };
 
@@ -130,15 +182,50 @@ export default function SlideShow({
 
   // Single useEffect for slide timer and video playback
   useEffect(() => {
+    console.log('useEffect triggered - slideshowActive:', slideshowActive, 'isPaused:', isPaused, 'isVideo:', isVideo, 'currentIndex:', currentIndex);
     clearTimer();
 
     if (!slideshowActive || isPaused) return; // <-- stop if slideshow not active or paused
 
+    console.log('Checking video condition - isVideo:', isVideo, 'videoRef.current:', !!videoRef.current);
     if (isVideo && videoRef.current) {
       const video = videoRef.current;
       video.currentTime = 0;
+      
+      // Immediately pause background music when video slide starts
+      // We'll assume video has audio and pause background music by default
+      if (audioRef.current) {
+        console.log('Pausing background music for video slide, musicPlaying:', musicPlaying);
+        console.log('Audio element paused before:', audioRef.current.paused);
+        console.log('Audio element currentTime:', audioRef.current.currentTime);
+        console.log('Audio element duration:', audioRef.current.duration);
+        
+        // Force pause the audio
+        audioRef.current.pause();
+        
+        // Also set the currentTime to 0 to ensure it stops
+        audioRef.current.currentTime = 0;
+        
+        console.log('Audio element paused after:', audioRef.current.paused);
+        setBackgroundAudioPausedForVideo(true);
+        
+        // Double-check after a short delay
+        setTimeout(() => {
+          if (audioRef.current && !audioRef.current.paused) {
+            console.log('Audio still playing, forcing pause again');
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+          }
+        }, 100);
+      } else {
+        console.log('No audio element found');
+      }
 
       const handleLoadedMetadata = () => {
+        // Ensure video can play audio
+        video.muted = false;
+        video.volume = 1.0;
+        
         // Set up a fallback timer based on video duration as backup
         if (video.duration && isFinite(video.duration)) {
           const fallbackTimer = setTimeout(() => {
@@ -150,8 +237,27 @@ export default function SlideShow({
         }
       };
 
-      // Add fallback timer listener
+      // Check if video actually has audio after it starts playing
+      const handlePlaying = () => {
+        // Wait a bit to see if video actually has audio
+        setTimeout(async () => {
+          const hasAudio = await checkVideoHasAudio(video);
+          console.log('Video playing - has audio:', hasAudio);
+          
+          if (!hasAudio && audioRef.current && backgroundAudioPausedForVideo) {
+            // Video has no audio - resume background music
+            console.log('Resuming background music - video has no audio');
+            audioRef.current.play().catch(() => {
+              // Audio might be blocked, but slideshow can continue
+            });
+            setBackgroundAudioPausedForVideo(false);
+          }
+        }, 1000); // Check after 1 second of playback
+      };
+
+      // Add event listeners
       video.addEventListener("loadedmetadata", handleLoadedMetadata);
+      video.addEventListener("playing", handlePlaying);
 
       video.play().catch((e) => {
         console.warn("Video play failed:", e);
@@ -163,6 +269,7 @@ export default function SlideShow({
         if (video) {
           video.pause();
           video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+          video.removeEventListener("playing", handlePlaying);
 
           // Clear fallback timer if it exists
           if (video._fallbackTimer) {
@@ -266,12 +373,26 @@ export default function SlideShow({
                 playsInline
                 loop={false}
                 preload="metadata"
+                onLoadStart={() => {
+                  console.log('Video load started - pausing background music');
+                  if (audioRef.current) {
+                    audioRef.current.pause();
+                    setBackgroundAudioPausedForVideo(true);
+                  }
+                }}
                 onError={(e) => {
                   console.error("Video error:", e);
                   // If video fails to load, move to next slide after 2 seconds
                   setTimeout(() => nextSlide(), 2000);
                 }}
                 onEnded={() => {
+                  // Restore background audio if it was paused for video
+                  if (backgroundAudioPausedForVideo && audioRef.current && musicPlaying) {
+                    audioRef.current.play().catch(() => {
+                      // Audio might be blocked, but slideshow can continue
+                    });
+                    setBackgroundAudioPausedForVideo(false);
+                  }
                   nextSlide();
                 }}
               />
