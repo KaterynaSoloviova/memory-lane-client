@@ -136,9 +136,11 @@ function ViewCapsulePage() {
             </VintageContainer>
           )}
 
-          <div className="mb-8">
-            <CommentSection capsuleId={capsule._id} isPublicView={isPublicView} />
-          </div>
+          {!editMode && (
+            <div className="mb-8">
+              <CommentSection capsuleId={capsule._id} isPublicView={isPublicView} />
+            </div>
+          )}
 
           {editMode && (
             <div className="mb-4 flex items-center justify-center gap-4 bg-[#f9f5e8] p-3 rounded-lg border border-[#d4c5a3]">
