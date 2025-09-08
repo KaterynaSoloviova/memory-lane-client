@@ -670,18 +670,18 @@ function CreateCapsule() {
                           aria-pressed={styleKey === key}
                         >
                           <div
-                            className="w-28 h-16"
+                            className="w-28 h-16 relative"
                             style={{
                               backgroundImage: s.backgroundImage,
                               backgroundSize: "cover",
                               backgroundPosition: "center",
                               backgroundRepeat: "no-repeat",
                               margin: "0 auto",
-                              position: "relative",
                             }}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-[#8B4513] drop-shadow-lg" style={{ fontFamily: 'Georgia, serif' }}>
-                            {s.label}
+                          >
+                            <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-[#8B4513] drop-shadow-lg" style={{ fontFamily: 'Georgia, serif', textAlign: 'center', lineHeight: '1.2', textShadow: '2px 2px 4px rgba(255,255,255,0.8)' }}>
+                              {s.label}
+                            </div>
                           </div>
                         </button>
                       );
