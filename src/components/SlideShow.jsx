@@ -592,7 +592,7 @@ export default function SlideShow({
                       <style>
                         .slide-text-content img {
                           max-width: 100%;
-                          max-height: 90vh;
+                          max-height: 95vh;
                           min-height: 500px;
                           width: auto;
                           height: auto;
