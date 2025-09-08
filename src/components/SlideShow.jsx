@@ -538,6 +538,31 @@ export default function SlideShow({
                           content: " ";
                           white-space: pre;
                         }
+                        /* Line breaks and spacing for images with text */
+                        .slide-content br {
+                          display: block;
+                          margin: 0.5em 0;
+                          line-height: 0.5em;
+                        }
+                        .slide-content p {
+                          margin: 0.5em 0;
+                          line-height: 1.6;
+                          display: block;
+                        }
+                        .slide-content div {
+                          margin: 0.3em 0;
+                          display: block;
+                        }
+                        .slide-content {
+                          white-space: pre-wrap;
+                          word-wrap: break-word;
+                          line-height: 1.6;
+                        }
+                        /* Default alignment for content without specific alignment */
+                        .slide-content p:not([style*="text-align"]),
+                        .slide-content div:not([style*="text-align"]) {
+                          text-align: left;
+                        }
                       </style>
                       <div class="slide-content">${currentItem.content}</div>
                     </div>
@@ -600,6 +625,31 @@ export default function SlideShow({
                         .slide-text-content p:empty::before {
                           content: " ";
                           white-space: pre;
+                        }
+                        /* Line breaks and spacing */
+                        .slide-text-content br {
+                          display: block;
+                          margin: 0.5em 0;
+                          line-height: 0.5em;
+                        }
+                        .slide-text-content p {
+                          margin: 0.5em 0;
+                          line-height: 1.6;
+                          display: block;
+                        }
+                        .slide-text-content div {
+                          margin: 0.3em 0;
+                          display: block;
+                        }
+                        .slide-text-content {
+                          white-space: pre-wrap;
+                          word-wrap: break-word;
+                          line-height: 1.6;
+                        }
+                        /* Default alignment for content without specific alignment */
+                        .slide-text-content p:not([style*="text-align"]),
+                        .slide-text-content div:not([style*="text-align"]) {
+                          text-align: left;
                         }
                       </style>
                       <div class="slide-text-content">${currentItem.content}</div>

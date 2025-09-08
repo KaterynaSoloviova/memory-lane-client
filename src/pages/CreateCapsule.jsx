@@ -485,6 +485,110 @@ function CreateCapsule() {
             background-color: #fdf9f4;
             font-style: italic;
           }
+          /* Text positioning and spacing for preview */
+          .preview-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+          }
+          
+          /* Line breaks */
+          .preview-content br {
+            display: block;
+            margin: 0.5em 0;
+            line-height: 0.5em;
+          }
+          
+          /* Paragraphs */
+          .preview-content p {
+            margin: 0.5em 0;
+            line-height: 1.6;
+            display: block;
+          }
+          
+          /* Divs */
+          .preview-content div {
+            margin: 0.3em 0;
+            display: block;
+          }
+          
+          /* Text alignment - this is the key fix! */
+          .preview-content p[style*="text-align: left"],
+          .preview-content div[style*="text-align: left"] {
+            text-align: left !important;
+          }
+          
+          .preview-content p[style*="text-align: right"],
+          .preview-content div[style*="text-align: right"] {
+            text-align: right !important;
+          }
+          
+          .preview-content p[style*="text-align: center"],
+          .preview-content div[style*="text-align: center"] {
+            text-align: center !important;
+          }
+          
+          .preview-content p[style*="text-align: justify"],
+          .preview-content div[style*="text-align: justify"] {
+            text-align: justify !important;
+          }
+          
+          /* Default alignment for content without specific alignment */
+          .preview-content p:not([style*="text-align"]),
+          .preview-content div:not([style*="text-align"]) {
+            text-align: left;
+          }
+          
+          /* Memory cards text alignment and spacing */
+          .memory-card-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+          }
+          
+          .memory-card-content br {
+            display: block;
+            margin: 0.5em 0;
+            line-height: 0.5em;
+          }
+          
+          .memory-card-content p {
+            margin: 0.5em 0;
+            line-height: 1.6;
+            display: block;
+          }
+          
+          .memory-card-content div {
+            margin: 0.3em 0;
+            display: block;
+          }
+          
+          /* Text alignment for memory cards */
+          .memory-card-content p[style*="text-align: left"],
+          .memory-card-content div[style*="text-align: left"] {
+            text-align: left !important;
+          }
+          
+          .memory-card-content p[style*="text-align: right"],
+          .memory-card-content div[style*="text-align: right"] {
+            text-align: right !important;
+          }
+          
+          .memory-card-content p[style*="text-align: center"],
+          .memory-card-content div[style*="text-align: center"] {
+            text-align: center !important;
+          }
+          
+          .memory-card-content p[style*="text-align: justify"],
+          .memory-card-content div[style*="text-align: justify"] {
+            text-align: justify !important;
+          }
+          
+          /* Default alignment for memory cards */
+          .memory-card-content p:not([style*="text-align"]),
+          .memory-card-content div:not([style*="text-align"]) {
+            text-align: left;
+          }
         `
       }} />
 
@@ -1043,25 +1147,20 @@ function CreateCapsule() {
                         color:
                           memoryStyles[styleKey]?.color || memoryStyles.default.color,
                         minHeight: "400px",
-                        whiteSpace: "pre-wrap",
-                        overflowWrap: "break-word",
                         width: "100%",
                         boxSizing: "border-box",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        padding: "40px",
                       }}
                     >
                       <div
                         dangerouslySetInnerHTML={{ __html: textContent }}
                         style={{
-                          maxWidth: "80%",
-                          padding: "20px",
                           fontSize: newItemFontSize,
                           fontFamily: newItemFontFamily,
                           color: newItemFontColor,
                           width: "100%",
                           boxSizing: "border-box",
+                          lineHeight: "1.6",
                         }}
                         className="preview-content"
                       />
@@ -1252,10 +1351,7 @@ function CreateCapsule() {
                           overflowWrap: "break-word",
                           width: "100%",
                           boxSizing: "border-box",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          textAlign: "center",
+                          padding: "40px",
                         }}
                       >
                         {item.type === "text" && (
@@ -1401,7 +1497,7 @@ function CreateCapsule() {
                                   fontFamily: item.fontFamily || "Georgia, serif",
                                   color: item.fontColor || "#8B4513",
                                 }}
-                                className="preview-content"
+                                className="memory-card-content"
                               />
                             )}
                           </>
@@ -1449,6 +1545,7 @@ function CreateCapsule() {
           </VintageContainer>
         </div>
       </section>
+
     </main>
   );
 }
