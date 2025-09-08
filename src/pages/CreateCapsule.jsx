@@ -1636,7 +1636,7 @@ function CreateCapsule() {
                     </div>
                   ` }}
                                 style={{
-                                  maxWidth: "80%",
+                                  width: "100%",
                                   padding: "15px",
                                   fontSize: item.fontSize || "16px",
                                   fontFamily: item.fontFamily || "Georgia, serif",
