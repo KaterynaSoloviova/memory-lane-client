@@ -276,10 +276,12 @@ function CreateCapsule() {
   };
 
   const handleDeleteItem = (index) => {
+    console.log("Delete item clicked for index:", index);
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleMoveItemUp = (index) => {
+    console.log("Move up clicked for index:", index);
     if (index > 0) {
       setItems((prev) => {
         const newItems = [...prev];
@@ -293,6 +295,7 @@ function CreateCapsule() {
   };
 
   const handleMoveItemDown = (index) => {
+    console.log("Move down clicked for index:", index);
     if (index < items.length - 1) {
       setItems((prev) => {
         const newItems = [...prev];
@@ -1390,13 +1393,16 @@ function CreateCapsule() {
                   items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] shadow-lg p-0 flex flex-col items-center relative mb-6"
+                      className="border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] shadow-lg p-0 flex flex-col items-center relative mb-6 pointer-events-auto"
                     >
                       {/* Reorder buttons */}
-                      <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                      <div className="absolute top-3 left-3 flex flex-col gap-1 z-20 pointer-events-auto">
                         <button
                           type="button"
-                          onClick={() => handleMoveItemUp(idx)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveItemUp(idx);
+                          }}
                           disabled={idx === 0}
                           className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-md transition-all duration-300 ${idx === 0
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -1407,7 +1413,10 @@ function CreateCapsule() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleMoveItemDown(idx)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveItemDown(idx);
+                          }}
                           disabled={idx === items.length - 1}
                           className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-md transition-all duration-300 ${idx === items.length - 1
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -1421,8 +1430,11 @@ function CreateCapsule() {
                       {/* Delete button */}
                       <button
                         type="button"
-                        onClick={() => handleDeleteItem(idx)}
-                        className="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-full p-2 shadow-lg z-10 w-8 h-8 flex items-center justify-center transition-all duration-300 transform hover:scale-105"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteItem(idx);
+                        }}
+                        className="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-full p-2 shadow-lg z-20 w-8 h-8 flex items-center justify-center transition-all duration-300 transform hover:scale-105 pointer-events-auto"
                       >
                         <X size={14} />
                       </button>
