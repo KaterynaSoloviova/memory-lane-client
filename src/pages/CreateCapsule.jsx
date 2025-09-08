@@ -551,7 +551,38 @@ function CreateCapsule() {
           /* Default alignment for content without specific alignment */
           .preview-content p:not([style*="text-align"]),
           .preview-content div:not([style*="text-align"]) {
-            text-align: left;
+            text-align: left !important;
+          }
+          
+          /* Ensure all preview content defaults to center alignment and positioning */
+          .preview-content {
+            text-align: center !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          
+          .preview-content p, .preview-content div {
+            text-align: left !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          
+          .preview-content p:first-child {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+          }
+          
+          /* Center images in preview */
+          .preview-content img {
+            display: block !important;
+            margin: 0 auto !important;
+            max-width: 100% !important;
+            max-height: 70vh !important;
+            object-fit: contain !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
           }
           
           /* Memory cards text alignment and spacing */
@@ -625,7 +656,27 @@ function CreateCapsule() {
           /* Default alignment for memory cards */
           .memory-card-content p:not([style*="text-align"]),
           .memory-card-content div:not([style*="text-align"]) {
-            text-align: left;
+            text-align: left !important;
+          }
+          
+          /* Ensure all memory card content defaults to left alignment and top positioning */
+          .memory-card-content {
+            text-align: left !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          
+          .memory-card-content p, .memory-card-content div {
+            text-align: left !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          
+          .memory-card-content p:first-child {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
           }
         `
       }} />
@@ -1165,9 +1216,9 @@ function CreateCapsule() {
 
                 <div className="mt-4">
                   <label className="block font-bold text-xl text-[#8B4513] mb-2" style={{ fontFamily: 'Georgia, serif' }}>Preview</label>
-                  <div className="p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                  <div className="pt-0 px-4 pb-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
                     <div
-                      className="p-6 rounded-lg shadow-lg border-2 border-[#dbc7a6] relative overflow-hidden"
+                      className="pt-0 px-6 pb-6 rounded-lg shadow-lg border-2 border-[#dbc7a6] relative overflow-hidden"
                       style={{
                         backgroundColor:
                           memoryStyles[styleKey]?.backgroundColor ||
@@ -1187,7 +1238,12 @@ function CreateCapsule() {
                         minHeight: "400px",
                         width: "100%",
                         boxSizing: "border-box",
-                        padding: "40px",
+                        padding: "0px 40px 40px 40px",
+                        margin: "0",
+                        textAlign: "center",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       <div
@@ -1199,6 +1255,13 @@ function CreateCapsule() {
                           width: "100%",
                           boxSizing: "border-box",
                           lineHeight: "1.6",
+                          margin: "0",
+                          padding: "0",
+                          textAlign: "center",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexDirection: "column",
                         }}
                         className="preview-content"
                       />
@@ -1307,7 +1370,7 @@ function CreateCapsule() {
               {error && <p className="text-red-500 mb-4">{error}</p>}
 
               {/* Items List */}
-              <div className="mt-6 space-y-6">
+              <div className="mt-6 space-y-0">
                 {items.length === 0 ? (
                   <div className="text-center p-8 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
                     <p className="text-[#A0522D]" style={{ fontFamily: 'Georgia, serif' }}>No memories added yet.</p>
@@ -1316,7 +1379,7 @@ function CreateCapsule() {
                   items.map((item, idx) => (
                     <div
                       key={idx}
-                      className="border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] shadow-lg p-6 flex flex-col items-center relative"
+                      className="border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] shadow-lg p-0 flex flex-col items-center relative mb-6"
                     >
                       {/* Reorder buttons */}
                       <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
@@ -1366,7 +1429,7 @@ function CreateCapsule() {
                       )}
 
                       <div
-                        className="prose max-w-full p-6 rounded-lg shadow-lg border-2 border-[#dbc7a6] relative overflow-hidden"
+                        className="prose max-w-full p-0 rounded-lg shadow-lg border-2 border-[#dbc7a6] relative overflow-hidden"
                         style={{
                           backgroundColor:
                             memoryStyles[item.style]?.backgroundColor ||
@@ -1389,13 +1452,18 @@ function CreateCapsule() {
                           overflowWrap: "break-word",
                           width: "100%",
                           boxSizing: "border-box",
-                          padding: "40px",
+                          padding: "0px",
+                          margin: "0",
+                          textAlign: "left",
+                          display: "flex",
+                          alignItems: "flex-start",
+                          justifyContent: "flex-start",
                         }}
                       >
                         {item.type === "text" && (
                           <>
                             {editingItemIndex === idx ? (
-                              <div style={{ width: "100%", padding: "20px" }}>
+                              <div style={{ width: "100%", padding: "0px 20px 20px 20px" }}>
                                 <TiptapEditor
                                   content={editingContent}
                                   onChange={setEditingContent}
@@ -1542,8 +1610,8 @@ function CreateCapsule() {
                       <style>
                         .slide-content img {
                           max-width: 100%;
-                          max-height: 50vh;
-                          min-height: 200px;
+                          max-height: 85vh;
+                          min-height: 400px;
                           width: auto;
                           height: auto;
                           object-fit: contain;
@@ -1629,7 +1697,27 @@ function CreateCapsule() {
                         /* Default alignment for content without specific alignment */
                         .slide-content p:not([style*="text-align"]),
                         .slide-content div:not([style*="text-align"]) {
-                          text-align: left;
+                          text-align: left !important;
+                        }
+                        
+                        /* Ensure all text content defaults to left alignment and top positioning */
+                        .slide-content {
+                          text-align: left !important;
+                          align-items: flex-start !important;
+                          justify-content: flex-start !important;
+                          margin: 0 !important;
+                          padding: 0 !important;
+                        }
+                        
+                        .slide-content p, .slide-content div {
+                          text-align: left !important;
+                          margin: 0 !important;
+                          padding: 0 !important;
+                        }
+                        
+                        .slide-content p:first-child {
+                          margin-top: 0 !important;
+                          padding-top: 0 !important;
                         }
                       </style>
                       <div class="slide-content">${item.content}</div>
@@ -1637,7 +1725,8 @@ function CreateCapsule() {
                   ` }}
                                 style={{
                                   width: "100%",
-                                  padding: "15px",
+                                  padding: "0px",
+                                  margin: "0px",
                                   fontSize: item.fontSize || "16px",
                                   fontFamily: item.fontFamily || "Georgia, serif",
                                   color: item.fontColor || "#8B4513",

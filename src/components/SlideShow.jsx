@@ -337,11 +337,11 @@ export default function SlideShow({
             animate="center"
             exit="exit"
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="rounded-lg shadow-lg p-6 border border-[#d4c5a3]"
+            className={hasOnlyImages(currentItem.content) ? "p-0 border-0" : "rounded-lg shadow-lg p-6 border border-[#d4c5a3]"}
             style={{
               height: "80vh",
-              backgroundColor: "#f9f5e8",
-              backgroundImage: "url('/paper-texture.png')",
+              backgroundColor: hasOnlyImages(currentItem.content) ? "transparent" : "#f9f5e8",
+              backgroundImage: hasOnlyImages(currentItem.content) ? "none" : "url('/paper-texture.png')",
               backgroundSize: "cover",
             }}
           >
@@ -387,7 +387,7 @@ export default function SlideShow({
               />
             ) : (
               <motion.div
-                className="w-full h-full flex flex-col justify-center px-4 py-8"
+                className="w-full h-full flex flex-col justify-start px-4 pt-0 pb-8"
                 style={{
                   backgroundColor:
                     memoryStyles[currentItem.style]?.backgroundColor ||
@@ -414,8 +414,9 @@ export default function SlideShow({
                   width: "100%",
                   boxSizing: "border-box",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  textAlign: "left",
                 }}
                 whileHover={{ scale: 1.02 }}
                 dangerouslySetInnerHTML={{ 
@@ -428,13 +429,21 @@ export default function SlideShow({
                       width: 100%; 
                       height: 100%;
                       overflow: hidden;
-                      padding: 20px;
+                      padding: 10px;
                       box-sizing: border-box;
                     ">
                       <style>
+                        .slide-image-only {
+                          width: 100%;
+                          height: 100%;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        }
+                        
                         .slide-image-only img {
                           max-width: 100%;
-                          max-height: 75vh;
+                          max-height: 95vh;
                           width: auto;
                           height: auto;
                           object-fit: contain;
@@ -442,13 +451,6 @@ export default function SlideShow({
                           box-shadow: 0 4px 8px rgba(0,0,0,0.15);
                           display: block;
                           margin: 0 auto;
-                        }
-                        .slide-image-only {
-                          width: 100%;
-                          height: 100%;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
                         }
                         .slide-image-only p:empty {
                           min-height: 1.2em;
@@ -475,8 +477,8 @@ export default function SlideShow({
                       <style>
                         .slide-content img {
                           max-width: 100%;
-                          max-height: 50vh;
-                          min-height: 200px;
+                          max-height: 90vh;
+                          min-height: 500px;
                           width: auto;
                           height: auto;
                           object-fit: contain;
@@ -496,7 +498,7 @@ export default function SlideShow({
                         }
                         .slide-content p, .slide-content div {
                           word-wrap: break-word;
-                          font-size: 0.9em;
+                          font-size: 1.1em;
                           display: block;
                           width: 100%;
                         }
@@ -562,7 +564,18 @@ export default function SlideShow({
                         /* Default alignment for content without specific alignment */
                         .slide-content p:not([style*="text-align"]),
                         .slide-content div:not([style*="text-align"]) {
-                          text-align: left;
+                          text-align: left !important;
+                        }
+                        
+                        /* Ensure all text content defaults to left alignment and top positioning */
+                        .slide-content {
+                          text-align: left !important;
+                          align-items: flex-start !important;
+                          justify-content: flex-start !important;
+                        }
+                        
+                        .slide-content p, .slide-content div {
+                          text-align: left !important;
                         }
                       </style>
                       <div class="slide-content">${currentItem.content}</div>
@@ -579,8 +592,8 @@ export default function SlideShow({
                       <style>
                         .slide-text-content img {
                           max-width: 100%;
-                          max-height: 50vh;
-                          min-height: 200px;
+                          max-height: 90vh;
+                          min-height: 500px;
                           width: auto;
                           height: auto;
                           object-fit: contain;
@@ -651,7 +664,18 @@ export default function SlideShow({
                         /* Default alignment for content without specific alignment */
                         .slide-text-content p:not([style*="text-align"]),
                         .slide-text-content div:not([style*="text-align"]) {
-                          text-align: left;
+                          text-align: left !important;
+                        }
+                        
+                        /* Ensure all text content defaults to left alignment and top positioning */
+                        .slide-text-content {
+                          text-align: left !important;
+                          align-items: flex-start !important;
+                          justify-content: flex-start !important;
+                        }
+                        
+                        .slide-text-content p, .slide-text-content div {
+                          text-align: left !important;
                         }
                       </style>
                       <div class="slide-text-content">${currentItem.content}</div>
