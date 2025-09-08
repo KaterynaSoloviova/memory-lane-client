@@ -517,9 +517,10 @@ export default function SlideShow({
                         .slide-content div[style*="text-align: center"] {
                           text-align: center !important;
                         }
-                        .slide-content p[style*="text-align: justify"], 
+                        .slide-content p[style*="text-align: justify"],
                         .slide-content div[style*="text-align: justify"] {
                           text-align: justify !important;
+                          text-justify: inter-word;
                         }
                         .slide-content ul, .slide-content ol {
                           padding-left: 20px;
@@ -546,7 +547,7 @@ export default function SlideShow({
                         }
                         .slide-content p {
                           margin: 0.5em 0;
-                          line-height: 1.6;
+                          line-height: 1.2;
                           display: block;
                         }
                         .slide-content div {
@@ -556,7 +557,7 @@ export default function SlideShow({
                         .slide-content {
                           white-space: pre-wrap;
                           word-wrap: break-word;
-                          line-height: 1.6;
+                          line-height: 1.2;
                         }
                         /* Default alignment for content without specific alignment */
                         .slide-content p:not([style*="text-align"]),
@@ -605,9 +606,10 @@ export default function SlideShow({
                         .slide-text-content div[style*="text-align: center"] {
                           text-align: center !important;
                         }
-                        .slide-text-content p[style*="text-align: justify"], 
+                        .slide-text-content p[style*="text-align: justify"],
                         .slide-text-content div[style*="text-align: justify"] {
                           text-align: justify !important;
+                          text-justify: inter-word;
                         }
                         .slide-text-content ul, .slide-text-content ol {
                           padding-left: 20px;
@@ -634,7 +636,7 @@ export default function SlideShow({
                         }
                         .slide-text-content p {
                           margin: 0.5em 0;
-                          line-height: 1.6;
+                          line-height: 1.2;
                           display: block;
                         }
                         .slide-text-content div {
@@ -644,7 +646,7 @@ export default function SlideShow({
                         .slide-text-content {
                           white-space: pre-wrap;
                           word-wrap: break-word;
-                          line-height: 1.6;
+                          line-height: 1.2;
                         }
                         /* Default alignment for content without specific alignment */
                         .slide-text-content p:not([style*="text-align"]),

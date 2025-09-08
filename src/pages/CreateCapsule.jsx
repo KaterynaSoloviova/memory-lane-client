@@ -109,7 +109,7 @@ function CreateCapsule() {
           setParticipants(cap.emails || []);
           setSelectedMusic(cap.backgroundMusic || "");
           setSlideshowTimeout(cap.slideshowTimeout || 5000);
-          
+
           // If backgroundMusic exists, add it to uploadedAudio (all audio is now custom)
           if (cap.backgroundMusic) {
             const customAudio = {
@@ -444,7 +444,7 @@ function CreateCapsule() {
   return (
     <main className={vintageClasses.pageContainer}>
       <VintageDecorations />
-      
+
       {/* CSS for empty paragraph visibility and text alignment */}
       <style dangerouslySetInnerHTML={{
         __html: `
@@ -489,7 +489,7 @@ function CreateCapsule() {
           .preview-content {
             white-space: pre-wrap;
             word-wrap: break-word;
-            line-height: 1.6;
+            line-height: 1.2;
           }
           
           /* Line breaks */
@@ -502,7 +502,7 @@ function CreateCapsule() {
           /* Paragraphs */
           .preview-content p {
             margin: 0.5em 0;
-            line-height: 1.6;
+            line-height: 1.2;
             display: block;
           }
           
@@ -531,6 +531,21 @@ function CreateCapsule() {
           .preview-content p[style*="text-align: justify"],
           .preview-content div[style*="text-align: justify"] {
             text-align: justify !important;
+            text-justify: inter-word;
+          }
+          
+          /* Additional justify support for different attribute formats */
+          .preview-content p[style*="justify"],
+          .preview-content div[style*="justify"] {
+            text-align: justify !important;
+            text-justify: inter-word;
+          }
+          
+          /* Support for Tiptap justify classes */
+          .preview-content .has-text-align-justify,
+          .preview-content [data-text-align="justify"] {
+            text-align: justify !important;
+            text-justify: inter-word;
           }
           
           /* Default alignment for content without specific alignment */
@@ -541,25 +556,47 @@ function CreateCapsule() {
           
           /* Memory cards text alignment and spacing */
           .memory-card-content {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            line-height: 1.6;
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            line-height: 1.2 !important;
+            overflow-wrap: break-word !important;
           }
           
           .memory-card-content br {
-            display: block;
-            margin: 0.5em 0;
-            line-height: 0.5em;
+            display: block !important;
+            margin: 0.8em 0 !important;
+            line-height: 1.2 !important;
+            height: 0.8em !important;
+            content: "" !important;
+            min-height: 0.8em !important;
+          }
+          
+          /* Force line breaks to be visible */
+          .memory-card-content br::after {
+            content: "\\A" !important;
+            white-space: pre !important;
+          }
+          
+          /* Additional line break support for memory cards */
+          .memory-card-content br {
+            display: block !important;
+            margin: 0.8em 0 !important;
+            line-height: 1.2 !important;
+            height: 0.8em !important;
+            content: "" !important;
+            min-height: 0.8em !important;
+            width: 100% !important;
+            clear: both !important;
           }
           
           .memory-card-content p {
-            margin: 0.5em 0;
-            line-height: 1.6;
+            margin: 0.8em 0;
+            line-height: 1.2;
             display: block;
           }
           
           .memory-card-content div {
-            margin: 0.3em 0;
+            margin: 0.6em 0;
             display: block;
           }
           
@@ -582,6 +619,7 @@ function CreateCapsule() {
           .memory-card-content p[style*="text-align: justify"],
           .memory-card-content div[style*="text-align: justify"] {
             text-align: justify !important;
+            text-justify: inter-word;
           }
           
           /* Default alignment for memory cards */
@@ -607,9 +645,9 @@ function CreateCapsule() {
 
             {loading && (
               <div className="mb-4">
-                <VintageLoader 
-                  size="sm" 
-                  message="Saving your precious memories..." 
+                <VintageLoader
+                  size="sm"
+                  message="Saving your precious memories..."
                 />
               </div>
             )}
@@ -707,7 +745,7 @@ function CreateCapsule() {
                   />
                   <span className="font-bold text-xl">Make Public</span>
                   <div className="relative">
-                    <Info 
+                    <Info
                       className="w-5 h-5 text-[#CD853F] cursor-help"
                       onMouseEnter={() => setShowPublicTooltip(true)}
                       onMouseLeave={() => setShowPublicTooltip(false)}
@@ -788,7 +826,7 @@ function CreateCapsule() {
                     </span>
                   </div>
                 </button>
-                
+
                 {isStyleSectionOpen && (
                   <div className="grid grid-cols-5 gap-2 mt-2 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
                     {Object.keys(memoryStyles).map((key) => {
@@ -900,8 +938,8 @@ function CreateCapsule() {
                         type="button"
                         onClick={() => setSelectedMusic(audio.id)}
                         className={`border rounded-lg p-3 text-left transition-all ${selectedMusic === audio.id
-                            ? "border-[#CD853F] bg-[#fdf9f4] ring-2 ring-[#CD853F] ring-opacity-50"
-                            : "border-[#e8d5b7] bg-[#fefcf8] hover:border-[#CD853F] hover:bg-[#fdf9f4]"
+                          ? "border-[#CD853F] bg-[#fdf9f4] ring-2 ring-[#CD853F] ring-opacity-50"
+                          : "border-[#e8d5b7] bg-[#fefcf8] hover:border-[#CD853F] hover:bg-[#fdf9f4]"
                           }`}
                       >
                         <div className="flex items-center gap-2">
@@ -947,8 +985,8 @@ function CreateCapsule() {
                           onClick={toggleMusicPreview}
                           disabled={!selectedMusic}
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 ${isPlayingPreview
-                              ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg"
-                              : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] shadow-lg"
+                            ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg"
+                            : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] shadow-lg"
                             }`}
                         >
                           {isPlayingPreview ? <Pause size={16} /> : <Play size={16} />}
@@ -1000,8 +1038,8 @@ function CreateCapsule() {
                       type="button"
                       onClick={() => setSlideshowTimeout(option.value)}
                       className={`border rounded-lg p-3 text-center transition-all ${slideshowTimeout === option.value
-                          ? "border-[#CD853F] bg-[#fdf9f4] ring-2 ring-[#CD853F] ring-opacity-50"
-                          : "border-[#e8d5b7] bg-[#fefcf8] hover:border-[#CD853F] hover:bg-[#fdf9f4]"
+                        ? "border-[#CD853F] bg-[#fdf9f4] ring-2 ring-[#CD853F] ring-opacity-50"
+                        : "border-[#e8d5b7] bg-[#fefcf8] hover:border-[#CD853F] hover:bg-[#fdf9f4]"
                         }`}
                     >
                       <div className="font-medium text-[#8B4513]">{option.label}</div>
@@ -1247,11 +1285,11 @@ function CreateCapsule() {
                       Video Preview
                     </h4>
                     <div className="flex flex-col items-center">
-                      <video 
-                        width="320" 
-                        height="240" 
-                        controls 
-                        src={videoPreview} 
+                      <video
+                        width="320"
+                        height="240"
+                        controls
+                        src={videoPreview}
                         className="rounded-lg shadow-md border-2 border-[#dbc7a6]"
                       />
                       <button
@@ -1287,8 +1325,8 @@ function CreateCapsule() {
                           onClick={() => handleMoveItemUp(idx)}
                           disabled={idx === 0}
                           className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-md transition-all duration-300 ${idx === 0
-                              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                              : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] cursor-pointer transform hover:scale-105"
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] cursor-pointer transform hover:scale-105"
                             }`}
                         >
                           <ChevronUp size={14} />
@@ -1298,8 +1336,8 @@ function CreateCapsule() {
                           onClick={() => handleMoveItemDown(idx)}
                           disabled={idx === items.length - 1}
                           className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-md transition-all duration-300 ${idx === items.length - 1
-                              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                              : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] cursor-pointer transform hover:scale-105"
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] cursor-pointer transform hover:scale-105"
                             }`}
                         >
                           <ChevronDown size={14} />
@@ -1489,7 +1527,114 @@ function CreateCapsule() {
                               </div>
                             ) : (
                               <div
-                                dangerouslySetInnerHTML={{ __html: item.content }}
+                                dangerouslySetInnerHTML={{
+                                  __html: `
+                    <div style="
+                      display: flex; 
+                      flex-direction: column; 
+                      gap: 0px; 
+                      width: 100%; 
+                      max-height: 100%;
+                      overflow: hidden;
+                      padding: 0px;
+                      box-sizing: border-box;
+                    ">
+                      <style>
+                        .slide-content img {
+                          max-width: 100%;
+                          max-height: 50vh;
+                          min-height: 200px;
+                          width: auto;
+                          height: auto;
+                          object-fit: contain;
+                          border-radius: 6px;
+                          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                          display: block;
+                          margin: 0 auto;
+                        }
+                        .slide-content {
+                          display: flex;
+                          flex-direction: column;
+                          gap: 0px;
+                          width: 100%;
+                          height: 100%;
+                          padding: 0px;
+                          justify-content: center;
+                        }
+                        .slide-content p, .slide-content div {
+                          word-wrap: break-word;
+                          font-size: 0.9em;
+                          display: block;
+                          width: 100%;
+                        }
+                        /* Ensure text alignment from editor is preserved */
+                        .slide-content *[style*="text-align"] {
+                          /* Preserve any text-align style from editor */
+                        }
+                        /* Preserve text alignment from editor */
+                        .slide-content p[style*="text-align: left"], 
+                        .slide-content div[style*="text-align: left"] {
+                          text-align: left !important;
+                        }
+                        .slide-content p[style*="text-align: right"], 
+                        .slide-content div[style*="text-align: right"] {
+                          text-align: right !important;
+                        }
+                        .slide-content p[style*="text-align: center"], 
+                        .slide-content div[style*="text-align: center"] {
+                          text-align: center !important;
+                        }
+                        .slide-content p[style*="text-align: justify"],
+                        .slide-content div[style*="text-align: justify"] {
+                          text-align: justify !important;
+                          text-justify: inter-word;
+                        }
+                        .slide-content ul, .slide-content ol {
+                          padding-left: 20px;
+                        }
+                        .slide-content blockquote {
+                          padding: 8px 16px;
+                          border-left: 4px solid #CD853F;
+                          background-color: #fdf9f4;
+                          font-style: italic;
+                        }
+                        .slide-content p:empty {
+                          min-height: 1.2em;
+                          display: block;
+                        }
+                        .slide-content p:empty::before {
+                          content: " ";
+                          white-space: pre;
+                        }
+                        /* Line breaks and spacing for images with text */
+                        .slide-content br {
+                          display: block;
+                          margin: 0.5em 0;
+                          line-height: 0.5em;
+                        }
+                        .slide-content p {
+                          margin: 0.5em 0;
+                          line-height: 1.2;
+                          display: block;
+                        }
+                        .slide-content div {
+                          margin: 0.3em 0;
+                          display: block;
+                        }
+                        .slide-content {
+                          white-space: pre-wrap;
+                          word-wrap: break-word;
+                          line-height: 1.2;
+                        }
+                        /* Default alignment for content without specific alignment */
+                        .slide-content p:not([style*="text-align"]),
+                        .slide-content div:not([style*="text-align"]) {
+                          text-align: left;
+                        }
+                      </style>
+                      <div class="slide-content">${item.content}</div>
+                    </div>
+                  ` }}
                                 style={{
                                   maxWidth: "80%",
                                   padding: "15px",
@@ -1533,8 +1678,8 @@ function CreateCapsule() {
                   onClick={handlePreview}
                   disabled={!id || loading}
                   className={`${vintageClasses.button.secondary} ${!id || loading
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
                     }`}
                 >
                   <span className="text-xl mr-2">👁️</span>
