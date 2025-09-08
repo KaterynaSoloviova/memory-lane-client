@@ -445,7 +445,7 @@ function CreateCapsule() {
     <main className={vintageClasses.pageContainer}>
       <VintageDecorations />
       
-      {/* CSS for empty paragraph visibility */}
+      {/* CSS for empty paragraph visibility and text alignment */}
       <style dangerouslySetInnerHTML={{
         __html: `
           .preview-content p:empty {
@@ -455,6 +455,35 @@ function CreateCapsule() {
           .preview-content p:empty::before {
             content: " ";
             white-space: pre;
+          }
+          /* Ensure text alignment from editor is preserved in preview */
+          .preview-content *[style*="text-align"] {
+            /* Preserve any text-align style from editor */
+          }
+          .preview-content p[style*="text-align: left"], 
+          .preview-content div[style*="text-align: left"] {
+            text-align: left !important;
+          }
+          .preview-content p[style*="text-align: right"], 
+          .preview-content div[style*="text-align: right"] {
+            text-align: right !important;
+          }
+          .preview-content p[style*="text-align: center"], 
+          .preview-content div[style*="text-align: center"] {
+            text-align: center !important;
+          }
+          .preview-content p[style*="text-align: justify"], 
+          .preview-content div[style*="text-align: justify"] {
+            text-align: justify !important;
+          }
+          .preview-content ul, .preview-content ol {
+            padding-left: 20px;
+          }
+          .preview-content blockquote {
+            padding: 8px 16px;
+            border-left: 4px solid #CD853F;
+            background-color: #fdf9f4;
+            font-style: italic;
           }
         `
       }} />
@@ -931,6 +960,11 @@ function CreateCapsule() {
                         <option value="24px">24px - XX-Large</option>
                         <option value="28px">28px - Huge</option>
                         <option value="32px">32px - Massive</option>
+                        <option value="36px">36px - Giant</option>
+                        <option value="40px">40px - Enormous</option>
+                        <option value="44px">44px - Colossal</option>
+                        <option value="48px">48px - Monumental</option>
+                        <option value="50px">50px - Epic</option>
                       </select>
                     </div>
 
@@ -954,6 +988,12 @@ function CreateCapsule() {
                         <option value="Garamond, serif">Garamond</option>
                         <option value="Brush Script MT, cursive">Brush Script</option>
                         <option value="Comic Sans MS, cursive">Comic Sans</option>
+                        <option value="Patrick Hand, cursive">Patrick Hand</option>
+                        <option value="Caveat, cursive">Caveat</option>
+                        <option value="Homemade Apple, cursive">Homemade Apple</option>
+                        <option value="Dancing Script, cursive">Dancing Script</option>
+                        <option value="Pacifico, cursive">Pacifico</option>
+                        <option value="Lobster Two, cursive">Lobster Two</option>
                       </select>
                     </div>
 
@@ -1005,6 +1045,8 @@ function CreateCapsule() {
                         minHeight: "400px",
                         whiteSpace: "pre-wrap",
                         overflowWrap: "break-word",
+                        width: "100%",
+                        boxSizing: "border-box",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1018,6 +1060,8 @@ function CreateCapsule() {
                           fontSize: newItemFontSize,
                           fontFamily: newItemFontFamily,
                           color: newItemFontColor,
+                          width: "100%",
+                          boxSizing: "border-box",
                         }}
                         className="preview-content"
                       />
@@ -1249,6 +1293,11 @@ function CreateCapsule() {
                                         <option value="24px">24px - XX-Large</option>
                                         <option value="28px">28px - Huge</option>
                                         <option value="32px">32px - Massive</option>
+                                        <option value="36px">36px - Giant</option>
+                                        <option value="40px">40px - Enormous</option>
+                                        <option value="44px">44px - Colossal</option>
+                                        <option value="48px">48px - Monumental</option>
+                                        <option value="50px">50px - Epic</option>
                                       </select>
                                     </div>
 
@@ -1272,6 +1321,12 @@ function CreateCapsule() {
                                         <option value="Garamond, serif">Garamond</option>
                                         <option value="Brush Script MT, cursive">Brush Script</option>
                                         <option value="Comic Sans MS, cursive">Comic Sans</option>
+                                        <option value="Patrick Hand, cursive">Patrick Hand</option>
+                                        <option value="Caveat, cursive">Caveat</option>
+                                        <option value="Homemade Apple, cursive">Homemade Apple</option>
+                                        <option value="Dancing Script, cursive">Dancing Script</option>
+                                        <option value="Pacifico, cursive">Pacifico</option>
+                                        <option value="Lobster Two, cursive">Lobster Two</option>
                                       </select>
                                     </div>
 
