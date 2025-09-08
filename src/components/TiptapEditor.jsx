@@ -93,26 +93,6 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
     }
   };
 
-  const setLineHeight = (height) => {
-    if (editor) {
-      // Apply line height to the current selection or all content
-      editor.chain().focus().setParagraph().run();
-      editor.commands.updateAttributes('paragraph', { 
-        style: `line-height: ${height}` 
-      });
-    }
-  };
-
-  const setParagraphSpacing = (spacing) => {
-    if (editor) {
-      // Apply paragraph spacing to the current selection or all content
-      editor.chain().focus().setParagraph().run();
-      editor.commands.updateAttributes('paragraph', { 
-        style: `margin: ${spacing}px 0` 
-      });
-    }
-  };
-
   return (
     <div className="border-2 border-[#e8d5b7] rounded-lg bg-[#fefcf8] overflow-hidden">
       <div className="bg-gradient-to-r from-[#f8f3ec] to-[#fdf9f4] p-3 border-b border-[#e8d5b7]">
@@ -290,38 +270,6 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
           >
             <Redo className="w-4 h-4" />
           </button>
-
-          {/* Spacing Controls */}
-          <div className="flex items-center gap-1 border-l border-[#e8d5b7] pl-2 ml-2">
-            <span className="text-xs text-[#8B4513] font-medium">Line:</span>
-            <select
-              onChange={(e) => setLineHeight(e.target.value)}
-              defaultValue="1.6"
-              className="text-xs border border-[#e8d5b7] rounded px-2 py-1 bg-white text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
-              title="Line Height"
-            >
-              <option value="1.2">1.2</option>
-              <option value="1.4">1.4</option>
-              <option value="1.6">1.6</option>
-              <option value="1.8">1.8</option>
-              <option value="2.0">2.0</option>
-            </select>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-[#8B4513] font-medium">Space:</span>
-            <select
-              onChange={(e) => setParagraphSpacing(e.target.value)}
-              defaultValue="4"
-              className="text-xs border border-[#e8d5b7] rounded px-2 py-1 bg-white text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
-              title="Paragraph Spacing"
-            >
-              <option value="0">None</option>
-              <option value="4">Tight</option>
-              <option value="8">Normal</option>
-              <option value="12">Loose</option>
-            </select>
-          </div>
         </div>
       </div>
 
