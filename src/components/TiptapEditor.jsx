@@ -54,7 +54,7 @@ const TiptapEditor = ({ content, onChange, onImageUpload }) => {
       Image.configure({
         HTMLAttributes: {
           class: "max-w-full h-auto rounded-lg shadow-md",
-          style: "max-height: 450px; object-fit: contain;",
+          style: "max-height: 400px; object-fit: contain;",
         },
         allowBase64: true,
       }),
