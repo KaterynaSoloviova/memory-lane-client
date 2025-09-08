@@ -387,18 +387,11 @@ export default function SlideShow({
               />
             ) : (
               <motion.div
-                className="w-full h-full flex flex-col justify-start px-4 pt-0 pb-8"
+                className="w-full h-full flex flex-col justify-start px-4 pt-0 pb-8 relative"
                 style={{
                   backgroundColor:
                     memoryStyles[currentItem.style]?.backgroundColor ||
                     memoryStyles.default.backgroundColor,
-                  backgroundImage:
-                    memoryStyles[currentItem.style]?.backgroundImage || "none",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  opacity:
-                    memoryStyles[currentItem.style]?.opacity ||
-                    memoryStyles.default.opacity,
                   fontFamily:
                     currentItem.fontFamily ||
                     memoryStyles[currentItem.style]?.fontFamily ||
@@ -421,9 +414,25 @@ export default function SlideShow({
                   justifyContent: "flex-start",
                   textAlign: "left",
                 }}
-                whileHover={{ scale: 1.02 }}
-                dangerouslySetInnerHTML={{ 
-                  __html: hasOnlyImages(currentItem.content) ? `
+              >
+                {/* Background image with opacity */}
+                {memoryStyles[currentItem.style]?.backgroundImage && (
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundImage: memoryStyles[currentItem.style]?.backgroundImage,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      opacity: memoryStyles[currentItem.style]?.opacity || 0.8,
+                    }}
+                  />
+                )}
+                {/* Content overlay */}
+                <div className="relative z-10 w-full h-full">
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    dangerouslySetInnerHTML={{ 
+                      __html: hasOnlyImages(currentItem.content) ? `
                     <div style="
                       display: flex; 
                       flex-direction: column; 
@@ -684,8 +693,10 @@ export default function SlideShow({
                       <div class="slide-text-content">${currentItem.content}</div>
                     </div>
                   `
-                }}
-              />
+                    }}
+                  />
+                </div>
+              </motion.div>
             )}
           </motion.div>
         </AnimatePresence>

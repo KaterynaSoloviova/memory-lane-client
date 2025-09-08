@@ -1223,13 +1223,6 @@ function CreateCapsule() {
                         backgroundColor:
                           memoryStyles[styleKey]?.backgroundColor ||
                           memoryStyles.default.backgroundColor,
-                        backgroundImage:
-                          memoryStyles[styleKey]?.backgroundImage || "none",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        opacity:
-                          memoryStyles[styleKey]?.opacity ||
-                          memoryStyles.default.opacity,
                         fontFamily:
                           memoryStyles[styleKey]?.fontFamily ||
                           memoryStyles.default.fontFamily,
@@ -1249,6 +1242,20 @@ function CreateCapsule() {
                         justifyContent: "center",
                       }}
                     >
+                      {/* Background image with opacity */}
+                      {memoryStyles[styleKey]?.backgroundImage && (
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            backgroundImage: memoryStyles[styleKey]?.backgroundImage,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            opacity: memoryStyles[styleKey]?.opacity || 0.8,
+                          }}
+                        />
+                      )}
+                      {/* Content overlay */}
+                      <div className="relative z-10 w-full h-full">
                       <div
                         dangerouslySetInnerHTML={{ __html: textContent }}
                         style={{
@@ -1268,6 +1275,7 @@ function CreateCapsule() {
                         }}
                         className="preview-content"
                       />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1437,13 +1445,6 @@ function CreateCapsule() {
                           backgroundColor:
                             memoryStyles[item.style]?.backgroundColor ||
                             memoryStyles.default.backgroundColor,
-                          backgroundImage:
-                            memoryStyles[item.style]?.backgroundImage || "none",
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                          opacity:
-                            memoryStyles[item.style]?.opacity ||
-                            memoryStyles.default.opacity,
                           fontFamily:
                             memoryStyles[item.style]?.fontFamily ||
                             memoryStyles.default.fontFamily,
@@ -1466,6 +1467,20 @@ function CreateCapsule() {
                           justifyContent: "flex-start",
                         }}
                       >
+                        {/* Background image with opacity */}
+                        {memoryStyles[item.style]?.backgroundImage && (
+                          <div
+                            className="absolute inset-0 pointer-events-none"
+                            style={{
+                              backgroundImage: memoryStyles[item.style]?.backgroundImage,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              opacity: memoryStyles[item.style]?.opacity || 0.8,
+                            }}
+                          />
+                        )}
+                        {/* Content overlay */}
+                        <div className="relative z-10 w-full h-full">
                         {item.type === "text" && (
                           <>
                             {editingItemIndex === idx ? (
@@ -1752,6 +1767,7 @@ function CreateCapsule() {
                             />
                           </div>
                         )}
+                        </div>
                       </div>
                     </div>
                   ))
