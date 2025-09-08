@@ -309,6 +309,7 @@ function CreateCapsule() {
   };
 
   const handleEditItem = (index) => {
+    console.log("Edit item clicked for index:", index);
     const item = items[index];
     if (item.type === "text") {
       setEditingItemIndex(index);
@@ -1443,8 +1444,11 @@ function CreateCapsule() {
                       {item.type === "text" && editingItemIndex !== idx && (
                         <button
                           type="button"
-                          onClick={() => handleEditItem(idx)}
-                          className="absolute bottom-3 right-3 bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] rounded-full p-2 shadow-lg z-10 w-9 h-9 flex items-center justify-center transition-all duration-300 transform hover:scale-105"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditItem(idx);
+                          }}
+                          className="absolute bottom-3 right-3 bg-gradient-to-r from-[#CD853F] to-[#D2691E] text-white hover:from-[#D2691E] hover:to-[#CD853F] rounded-full p-2 shadow-lg z-20 w-9 h-9 flex items-center justify-center transition-all duration-300 transform hover:scale-105 pointer-events-auto"
                           title="Edit memory"
                         >
                           <Edit size={14} />
