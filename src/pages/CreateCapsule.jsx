@@ -1227,6 +1227,9 @@ function CreateCapsule() {
                           memoryStyles[styleKey]?.backgroundImage || "none",
                         backgroundSize: "cover",
                         backgroundPosition: "center",
+                        opacity:
+                          memoryStyles[styleKey]?.opacity ||
+                          memoryStyles.default.opacity,
                         fontFamily:
                           memoryStyles[styleKey]?.fontFamily ||
                           memoryStyles.default.fontFamily,
@@ -1438,6 +1441,9 @@ function CreateCapsule() {
                             memoryStyles[item.style]?.backgroundImage || "none",
                           backgroundSize: "cover",
                           backgroundPosition: "center",
+                          opacity:
+                            memoryStyles[item.style]?.opacity ||
+                            memoryStyles.default.opacity,
                           fontFamily:
                             memoryStyles[item.style]?.fontFamily ||
                             memoryStyles.default.fontFamily,

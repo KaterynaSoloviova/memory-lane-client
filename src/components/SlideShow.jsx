@@ -396,6 +396,9 @@ export default function SlideShow({
                     memoryStyles[currentItem.style]?.backgroundImage || "none",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
+                  opacity:
+                    memoryStyles[currentItem.style]?.opacity ||
+                    memoryStyles.default.opacity,
                   fontFamily:
                     currentItem.fontFamily ||
                     memoryStyles[currentItem.style]?.fontFamily ||
