@@ -337,7 +337,7 @@ export default function SlideShow({
             animate="center"
             exit="exit"
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className={hasOnlyImages(currentItem.content) ? "p-0 border-0" : "rounded-lg shadow-lg p-6 border border-[#d4c5a3]"}
+            className={hasOnlyImages(currentItem.content) ? "p-0 border-0" : "rounded-lg shadow-lg p-0 border border-[#d4c5a3] overflow-hidden"}
             style={{
               height: "80vh",
               backgroundColor: hasOnlyImages(currentItem.content) ? "transparent" : "#f9f5e8",
@@ -387,7 +387,7 @@ export default function SlideShow({
               />
             ) : (
               <motion.div
-                className="w-full h-full flex flex-col justify-start px-4 pt-0 pb-8 relative"
+                className="w-full h-full flex flex-col justify-start px-4 pt-0 pb-0 relative"
                 style={{
                   backgroundColor:
                     memoryStyles[currentItem.style]?.backgroundColor ||
@@ -455,7 +455,7 @@ export default function SlideShow({
                         
                         .slide-image-only img {
                           max-width: 100%;
-                          max-height: 95vh;
+                          max-height: 100%;
                           width: auto;
                           height: auto;
                           object-fit: contain;
@@ -475,124 +475,8 @@ export default function SlideShow({
                       </style>
                       <div class="slide-image-only">${currentItem.content}</div>
                     </div>
-                  ` : hasImagesWithText(currentItem.content) ? `
-                    <div style="
-                      display: flex; 
-                      flex-direction: column; 
-                      gap: 0px; 
-                      width: 100%; 
-                      max-height: 100%;
-                      overflow: hidden;
-                      padding: 0px;
-                      box-sizing: border-box;
-                    ">
-                      <style>
-                        .slide-content img {
-                          max-width: 100%;
-                          max-height: 90vh;
-                          min-height: 500px;
-                          width: auto;
-                          height: auto;
-                          object-fit: contain;
-                          border-radius: 6px;
-                          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                          display: block;
-                          margin: 0 auto;
-                        }
-                        .slide-content {
-                          display: flex;
-                          flex-direction: column;
-                          gap: 0px;
-                          width: 100%;
-                          height: 100%;
-                          padding: 0px;
-                          justify-content: center;
-                        }
-                        .slide-content p, .slide-content div {
-                          word-wrap: break-word;
-                          font-size: 1.1em;
-                          display: block;
-                          width: 100%;
-                        }
-                        /* Ensure text alignment from editor is preserved */
-                        .slide-content *[style*="text-align"] {
-                          /* Preserve any text-align style from editor */
-                        }
-                        /* Preserve text alignment from editor */
-                        .slide-content p[style*="text-align: left"], 
-                        .slide-content div[style*="text-align: left"] {
-                          text-align: left !important;
-                        }
-                        .slide-content p[style*="text-align: right"], 
-                        .slide-content div[style*="text-align: right"] {
-                          text-align: right !important;
-                        }
-                        .slide-content p[style*="text-align: center"], 
-                        .slide-content div[style*="text-align: center"] {
-                          text-align: center !important;
-                        }
-                        .slide-content p[style*="text-align: justify"],
-                        .slide-content div[style*="text-align: justify"] {
-                          text-align: justify !important;
-                          text-justify: inter-word;
-                        }
-                        .slide-content ul, .slide-content ol {
-                          padding-left: 20px;
-                        }
-                        .slide-content blockquote {
-                          padding: 8px 16px;
-                          border-left: 4px solid #CD853F;
-                          background-color: #fdf9f4;
-                          font-style: italic;
-                        }
-                        .slide-content p:empty {
-                          min-height: 1.2em;
-                          display: block;
-                        }
-                        .slide-content p:empty::before {
-                          content: " ";
-                          white-space: pre;
-                        }
-                        /* Line breaks and spacing for images with text */
-                        .slide-content br {
-                          display: block;
-                          margin: 0.5em 0;
-                          line-height: 0.5em;
-                        }
-                        .slide-content p {
-                          margin: 0.5em 0;
-                          line-height: 1.2;
-                          display: block;
-                        }
-                        .slide-content div {
-                          margin: 0.3em 0;
-                          display: block;
-                        }
-                        .slide-content {
-                          white-space: pre-wrap;
-                          word-wrap: break-word;
-                          line-height: 1.2;
-                        }
-                        /* Default alignment for content without specific alignment */
-                        .slide-content p:not([style*="text-align"]),
-                        .slide-content div:not([style*="text-align"]) {
-                          text-align: left !important;
-                        }
-                        
-                        /* Ensure all text content defaults to left alignment and top positioning */
-                        .slide-content {
-                          text-align: left !important;
-                          align-items: flex-start !important;
-                          justify-content: flex-start !important;
-                        }
-                        
-                        .slide-content p, .slide-content div {
-                          text-align: left !important;
-                        }
-                      </style>
-                      <div class="slide-content">${currentItem.content}</div>
-                    </div>
-                  ` : `
+                  ` : hasImagesWithText(currentItem.content) ? `<div class="slide-content">${currentItem.content}</div>`
+                  : `
                     <div style="
                       display: flex; 
                       flex-direction: column; 
@@ -653,6 +537,16 @@ export default function SlideShow({
                           content: " ";
                           white-space: pre;
                         }
+                        /* Remove accidental leading empty paragraph from editor */
+                        .slide-text-content p:empty:first-child { display: none; }
+                        /* Normalize heading margins to avoid big top gap */
+                        .slide-text-content h1, .slide-text-content h2, .slide-text-content h3,
+                        .slide-text-content h4, .slide-text-content h5, .slide-text-content h6 {
+                          margin: 0.25em 0;
+                          line-height: 1.2;
+                        }
+                        /* Ensure the very first element hugs the top */
+                        .slide-text-content > *:first-child { margin-top: 0 !important; padding-top: 0 !important; }
                         /* Line breaks and spacing */
                         .slide-text-content br {
                           display: block;

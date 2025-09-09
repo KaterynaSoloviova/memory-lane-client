@@ -451,7 +451,8 @@ function CreateCapsule() {
 
       {/* CSS for empty paragraph visibility and text alignment */}
       <style dangerouslySetInnerHTML={{
-        __html: `
+        __html: 
+        `
           .preview-content p:empty {
             min-height: 1.2em;
             display: block;
@@ -459,228 +460,6 @@ function CreateCapsule() {
           .preview-content p:empty::before {
             content: " ";
             white-space: pre;
-          }
-          /* Ensure text alignment from editor is preserved in preview */
-          .preview-content *[style*="text-align"] {
-            /* Preserve any text-align style from editor */
-          }
-          .preview-content p[style*="text-align: left"], 
-          .preview-content div[style*="text-align: left"] {
-            text-align: left !important;
-          }
-          .preview-content p[style*="text-align: right"], 
-          .preview-content div[style*="text-align: right"] {
-            text-align: right !important;
-          }
-          .preview-content p[style*="text-align: center"], 
-          .preview-content div[style*="text-align: center"] {
-            text-align: center !important;
-          }
-          .preview-content p[style*="text-align: justify"], 
-          .preview-content div[style*="text-align: justify"] {
-            text-align: justify !important;
-          }
-          .preview-content ul, .preview-content ol {
-            padding-left: 20px;
-          }
-          .preview-content blockquote {
-            padding: 8px 16px;
-            border-left: 4px solid #CD853F;
-            background-color: #fdf9f4;
-            font-style: italic;
-          }
-          /* Text positioning and spacing for preview */
-          .preview-content {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            line-height: 1.2;
-          }
-          
-          /* Line breaks */
-          .preview-content br {
-            display: block;
-            margin: 0.5em 0;
-            line-height: 0.5em;
-          }
-          
-          /* Paragraphs */
-          .preview-content p {
-            margin: 0.5em 0;
-            line-height: 1.2;
-            display: block;
-          }
-          
-          /* Divs */
-          .preview-content div {
-            margin: 0.3em 0;
-            display: block;
-          }
-          
-          /* Text alignment - this is the key fix! */
-          .preview-content p[style*="text-align: left"],
-          .preview-content div[style*="text-align: left"] {
-            text-align: left !important;
-          }
-          
-          .preview-content p[style*="text-align: right"],
-          .preview-content div[style*="text-align: right"] {
-            text-align: right !important;
-          }
-          
-          .preview-content p[style*="text-align: center"],
-          .preview-content div[style*="text-align: center"] {
-            text-align: center !important;
-          }
-          
-          .preview-content p[style*="text-align: justify"],
-          .preview-content div[style*="text-align: justify"] {
-            text-align: justify !important;
-            text-justify: inter-word;
-          }
-          
-          /* Additional justify support for different attribute formats */
-          .preview-content p[style*="justify"],
-          .preview-content div[style*="justify"] {
-            text-align: justify !important;
-            text-justify: inter-word;
-          }
-          
-          /* Support for Tiptap justify classes */
-          .preview-content .has-text-align-justify,
-          .preview-content [data-text-align="justify"] {
-            text-align: justify !important;
-            text-justify: inter-word;
-          }
-          
-          /* Default alignment for content without specific alignment */
-          .preview-content p:not([style*="text-align"]),
-          .preview-content div:not([style*="text-align"]) {
-            text-align: left !important;
-          }
-          
-          /* Ensure all preview content defaults to center alignment and positioning */
-          .preview-content {
-            text-align: center !important;
-            align-items: center !important;
-            justify-content: center !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          
-          .preview-content p, .preview-content div {
-            text-align: left !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          
-          .preview-content p:first-child {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-          }
-          
-          /* Center images in preview */
-          .preview-content img {
-            display: block !important;
-            margin: 0 auto !important;
-            max-width: 100% !important;
-            max-height: 70vh !important;
-            object-fit: contain !important;
-            border-radius: 8px !important;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-          }
-          
-          /* Memory cards text alignment and spacing */
-          .memory-card-content {
-            white-space: pre-wrap !important;
-            word-wrap: break-word !important;
-            line-height: 1.2 !important;
-            overflow-wrap: break-word !important;
-          }
-          
-          .memory-card-content br {
-            display: block !important;
-            margin: 0.8em 0 !important;
-            line-height: 1.2 !important;
-            height: 0.8em !important;
-            content: "" !important;
-            min-height: 0.8em !important;
-          }
-          
-          /* Force line breaks to be visible */
-          .memory-card-content br::after {
-            content: "\\A" !important;
-            white-space: pre !important;
-          }
-          
-          /* Additional line break support for memory cards */
-          .memory-card-content br {
-            display: block !important;
-            margin: 0.8em 0 !important;
-            line-height: 1.2 !important;
-            height: 0.8em !important;
-            content: "" !important;
-            min-height: 0.8em !important;
-            width: 100% !important;
-            clear: both !important;
-          }
-          
-          .memory-card-content p {
-            margin: 0.8em 0;
-            line-height: 1.2;
-            display: block;
-          }
-          
-          .memory-card-content div {
-            margin: 0.6em 0;
-            display: block;
-          }
-          
-          /* Text alignment for memory cards */
-          .memory-card-content p[style*="text-align: left"],
-          .memory-card-content div[style*="text-align: left"] {
-            text-align: left !important;
-          }
-          
-          .memory-card-content p[style*="text-align: right"],
-          .memory-card-content div[style*="text-align: right"] {
-            text-align: right !important;
-          }
-          
-          .memory-card-content p[style*="text-align: center"],
-          .memory-card-content div[style*="text-align: center"] {
-            text-align: center !important;
-          }
-          
-          .memory-card-content p[style*="text-align: justify"],
-          .memory-card-content div[style*="text-align: justify"] {
-            text-align: justify !important;
-            text-justify: inter-word;
-          }
-          
-          /* Default alignment for memory cards */
-          .memory-card-content p:not([style*="text-align"]),
-          .memory-card-content div:not([style*="text-align"]) {
-            text-align: left !important;
-          }
-          
-          /* Ensure all memory card content defaults to left alignment and top positioning */
-          .memory-card-content {
-            text-align: left !important;
-            align-items: flex-start !important;
-            justify-content: flex-start !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          
-          .memory-card-content p, .memory-card-content div {
-            text-align: left !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          
-          .memory-card-content p:first-child {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
           }
         `
       }} />
@@ -1240,10 +1019,10 @@ function CreateCapsule() {
                         boxSizing: "border-box",
                         padding: "0px 40px 40px 40px",
                         margin: "0",
-                        textAlign: "center",
+                        textAlign: "left",
                         display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
                       }}
                     >
                       {/* Background image with opacity */}
@@ -1260,25 +1039,22 @@ function CreateCapsule() {
                       )}
                       {/* Content overlay */}
                       <div className="relative z-10 w-full h-full">
-                      <div
-                        dangerouslySetInnerHTML={{ __html: textContent }}
-                        style={{
-                          fontSize: newItemFontSize,
-                          fontFamily: newItemFontFamily,
-                          color: newItemFontColor,
-                          width: "100%",
-                          boxSizing: "border-box",
-                          lineHeight: "1.6",
-                          margin: "0",
-                          padding: "0",
-                          textAlign: "center",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                        }}
-                        className="preview-content"
-                      />
+                        <div
+                          dangerouslySetInnerHTML={{ __html: textContent }}
+                          style={{
+                            fontSize: newItemFontSize,
+                            fontFamily: newItemFontFamily,
+                            color: newItemFontColor,
+                            width: "100%",
+                            boxSizing: "border-box",
+                            lineHeight: "1.6",
+                            margin: "0",
+                            padding: "0",
+                            textAlign: "left",
+                            display: "block",
+                          }}
+                          className="preview-content"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1471,8 +1247,6 @@ function CreateCapsule() {
                             memoryStyles[item.style]?.color ||
                             memoryStyles.default.color,
                           minHeight: "400px",
-                          whiteSpace: "pre-wrap",
-                          overflowWrap: "break-word",
                           width: "100%",
                           boxSizing: "border-box",
                           padding: "0px",
@@ -1497,292 +1271,172 @@ function CreateCapsule() {
                         )}
                         {/* Content overlay */}
                         <div className="relative z-10 w-full h-full">
-                        {item.type === "text" && (
-                          <>
-                            {editingItemIndex === idx ? (
-                              <div style={{ width: "100%", padding: "0px 20px 20px 20px" }}>
-                                <TiptapEditor
-                                  content={editingContent}
-                                  onChange={setEditingContent}
-                                  onImageUpload={handleEditorImageUpload}
-                                />
+                          {item.type === "text" && (
+                            <>
+                              {editingItemIndex === idx ? (
+                                <div style={{ width: "100%", padding: "0px 20px 20px 20px" }}>
+                                  <TiptapEditor
+                                    content={editingContent}
+                                    onChange={setEditingContent}
+                                    onImageUpload={handleEditorImageUpload}
+                                  />
 
-                                {/* Font Customization Controls */}
-                                <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
-                                  <h4 className="text-[#8B4513] font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>
-                                    Font Customization
-                                  </h4>
+                                  {/* Font Customization Controls */}
+                                  <div className="mt-4 p-4 bg-[#fefcf8] border-2 border-[#e8d5b7] rounded-lg">
+                                    <h4 className="text-[#8B4513] font-semibold mb-3" style={{ fontFamily: 'Georgia, serif' }}>
+                                      Font Customization
+                                    </h4>
 
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {/* Font Size */}
-                                    <div>
-                                      <label className="block text-sm font-medium text-[#8B4513] mb-1">
-                                        Font Size
-                                      </label>
-                                      <select
-                                        value={editingFontSize}
-                                        onChange={(e) => setEditingFontSize(e.target.value)}
-                                        className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
-                                      >
-                                        <option value="12px">12px - Small</option>
-                                        <option value="14px">14px - Regular</option>
-                                        <option value="16px">16px - Medium</option>
-                                        <option value="18px">18px - Large</option>
-                                        <option value="20px">20px - X-Large</option>
-                                        <option value="24px">24px - XX-Large</option>
-                                        <option value="28px">28px - Huge</option>
-                                        <option value="32px">32px - Massive</option>
-                                        <option value="36px">36px - Giant</option>
-                                        <option value="40px">40px - Enormous</option>
-                                        <option value="44px">44px - Colossal</option>
-                                        <option value="48px">48px - Monumental</option>
-                                        <option value="50px">50px - Epic</option>
-                                      </select>
-                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                      {/* Font Size */}
+                                      <div>
+                                        <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                                          Font Size
+                                        </label>
+                                        <select
+                                          value={editingFontSize}
+                                          onChange={(e) => setEditingFontSize(e.target.value)}
+                                          className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                                        >
+                                          <option value="12px">12px - Small</option>
+                                          <option value="14px">14px - Regular</option>
+                                          <option value="16px">16px - Medium</option>
+                                          <option value="18px">18px - Large</option>
+                                          <option value="20px">20px - X-Large</option>
+                                          <option value="24px">24px - XX-Large</option>
+                                          <option value="28px">28px - Huge</option>
+                                          <option value="32px">32px - Massive</option>
+                                          <option value="36px">36px - Giant</option>
+                                          <option value="40px">40px - Enormous</option>
+                                          <option value="44px">44px - Colossal</option>
+                                          <option value="48px">48px - Monumental</option>
+                                          <option value="50px">50px - Epic</option>
+                                        </select>
+                                      </div>
 
-                                    {/* Font Family */}
-                                    <div>
-                                      <label className="block text-sm font-medium text-[#8B4513] mb-1">
-                                        Font Family
-                                      </label>
-                                      <select
-                                        value={editingFontFamily}
-                                        onChange={(e) => setEditingFontFamily(e.target.value)}
-                                        className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
-                                      >
-                                        <option value="Georgia, serif">Georgia (Serif)</option>
-                                        <option value="Times New Roman, serif">Times New Roman</option>
-                                        <option value="Arial, sans-serif">Arial (Sans-serif)</option>
-                                        <option value="Helvetica, sans-serif">Helvetica</option>
-                                        <option value="Verdana, sans-serif">Verdana</option>
-                                        <option value="Courier New, monospace">Courier New</option>
-                                        <option value="Palatino, serif">Palatino</option>
-                                        <option value="Garamond, serif">Garamond</option>
-                                        <option value="Brush Script MT, cursive">Brush Script</option>
-                                        <option value="Comic Sans MS, cursive">Comic Sans</option>
-                                        <option value="Patrick Hand, cursive">Patrick Hand</option>
-                                        <option value="Caveat, cursive">Caveat</option>
-                                        <option value="Homemade Apple, cursive">Homemade Apple</option>
-                                        <option value="Dancing Script, cursive">Dancing Script</option>
-                                        <option value="Pacifico, cursive">Pacifico</option>
-                                        <option value="Lobster Two, cursive">Lobster Two</option>
-                                      </select>
-                                    </div>
+                                      {/* Font Family */}
+                                      <div>
+                                        <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                                          Font Family
+                                        </label>
+                                        <select
+                                          value={editingFontFamily}
+                                          onChange={(e) => setEditingFontFamily(e.target.value)}
+                                          className="w-full border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none"
+                                        >
+                                          <option value="Georgia, serif">Georgia (Serif)</option>
+                                          <option value="Times New Roman, serif">Times New Roman</option>
+                                          <option value="Arial, sans-serif">Arial (Sans-serif)</option>
+                                          <option value="Helvetica, sans-serif">Helvetica</option>
+                                          <option value="Verdana, sans-serif">Verdana</option>
+                                          <option value="Courier New, monospace">Courier New</option>
+                                          <option value="Palatino, serif">Palatino</option>
+                                          <option value="Garamond, serif">Garamond</option>
+                                          <option value="Brush Script MT, cursive">Brush Script</option>
+                                          <option value="Comic Sans MS, cursive">Comic Sans</option>
+                                          <option value="Patrick Hand, cursive">Patrick Hand</option>
+                                          <option value="Caveat, cursive">Caveat</option>
+                                          <option value="Homemade Apple, cursive">Homemade Apple</option>
+                                          <option value="Dancing Script, cursive">Dancing Script</option>
+                                          <option value="Pacifico, cursive">Pacifico</option>
+                                          <option value="Lobster Two, cursive">Lobster Two</option>
+                                        </select>
+                                      </div>
 
-                                    {/* Font Color */}
-                                    <div>
-                                      <label className="block text-sm font-medium text-[#8B4513] mb-1">
-                                        Font Color
-                                      </label>
-                                      <div className="flex gap-2">
-                                        <input
-                                          type="color"
-                                          value={editingFontColor}
-                                          onChange={(e) => setEditingFontColor(e.target.value)}
-                                          className="w-12 h-10 border-2 border-[#e8d5b7] rounded-lg cursor-pointer"
-                                        />
-                                        <input
-                                          type="text"
-                                          value={editingFontColor}
-                                          onChange={(e) => setEditingFontColor(e.target.value)}
-                                          className="flex-1 border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none text-sm"
-                                          placeholder="#8B4513"
-                                        />
+                                      {/* Font Color */}
+                                      <div>
+                                        <label className="block text-sm font-medium text-[#8B4513] mb-1">
+                                          Font Color
+                                        </label>
+                                        <div className="flex gap-2">
+                                          <input
+                                            type="color"
+                                            value={editingFontColor}
+                                            onChange={(e) => setEditingFontColor(e.target.value)}
+                                            className="w-12 h-10 border-2 border-[#e8d5b7] rounded-lg cursor-pointer"
+                                          />
+                                          <input
+                                            type="text"
+                                            value={editingFontColor}
+                                            onChange={(e) => setEditingFontColor(e.target.value)}
+                                            className="flex-1 border-2 border-[#e8d5b7] rounded-lg px-3 py-2 bg-[#fefcf8] text-[#8B4513] focus:border-[#CD853F] focus:outline-none text-sm"
+                                            placeholder="#8B4513"
+                                          />
+                                        </div>
                                       </div>
                                     </div>
+
+                                    {/* Preview */}
+                                    <div className="mt-4">
+                                      <label className="block text-sm font-medium text-[#8B4513] mb-2">
+                                        Font Preview
+                                      </label>
+                                      <div
+                                        className="p-3 border border-[#e8d5b7] rounded-lg bg-white max-h-32 overflow-y-auto preview-content"
+                                        style={{
+                                          fontSize: editingFontSize,
+                                          fontFamily: editingFontFamily,
+                                          color: editingFontColor,
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                          __html: editingContent || "Start typing to see preview..."
+                                        }}
+                                      />
+                                    </div>
                                   </div>
 
-                                  {/* Preview */}
-                                  <div className="mt-4">
-                                    <label className="block text-sm font-medium text-[#8B4513] mb-2">
-                                      Font Preview
-                                    </label>
-                                    <div
-                                      className="p-3 border border-[#e8d5b7] rounded-lg bg-white max-h-32 overflow-y-auto preview-content"
-                                      style={{
-                                        fontSize: editingFontSize,
-                                        fontFamily: editingFontFamily,
-                                        color: editingFontColor,
-                                      }}
-                                      dangerouslySetInnerHTML={{
-                                        __html: editingContent || "Start typing to see preview..."
-                                      }}
-                                    />
+                                  <div className="flex gap-4 mt-6 justify-center">
+                                    <button
+                                      type="button"
+                                      onClick={handleSaveEdit}
+                                      className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-5 py-2.5 rounded-full font-semibold text-base shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center gap-2"
+                                    >
+                                      <Save className="w-4 h-4" />
+                                      Save
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={handleCancelEdit}
+                                      className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-5 py-2.5 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
+                                    >
+                                      <X className="w-4 h-4" />
+                                      Cancel
+                                    </button>
                                   </div>
                                 </div>
+                              ) : (
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html:`<div class="slide-content">${item.content}</div>
+                                  `
+                                  }}
+                                  style={{
+                                    fontSize: item.fontSize || "16px",
+                                    fontFamily: item.fontFamily || "Georgia, serif",
+                                    color: item.fontColor || "#8B4513",
+                                    width: "100%",
+                                    boxSizing: "border-box",
+                                    lineHeight: "1.6",
+                                    padding: "0px",
+                                    margin: "0px",
+                                    textAlign: "left",
+                                    display: "block",
+                                  }}
+                                  className="memory-card-content"
+                                />
+                              )}
+                            </>
+                          )}
 
-                                <div className="flex gap-4 mt-6 justify-center">
-                                  <button
-                                    type="button"
-                                    onClick={handleSaveEdit}
-                                    className="bg-gradient-to-r from-[#CD853F] to-[#D2691E] hover:from-[#D2691E] hover:to-[#CD853F] text-white px-5 py-2.5 rounded-full font-semibold text-base shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-[#8B4513] flex items-center gap-2"
-                                  >
-                                    <Save className="w-4 h-4" />
-                                    Save
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={handleCancelEdit}
-                                    className="bg-gradient-to-r from-[#fefcf8] to-[#f8f3ec] border-3 border-[#CD853F] text-[#8B4513] hover:bg-gradient-to-r hover:from-[#CD853F] hover:to-[#D2691E] hover:text-white px-5 py-2.5 rounded-full font-semibold text-base transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2"
-                                  >
-                                    <X className="w-4 h-4" />
-                                    Cancel
-                                  </button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div
-                                dangerouslySetInnerHTML={{
-                                  __html: `
-                    <div style="
-                      display: flex; 
-                      flex-direction: column; 
-                      gap: 0px; 
-                      width: 100%; 
-                      max-height: 100%;
-                      overflow: hidden;
-                      padding: 0px;
-                      box-sizing: border-box;
-                    ">
-                      <style>
-                        .slide-content img {
-                          max-width: 100%;
-                          max-height: 85vh;
-                          min-height: 400px;
-                          width: auto;
-                          height: auto;
-                          object-fit: contain;
-                          border-radius: 6px;
-                          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                          display: block;
-                          margin: 0 auto;
-                        }
-                        .slide-content {
-                          display: flex;
-                          flex-direction: column;
-                          gap: 0px;
-                          width: 100%;
-                          height: 100%;
-                          padding: 0px;
-                          justify-content: center;
-                        }
-                        .slide-content p, .slide-content div {
-                          word-wrap: break-word;
-                          font-size: 0.9em;
-                          display: block;
-                          width: 100%;
-                        }
-                        /* Ensure text alignment from editor is preserved */
-                        .slide-content *[style*="text-align"] {
-                          /* Preserve any text-align style from editor */
-                        }
-                        /* Preserve text alignment from editor */
-                        .slide-content p[style*="text-align: left"], 
-                        .slide-content div[style*="text-align: left"] {
-                          text-align: left !important;
-                        }
-                        .slide-content p[style*="text-align: right"], 
-                        .slide-content div[style*="text-align: right"] {
-                          text-align: right !important;
-                        }
-                        .slide-content p[style*="text-align: center"], 
-                        .slide-content div[style*="text-align: center"] {
-                          text-align: center !important;
-                        }
-                        .slide-content p[style*="text-align: justify"],
-                        .slide-content div[style*="text-align: justify"] {
-                          text-align: justify !important;
-                          text-justify: inter-word;
-                        }
-                        .slide-content ul, .slide-content ol {
-                          padding-left: 20px;
-                        }
-                        .slide-content blockquote {
-                          padding: 8px 16px;
-                          border-left: 4px solid #CD853F;
-                          background-color: #fdf9f4;
-                          font-style: italic;
-                        }
-                        .slide-content p:empty {
-                          min-height: 1.2em;
-                          display: block;
-                        }
-                        .slide-content p:empty::before {
-                          content: " ";
-                          white-space: pre;
-                        }
-                        /* Line breaks and spacing for images with text */
-                        .slide-content br {
-                          display: block;
-                          margin: 0.5em 0;
-                          line-height: 0.5em;
-                        }
-                        .slide-content p {
-                          margin: 0.5em 0;
-                          line-height: 1.2;
-                          display: block;
-                        }
-                        .slide-content div {
-                          margin: 0.3em 0;
-                          display: block;
-                        }
-                        .slide-content {
-                          white-space: pre-wrap;
-                          word-wrap: break-word;
-                          line-height: 1.2;
-                        }
-                        /* Default alignment for content without specific alignment */
-                        .slide-content p:not([style*="text-align"]),
-                        .slide-content div:not([style*="text-align"]) {
-                          text-align: left !important;
-                        }
-                        
-                        /* Ensure all text content defaults to left alignment and top positioning */
-                        .slide-content {
-                          text-align: left !important;
-                          align-items: flex-start !important;
-                          justify-content: flex-start !important;
-                          margin: 0 !important;
-                          padding: 0 !important;
-                        }
-                        
-                        .slide-content p, .slide-content div {
-                          text-align: left !important;
-                          margin: 0 !important;
-                          padding: 0 !important;
-                        }
-                        
-                        .slide-content p:first-child {
-                          margin-top: 0 !important;
-                          padding-top: 0 !important;
-                        }
-                      </style>
-                      <div class="slide-content">${item.content}</div>
-                    </div>
-                  ` }}
-                                style={{
-                                  width: "100%",
-                                  padding: "0px",
-                                  margin: "0px",
-                                  fontSize: item.fontSize || "16px",
-                                  fontFamily: item.fontFamily || "Georgia, serif",
-                                  color: item.fontColor || "#8B4513",
-                                }}
-                                className="memory-card-content"
+                          {item.type === "video" && (
+                            <div style={{ maxWidth: "100%" }}>
+                              <video
+                                src={item.content}
+                                controls
+                                style={{ width: "100%", borderRadius: "8px" }}
                               />
-                            )}
-                          </>
-                        )}
-
-                        {item.type === "video" && (
-                          <div style={{ maxWidth: "100%" }}>
-                            <video
-                              src={item.content}
-                              controls
-                              style={{ width: "100%", borderRadius: "8px" }}
-                            />
-                          </div>
-                        )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
