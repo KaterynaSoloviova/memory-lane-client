@@ -328,7 +328,8 @@ export default function SlideShow({
 
   return (
     <div className="w-full p-0">
-      <div className="relative w-full h-[80vh]">
+      <div className="relative w-full h-[80vh] flex items-center justify-center">
+        <div className="w-full" style={{ aspectRatio: "16 / 9", maxHeight: "80vh"}}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -339,7 +340,7 @@ export default function SlideShow({
             transition={{ duration: 0.8, ease: "easeInOut" }}
             className={hasOnlyImages(currentItem.content) ? "p-0 border-0" : "rounded-lg shadow-lg p-0 border border-[#d4c5a3] overflow-hidden"}
             style={{
-              height: "80vh",
+              height: "100%",
               backgroundColor: hasOnlyImages(currentItem.content) ? "transparent" : "#f9f5e8",
               backgroundImage: hasOnlyImages(currentItem.content) ? "none" : "url('/paper-texture.png')",
               backgroundSize: "cover",
@@ -594,6 +595,7 @@ export default function SlideShow({
             )}
           </motion.div>
         </AnimatePresence>
+        </div>
 
         {/* Navigation Buttons - only show when slideshow is active */}
         {slideshowActive && (
